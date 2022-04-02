@@ -55,6 +55,12 @@ public class OwnerRepository implements MemberRepository<Owner> {
                 .getSingleResult();
     }
 
+    public Owner findOneWithPhoneNumber(Long ownerId) throws PersistenceException {
+        return em.createQuery("select m from Owner m left join fetch m.phoneNumber where m.id = :id", Owner.class)
+                .setParameter("id", ownerId)
+                .getSingleResult();
+    }
+
     // test
     public List<Owner> findAll() {
         return em.createQuery("select m from Owner m", Owner.class)

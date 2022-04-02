@@ -31,6 +31,9 @@ public class Restaurant {
     @Column(name = "restaurant_address")
     private String address;
 
+    @Embedded
+    private Location location;
+
     private int tableCount;
 
     @Enumerated(value = EnumType.STRING)

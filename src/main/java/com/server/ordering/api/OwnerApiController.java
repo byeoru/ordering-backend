@@ -3,7 +3,6 @@ package com.server.ordering.api;
 import com.server.ordering.domain.MemberType;
 import com.server.ordering.domain.PhoneNumber;
 import com.server.ordering.domain.Restaurant;
-import com.server.ordering.domain.SessionConst;
 import com.server.ordering.domain.dto.*;
 import com.server.ordering.domain.dto.request.*;
 import com.server.ordering.domain.dto.response.OwnerSignInResultDto;
@@ -14,9 +13,6 @@ import com.server.ordering.service.VerificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -77,17 +73,12 @@ public class OwnerApiController {
      * 점주 로그인
      */
     @PostMapping("/api/owner/signin")
-    public ResultDto<OwnerSignInResultDto> signIn(@RequestBody SignInDto dto, HttpServletRequest request) {
+    public ResultDto<OwnerSignInResultDto> signIn(@RequestBody SignInDto dto) {
         Optional<Owner> optionalOwner = ownerService.signIn(dto.getSignInId(), dto.getPassword());
 
         if (optionalOwner.isPresent()) {
             Owner owner = optionalOwner.get();
             Restaurant restaurant = owner.getRestaurant();
-
-            // session
-            HttpSession session = request.getSession();
-            // session에 login 회원정보 저장
-            session.setAttribute(SessionConst.LOGIN_MEMBER, owner);
 
             if (restaurant != null) {
                 return new ResultDto<>(1, new OwnerSignInResultDto(owner.getId(), owner.getRestaurant()));
@@ -100,15 +91,21 @@ public class OwnerApiController {
 
     /**
      *
-     * 점주 로그아웃
+     * 점주 휴대폰번호 변경
      */
-    @PostMapping("/api/owner/logout")
-    public ResultDto<Boolean> logout(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
+    @PutMapping("/api/owner/{ownerId}/phone-number")
+    public ResultDto<Boolean> putPhoneNumber(@PathVariable Long ownerId, @RequestBody PhoneNumberDto dto) {
+        ownerService.putPhoneNumber(ownerId, dto.getPhoneNumber());
+        return new ResultDto<>(1, true);
+    }
 
+    /**
+     *
+     * 점주 비밀번호 변경
+     */
+    @PutMapping("/api/owner/{ownerId}/password")
+    public ResultDto<Boolean> putPassword(@PathVariable Long ownerId, @RequestBody PasswordDto dto) {
+        ownerService.putPassword(ownerId, dto.getPassword());
         return new ResultDto<>(1, true);
     }
 

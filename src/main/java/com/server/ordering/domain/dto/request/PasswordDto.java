@@ -10,7 +10,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
-public class RestaurantIdDto {
+public class PasswordDto {
 
-    private Long restaurantId;
+    private String password;
 }

@@ -37,11 +37,11 @@ public class RestaurantApiController {
      * 매장 음식 추가
      */
     @PostMapping("/api/restaurant/{restaurantId}/food")
-    public ResultDto<Boolean> registerFood(
+    public ResultDto<Optional<Long>> registerFood(
             @PathVariable Long restaurantId,
             @RequestBody FoodDto dto) {
         Optional<Long> optionalId = restaurantService.registerFood(restaurantId, dto);
-        return new ResultDto<>(1, true);
+        return new ResultDto<>(1, optionalId);
     }
 
 //    @PutMapping("/api/restaurant/food")

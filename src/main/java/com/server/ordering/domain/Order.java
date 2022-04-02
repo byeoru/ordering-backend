@@ -1,7 +1,9 @@
 package com.server.ordering.domain;
 
 import com.server.ordering.domain.member.Customer;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,6 +17,7 @@ import static javax.persistence.GenerationType.*;
 @Entity
 @Getter
 @Table(name = "orders")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order {
 
     @Id @GeneratedValue(strategy = IDENTITY)

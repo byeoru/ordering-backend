@@ -1,5 +1,7 @@
 package com.server.ordering.service;
 
+import com.server.ordering.domain.MemberType;
+import com.server.ordering.domain.PhoneNumber;
 import com.server.ordering.domain.member.Owner;
 import com.server.ordering.repository.OwnerRepository;
 import lombok.RequiredArgsConstructor;
@@ -56,6 +58,25 @@ public class OwnerService implements MemberService<Owner> {
         } catch (NoResultException e) {
             return false;
         }
+    }
+
+    /**
+     * 점주 휴대폰번호 변경
+     */
+    @Transactional
+    public void putPhoneNumber(Long ownerId, String phoneNumber) {
+        Owner owner = ownerRepository.findOneWithPhoneNumber(ownerId);
+        PhoneNumber number = new PhoneNumber(phoneNumber, MemberType.OWNER);
+        owner.putPhoneNumber(number);
+    }
+
+    /**
+     * 점주 비밀번호 변경
+     */
+    @Transactional
+    public void putPassword(Long ownerId, String password) {
+        Owner owner = ownerRepository.findOne(ownerId);
+        owner.putPassword(password);
     }
 
     public Owner findOwner(Long id) {

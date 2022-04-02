@@ -20,4 +20,12 @@ public abstract class MemberBase {
     @OneToOne(fetch = LAZY, cascade = ALL, orphanRemoval = true)
     @JoinColumn(name = "phone_number")
     protected PhoneNumber phoneNumber;
+
+    public void putPhoneNumber(PhoneNumber phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void putPassword(String password) {
+        this.password = password;
+    }
 }
