@@ -13,22 +13,20 @@
 </div>
 
 <script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script>
-<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=8be2c7e30f1f630a3bdb53327b4bf1bb&libraries=services"></script>
 <script>
 
 
     window.addEventListener("message", onReceivedPostMessage, false);
 
-    const onReceivedPostMessage = (event) => {
+    function onReceivedPostMessage(event) {
         //..ex deconstruct event into action & params
         const action = event.data.action;
         const params = event.data.params;
 
         console.log("onReceivedPostMessage "+event);
-
     }
 
-    const onReceivedActivityMessageViaJavascriptInterface = (json) => {
+    function onReceivedActivityMessageViaJavascriptInterface(json) {
         //..ex deconstruct data into action & params
         const data = JSON.parse(json);
         const action = data.action;
@@ -40,9 +38,9 @@
     // 우편번호 찾기 화면을 넣을 element
     const element_layer = document.getElementById('layer');
 
-    const sample2_execDaumPostcode = () => {
+    function sample2_execDaumPostcode() {
         new daum.Postcode({
-            oncomplete: data => {
+             oncomplete: function(data) {
 
                 // 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
                 console.log(data);
@@ -105,7 +103,7 @@
     // 브라우저의 크기 변경에 따라 레이어를 가운데로 이동시키고자 하실때에는
     // resize이벤트나, orientationchange이벤트를 이용하여 값이 변경될때마다 아래 함수를 실행 시켜 주시거나,
     // 직접 element_layer의 top,left값을 수정해 주시면 됩니다.
-    const initLayerPosition = () => {
+    function initLayerPosition() {
         const width = (window.innerWidth || document.documentElement.clientWidth); //우편번호서비스가 들어갈 element의 width
         const height = (window.innerHeight || document.documentElement.clientHeight); //우편번호서비스가 들어갈 element의 height
         const borderWidth = 5; //샘플에서 사용하는 border의 두께
