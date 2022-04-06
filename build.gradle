@@ -30,8 +30,8 @@ dependencies {
     // twilio
     implementation group: "com.twilio.sdk", name: "twilio", version: "8.27.0"
     // AWS S3
-    //implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
-    implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.0'
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+    //implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.0'
 
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 }

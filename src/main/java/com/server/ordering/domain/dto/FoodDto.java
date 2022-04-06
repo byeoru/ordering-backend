@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -13,10 +14,13 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 public class FoodDto {
 
-    private Long foodId;
+    // request 전용
     private String foodName;
     private int price;
     private boolean soldOut;
+    private String menuIntro;
+
+    private Long foodId;
     private String imageUrl;
 
     public FoodDto(Food food) {
@@ -25,5 +29,6 @@ public class FoodDto {
         this.price = food.getPrice();
         this.soldOut = food.isSoldOut();
         this.imageUrl = food.getImageUrl();
+        this.menuIntro = food.getMenuIntro();
     }
 }

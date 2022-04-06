@@ -23,7 +23,6 @@ import java.util.Optional;
 public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
-    private final FoodRepository foodRepository;
     private final OwnerRepository ownerRepository;
 
     @Transactional
@@ -36,15 +35,7 @@ public class RestaurantService {
 
     @Transactional
     public void putRestaurant(Long restaurantId, RestaurantInfoDto dto) throws PersistenceException {
-        restaurantRepository.put(restaurantId, dto);
-    }
-
-    @Transactional
-    public Optional<Long> registerFood(Long restaurantId ,FoodDto dto) throws PersistenceException {
-        Restaurant restaurant = restaurantRepository.findOne(restaurantId);
-        Food food = new Food(dto.getFoodName(), dto.getPrice(), dto.isSoldOut());
-        foodRepository.save(food);
-        restaurant.addFood(food);
-        return Optional.of(food.getId());
+        restaurantRepository.put(dto.getRestaurantName(), dto.getOwnerName(), dto.getAddress(),
+                dto.getTableCount(), dto.getFoodCategory().toString(), dto.getRestaurantType().toString(), restaurantId);
     }
 }

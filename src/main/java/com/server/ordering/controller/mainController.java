@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import javax.servlet.http.Part;
 
 import java.io.InputStream;
 import java.util.List;
@@ -39,21 +40,21 @@ public class mainController {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    @PostMapping("/s3")
-    @ResponseBody
-    public String ps3(@RequestPart List<MultipartFile> multipartFile) {
-        multipartFile.forEach(file -> {
-            try (InputStream inputStream = file.getInputStream()) {
-                ObjectMetadata objectMetadata = new ObjectMetadata();
-                objectMetadata.setContentType(file.getContentType());
-                LocalDateTime localDateTime = new LocalDateTime();
-                amazonS3Client.putObject(new PutObjectRequest(bucketName, localDateTime.toString(), inputStream, objectMetadata)
-                        .withCannedAcl(CannedAccessControlList.PublicRead));
-            } catch (Exception e) {
-                System.out.println("e = " + e);
-            }
-        });
-
-        return "ok";
-    }
+//    @PostMapping("/s3")
+//    @ResponseBody
+//    public String ps3(@RequestPart List<Part> parts) {
+//        parts.forEach(file -> {
+//            try (InputStream inputStream = file.getInputStream()) {
+//                ObjectMetadata objectMetadata = new ObjectMetadata();
+//                objectMetadata.setContentType(file.getContentType());
+//                LocalDateTime localDateTime = new LocalDateTime();
+//                amazonS3Client.putObject(new PutObjectRequest(bucketName, localDateTime.toString(), inputStream, objectMetadata)
+//                        .withCannedAcl(CannedAccessControlList.PublicRead));
+//            } catch (Exception e) {
+//                System.out.println("e = " + e);
+//            }
+//        });
+//
+//        return "ok";
+//    }
 }

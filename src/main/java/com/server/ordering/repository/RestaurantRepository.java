@@ -23,10 +23,11 @@ public class RestaurantRepository {
         return em.find(Restaurant.class, id);
     }
 
-    public void put(Long restaurantId, RestaurantInfoDto dto) {
+    public void put(String restaurantName, String ownerName, String address, int tableCount, String foodCategory,
+                    String restaurantType, Long restaurantId) {
         jdbcTemplate.update("update restaurant set restaurant_name=?, owner_name=?, restaurant_address=?, table_count=?, " +
-                "food_category=?, restaurant_type=? where restaurant_id=?", dto.getRestaurantName(),
-                dto.getOwnerName(), dto.getAddress(), dto.getTableCount(), dto.getFoodCategory().toString(),
-                dto.getRestaurantType().toString(), restaurantId);
+                "food_category=?, restaurant_type=? where restaurant_id=?", restaurantName,
+                ownerName, address, tableCount, foodCategory,
+                restaurantType, restaurantId);
     }
 }

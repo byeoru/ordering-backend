@@ -1,5 +1,6 @@
 package com.server.ordering.domain;
 
+import com.server.ordering.domain.Order.Order;
 import lombok.Getter;
 import lombok.Setter;
 

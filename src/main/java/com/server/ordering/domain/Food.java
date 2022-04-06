@@ -33,10 +33,13 @@ public class Food {
     private int price;
     private boolean soldOut;
     private String imageUrl;
+    private String menuIntro;
 
-    public Food(String foodName, int price, boolean soldOut) {
+    public Food(String foodName, int price, boolean soldOut, String imageUrl, String menuIntro) {
         this.foodName = foodName;
         this.price = price;
         this.soldOut = soldOut;
+        this.imageUrl = imageUrl;
+        this.menuIntro = menuIntro;
     }
 }
