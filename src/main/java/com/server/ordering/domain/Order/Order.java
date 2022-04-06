@@ -1,5 +1,8 @@
-package com.server.ordering.domain;
+package com.server.ordering.domain.Order;
 
+import com.server.ordering.domain.OrderFood;
+import com.server.ordering.domain.OrderType;
+import com.server.ordering.domain.Review;
 import com.server.ordering.domain.member.Customer;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,10 +16,12 @@ import java.util.List;
 import static javax.persistence.CascadeType.*;
 import static javax.persistence.FetchType.*;
 import static javax.persistence.GenerationType.*;
+import static javax.persistence.InheritanceType.*;
 
 @Entity
 @Getter
 @Table(name = "orders")
+@Inheritance(strategy = JOINED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order {
 
@@ -37,4 +42,7 @@ public class Order {
     @OneToOne(fetch = LAZY)
     @JoinColumn(name = "review_id")
     private Review review;
+
+    @Enumerated(value = EnumType.STRING)
+    private OrderType orderType;
 }
