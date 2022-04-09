@@ -1,6 +1,5 @@
 package com.server.ordering.api;
 
-import com.server.ordering.S3Service;
 import com.server.ordering.domain.Food;
 import com.server.ordering.domain.dto.request.RestaurantInfoDto;
 import com.server.ordering.domain.dto.ResultDto;
@@ -8,7 +7,6 @@ import com.server.ordering.domain.dto.FoodDto;
 import com.server.ordering.service.FoodService;
 import com.server.ordering.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,7 +20,6 @@ public class RestaurantApiController {
 
     private final RestaurantService restaurantService;
     private final FoodService foodService;
-    private final S3Service s3Service;
 
     /**
      *
@@ -36,23 +33,17 @@ public class RestaurantApiController {
         return new ResultDto<>(1, true);
     }
 
-
     /**
      *
      * 매장 음식 추가
      */
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucketName;
     @PostMapping("/api/restaurant/{restaurantId}/food")
     public ResultDto<Optional<Long>> registerFood(
             @PathVariable Long restaurantId,
-            @RequestPart MultipartFile image,
+            @RequestPart(required = false) MultipartFile image,
             @RequestPart FoodDto dto) {
 
-        String newImageKey = restaurantId +"food-image" + System.currentTimeMillis();
-        String imageUrl = s3Service.upload(image, newImageKey);
-        dto.setImageUrl(imageUrl);
-        Optional<Long> foodId = foodService.registerFood(restaurantId, dto);
+        Optional<Long> foodId = foodService.registerFood(restaurantId, dto, image);
         return new ResultDto<>(1, foodId);
     }
 
@@ -65,12 +56,10 @@ public class RestaurantApiController {
         Food food = foodService.findFood(foodId);
 
         String imageUrl = food.getImageUrl();
-        System.out.println(imageUrl);
         if (imageUrl != null) {
             String imageKey = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
-            System.out.println(imageKey);
             // 기존 이미지 삭제
-            s3Service.delete(imageKey);
+            //s3Service.delete(imageKey);
         }
 
         foodService.deleteFood(food);
@@ -88,23 +77,7 @@ public class RestaurantApiController {
             @RequestPart(required = false) MultipartFile image,
             @RequestPart FoodDto dto) {
 
-        if (image.isEmpty()) {
-            foodService.putFood(foodId, dto, false);
-        } else {
-            Food food = foodService.findFood(foodId);
-            String imageUrl = food.getImageUrl();
-            String imageKey = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
-            String newImageKey = restaurantId +"food-image" + System.currentTimeMillis();
-
-            // 기존 이미지 삭제
-            s3Service.delete(imageKey);
-            // 이미지 S3 저장
-            String newImageUrl = s3Service.upload(image, newImageKey);
-            dto.setImageUrl(newImageUrl);
-            //storeFoodImage(image, restaurantId, dto);
-
-            foodService.putFood(foodId, dto, true);
-        }
+        foodService.putFood(foodId, restaurantId, dto, image);
         return new ResultDto<>(1, true);
     }
 

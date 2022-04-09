@@ -7,9 +7,11 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,8 +49,12 @@ public class S3Service {
 
     public String upload(MultipartFile file, String fileName) {
         try {
-            s3Client.putObject(new PutObjectRequest(bucket, fileName, file.getInputStream(), null)
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setContentType(MediaType.IMAGE_PNG_VALUE);
+            objectMetadata.setContentLength(file.getSize());
+            amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, file.getInputStream(), objectMetadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
+
         } catch (IOException e) {
             // log
         }
@@ -57,7 +63,7 @@ public class S3Service {
 
     public void delete(String filePath){
         boolean isExistObject = s3Client.doesObjectExist(bucket, filePath);
-//        if (isExistObject == true) {
+//        if (isExistObject) {
 //            s3Client.deleteObject(bucket, filePath);
 //        }
     }

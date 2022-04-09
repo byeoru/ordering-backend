@@ -1,6 +1,7 @@
 package com.server.ordering.repository;
 
 import com.server.ordering.domain.member.Customer;
+import com.server.ordering.domain.member.Owner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +38,12 @@ public class CustomerRepository implements MemberRepository<Customer> {
         return em.createQuery("select c from Customer c where c.signInId = :signInId and c.password = :password", Customer.class)
                 .setParameter("signInId", signInId)
                 .setParameter("password", password)
+                .getSingleResult();
+    }
+
+    public Customer findOneWithPhoneNumber(Long customerId) throws PersistenceException {
+        return em.createQuery("select m from Owner m left join fetch m.phoneNumber where m.id = :id", Customer.class)
+                .setParameter("id", customerId)
                 .getSingleResult();
     }
 

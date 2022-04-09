@@ -1,7 +1,7 @@
 package com.server.ordering.domain.member;
 
 import com.server.ordering.domain.Coupon;
-import com.server.ordering.domain.Order.Order;
+import com.server.ordering.domain.Order;
 import com.server.ordering.domain.PhoneNumber;
 import lombok.*;
 

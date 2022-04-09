@@ -1,6 +1,9 @@
 package com.server.ordering.service;
 
+import com.server.ordering.domain.MemberType;
+import com.server.ordering.domain.PhoneNumber;
 import com.server.ordering.domain.member.Customer;
+import com.server.ordering.domain.member.Owner;
 import com.server.ordering.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +58,25 @@ public class CustomerService implements MemberService<Customer> {
             return false;
         }
 
+    }
+
+    /**
+     * 고객 휴대폰번호 변경
+     */
+    @Transactional
+    public void putPhoneNumber(Long customerId, String phoneNumber) {
+        Customer customer = customerRepository.findOneWithPhoneNumber(customerId);
+        PhoneNumber number = new PhoneNumber(phoneNumber, MemberType.CUSTOMER);
+        customer.putPhoneNumber(number);
+    }
+
+    /**
+     * 고객 비밀번호 변경
+     */
+    @Transactional
+    public void putPassword(Long customerId, String password) {
+        Customer customer = customerRepository.findOne(customerId);
+        customer.putPassword(password);
     }
 
     /**

@@ -1,9 +1,7 @@
 package com.server.ordering.domain;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -27,7 +25,7 @@ public class Food {
     private Restaurant restaurant;
 
     @OneToMany(mappedBy = "food", cascade = REMOVE, orphanRemoval = true)
-    private final List<Review> reviews = new ArrayList<>();
+    private List<Review> reviews = new ArrayList<>();
 
     private String foodName;
     private int price;

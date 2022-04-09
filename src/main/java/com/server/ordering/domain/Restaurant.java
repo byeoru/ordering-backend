@@ -1,8 +1,6 @@
 package com.server.ordering.domain;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -15,44 +13,44 @@ import static lombok.AccessLevel.*;
 @Entity
 @Getter @Setter
 @NoArgsConstructor(access = PROTECTED)
+@RequiredArgsConstructor
 public class Restaurant {
 
     @Id @GeneratedValue(strategy = IDENTITY)
     @Column(name = "restaurant_id")
     private Long id;
 
+    @NonNull
     private String restaurantName;
 
+    @NonNull
     private String ownerName;
 
     @OneToMany(mappedBy = "restaurant", cascade = REMOVE, orphanRemoval = true)
-    private final List<Food> foods = new ArrayList<>();
+    private List<Food> foods = new ArrayList<>();
 
+    @OneToMany(mappedBy = "restaurant")
+    private List<Order> orders = new ArrayList<>();
+
+    @NonNull
     @Column(name = "restaurant_address")
     private String address;
 
     @Embedded
     private Location location;
 
+    @NonNull
     private int tableCount;
 
+    @NonNull
     @Enumerated(value = EnumType.STRING)
     private FoodCategory foodCategory;
 
+    @NonNull
     @Enumerated(value = EnumType.STRING)
     private RestaurantType restaurantType;
 
     private String imageUrl;
-
-    public Restaurant(String restaurantName, String ownerName, String address,
-                      int tableCount, FoodCategory foodCategory, RestaurantType restaurantType) {
-        this.restaurantName = restaurantName;
-        this.ownerName = ownerName;
-        this.address = address;
-        this.tableCount = tableCount;
-        this.foodCategory = foodCategory;
-        this.restaurantType = restaurantType;
-    }
 
     public void addFood(Food food) {
         this.foods.add(food);
