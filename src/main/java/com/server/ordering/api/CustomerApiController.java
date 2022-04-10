@@ -79,7 +79,7 @@ public class CustomerApiController {
      *
      * 고객 휴대폰번호 변경
      */
-    @PutMapping("/api/customer/{customerId}/phone-number")
+    @PutMapping("/api/customer/{customerId}/phone_number")
     public ResultDto<Boolean> putPhoneNumber(@PathVariable Long customerId, @RequestBody PhoneNumberDto dto) {
         customerService.putPhoneNumber(customerId, dto.getPhoneNumber());
         return new ResultDto<>(1, true);

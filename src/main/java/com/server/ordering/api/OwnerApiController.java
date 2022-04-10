@@ -93,7 +93,7 @@ public class OwnerApiController {
      *
      * 점주 휴대폰번호 변경
      */
-    @PutMapping("/api/owner/{ownerId}/phone-number")
+    @PutMapping("/api/owner/{ownerId}/phone_number")
     public ResultDto<Boolean> putPhoneNumber(@PathVariable Long ownerId, @RequestBody PhoneNumberDto dto) {
         ownerService.putPhoneNumber(ownerId, dto.getPhoneNumber());
         return new ResultDto<>(1, true);
