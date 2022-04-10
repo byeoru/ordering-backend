@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 
+import static javax.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
 
 @Entity
@@ -12,8 +13,10 @@ import static lombok.AccessLevel.*;
 @RequiredArgsConstructor
 public class PhoneNumber {
 
-    @Id
-    @Column(name = "phone_number")
+    @Id @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "phone_number_id")
+    private Long id;
+
     @NonNull
     private String phoneNumber;
 

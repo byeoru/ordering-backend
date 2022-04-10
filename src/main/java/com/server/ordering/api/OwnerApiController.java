@@ -104,9 +104,9 @@ public class OwnerApiController {
      * 점주 비밀번호 변경
      */
     @PutMapping("/api/owner/{ownerId}/password")
-    public ResultDto<Boolean> putPassword(@PathVariable Long ownerId, @RequestBody PasswordDto dto) {
-        ownerService.putPassword(ownerId, dto.getPassword());
-        return new ResultDto<>(1, true);
+    public ResultDto<Boolean> putPassword(@PathVariable Long ownerId, @RequestBody PasswordChangeDto dto) {
+        Boolean isChanged = ownerService.putPassword(ownerId, dto);
+        return new ResultDto<>(1, isChanged);
     }
 
     /**

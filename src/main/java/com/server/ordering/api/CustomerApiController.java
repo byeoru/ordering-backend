@@ -4,6 +4,7 @@ import com.server.ordering.domain.MemberType;
 import com.server.ordering.domain.PhoneNumber;
 import com.server.ordering.domain.dto.*;
 import com.server.ordering.domain.dto.request.*;
+import com.server.ordering.domain.dto.response.CustomerSignInResultDto;
 import com.server.ordering.domain.member.Customer;
 import com.server.ordering.service.CustomerService;
 import com.server.ordering.service.VerificationService;
@@ -67,9 +68,10 @@ public class CustomerApiController {
      * 고객 로그인
      */
     @PostMapping("/api/customer/signin")
-    public ResultDto<Long> signIn(@RequestBody SignInDto dto) {
+    public ResultDto<CustomerSignInResultDto> signIn(@RequestBody SignInDto dto) {
         Optional<Customer> optionalCustomer = customerService.signIn(dto.getSignInId(), dto.getPassword());
-        return optionalCustomer.map(customer -> new ResultDto<>(1, customer.getId()))
+        return optionalCustomer.map(customer -> new ResultDto<>(1,
+                        new CustomerSignInResultDto(customer.getId(), customer.getNickname())))
                 .orElseGet(() -> new ResultDto<>(1, null));
     }
 
@@ -85,12 +87,12 @@ public class CustomerApiController {
 
     /**
      *
-     * 점주 비밀번호 변경
+     * 고객 비밀번호 변경
      */
     @PutMapping("/api/customer/{customerId}/password")
-    public ResultDto<Boolean> putPassword(@PathVariable Long customerId, @RequestBody PasswordDto dto) {
-        customerService.putPassword(customerId, dto.getPassword());
-        return new ResultDto<>(1, true);
+    public ResultDto<Boolean> putPassword(@PathVariable Long customerId, @RequestBody PasswordChangeDto dto) {
+        Boolean isChanged = customerService.putPassword(customerId, dto);
+        return new ResultDto<>(1, isChanged);
     }
 
     /**

@@ -15,10 +15,10 @@ import static javax.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
 
 @Entity
-@Getter
+@Getter @Setter
 @Table(name = "orders")
 @NoArgsConstructor(access = PROTECTED)
-@RequiredArgsConstructor(access = PRIVATE)
+@RequiredArgsConstructor(access = PUBLIC)
 public class Order {
 
     @Id @GeneratedValue(strategy = IDENTITY)
@@ -31,11 +31,11 @@ public class Order {
     private Customer customer;
 
     @OneToMany(mappedBy = "order", cascade = ALL, orphanRemoval = true)
-    private List<OrderFood> orderFoods = new ArrayList<>();
+    private final List<OrderFood> orderFoods = new ArrayList<>();
 
     @NonNull
-    @Column(name = "order_time")
-    private LocalDateTime orderTime;
+    @Column(name = "order_date")
+    private LocalDateTime orderDate;
 
     @OneToOne(fetch = LAZY)
     @JoinColumn(name = "review_id")

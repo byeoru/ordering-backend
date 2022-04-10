@@ -8,10 +8,11 @@ import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 import static lombok.AccessLevel.PROTECTED;
+import static lombok.AccessLevel.PUBLIC;
 
 @Getter @Setter
 @AllArgsConstructor
-@NoArgsConstructor(access = PROTECTED)
+@NoArgsConstructor(access = PUBLIC)
 public class FoodDto {
 
     // request 전용

@@ -2,8 +2,8 @@ package com.server.ordering.service;
 
 import com.server.ordering.domain.MemberType;
 import com.server.ordering.domain.PhoneNumber;
+import com.server.ordering.domain.dto.request.PasswordChangeDto;
 import com.server.ordering.domain.member.Customer;
-import com.server.ordering.domain.member.Owner;
 import com.server.ordering.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NoResultException;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -74,9 +75,13 @@ public class CustomerService implements MemberService<Customer> {
      * 고객 비밀번호 변경
      */
     @Transactional
-    public void putPassword(Long customerId, String password) {
+    public Boolean putPassword(Long customerId, PasswordChangeDto dto) {
         Customer customer = customerRepository.findOne(customerId);
-        customer.putPassword(password);
+        if (Objects.equals(customer.getPassword(), dto.getCurrentPassword())) {
+            customer.putPassword(dto.getNewPassword());
+            return true;
+        }
+        return false;
     }
 
     /**

@@ -2,6 +2,7 @@ package com.server.ordering.service;
 
 import com.server.ordering.domain.MemberType;
 import com.server.ordering.domain.PhoneNumber;
+import com.server.ordering.domain.dto.request.PasswordChangeDto;
 import com.server.ordering.domain.member.Owner;
 import com.server.ordering.repository.OwnerRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -74,9 +76,13 @@ public class OwnerService implements MemberService<Owner> {
      * 점주 비밀번호 변경
      */
     @Transactional
-    public void putPassword(Long ownerId, String password) {
+    public Boolean putPassword(Long ownerId, PasswordChangeDto dto) {
         Owner owner = ownerRepository.findOne(ownerId);
-        owner.putPassword(password);
+        if (Objects.equals(owner.getPassword(), dto.getCurrentPassword())) {
+            owner.putPassword(dto.getNewPassword());
+            return true;
+        }
+        return false;
     }
 
     public Owner findOwner(Long id) {

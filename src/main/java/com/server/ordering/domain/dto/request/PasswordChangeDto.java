@@ -10,7 +10,8 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
-public class PasswordDto {
+public class PasswordChangeDto {
 
-    private String password;
+    private String currentPassword;
+    private String newPassword;
 }

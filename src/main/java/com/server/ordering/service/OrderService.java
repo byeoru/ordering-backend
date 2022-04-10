@@ -31,6 +31,11 @@ public class OrderService {
     private final OrderRepository orderRepository;
 
     @Transactional
+    public void testSave(Order order) {
+        orderRepository.save(order);
+    }
+
+    @Transactional
     public Long order(Long customerId, Long restaurantId, OrderDto orderDto) {
         Customer customer = customerRepository.findOne(customerId);
         Restaurant restaurant = restaurantRepository.findOne(restaurantId);

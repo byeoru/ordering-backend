@@ -4,13 +4,17 @@ import com.server.ordering.domain.Food;
 import com.server.ordering.domain.dto.request.RestaurantInfoDto;
 import com.server.ordering.domain.dto.ResultDto;
 import com.server.ordering.domain.dto.FoodDto;
+import com.server.ordering.domain.dto.request.SalesRequestDto;
+import com.server.ordering.domain.dto.response.DailySalesDto;
 import com.server.ordering.service.FoodService;
+import com.server.ordering.service.OrderService;
 import com.server.ordering.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -90,5 +94,14 @@ public class RestaurantApiController {
         List<Food> foods = foodService.getAllFood(restaurantId);
         List<FoodDto> foodDtoList = foods.stream().map(FoodDto::new).collect(Collectors.toList());
         return new ResultDto<>(foods.size(), foodDtoList);
+    }
+
+    /**
+     * 매장 한 달 매출 반환
+     */
+    @PostMapping("/api/restaurant/{restaurantId}/sales")
+    public ResultDto<List<DailySalesDto>> getDailySales(@PathVariable Long restaurantId, @RequestBody SalesRequestDto dto) {
+        List<DailySalesDto> sales = restaurantService.getMonthlySalesOfRestaurant(restaurantId, dto.getFrom(), dto.getBefore());
+        return new ResultDto<>(sales.size(), sales);
     }
 }
