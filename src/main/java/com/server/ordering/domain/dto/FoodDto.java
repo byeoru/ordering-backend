@@ -18,11 +18,11 @@ public class FoodDto {
     // request 전용
     private String foodName;
     private int price;
-    private boolean soldOut;
     private String menuIntro;
 
     private Long foodId;
     private String imageUrl;
+    private boolean soldOut;
 
     public FoodDto(Food food) {
         this.foodId = food.getId();

@@ -4,6 +4,7 @@ import com.server.ordering.S3Service;
 import com.server.ordering.domain.Food;
 import com.server.ordering.domain.Restaurant;
 import com.server.ordering.domain.dto.FoodDto;
+import com.server.ordering.domain.dto.request.FoodStatusDto;
 import com.server.ordering.repository.FoodRepository;
 import com.server.ordering.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,7 @@ public class FoodService {
             String imageUrl = s3Service.upload(image, newImageKey);
             dto.setImageUrl(imageUrl);
         }
-        Food food = new Food(dto.getFoodName(), dto.getPrice(), dto.isSoldOut(), dto.getImageUrl(), dto.getMenuIntro());
+        Food food = new Food(dto.getFoodName(), dto.getPrice(), false, dto.getImageUrl(), dto.getMenuIntro());
         restaurant.addFood(food);
         foodRepository.save(food);
         return Optional.of(food.getId());
@@ -61,12 +62,16 @@ public class FoodService {
             // 이미지 S3 저장
             String newImageUrl = s3Service.upload(image, newImageKey);
             dto.setImageUrl(newImageUrl);
-            foodRepository.putFood(foodId, dto.getFoodName(), dto.getPrice(),
-                    dto.isSoldOut(), dto.getImageUrl(), dto.getMenuIntro());
+            foodRepository.putFood(foodId, dto.getFoodName(), dto.getPrice(), dto.getImageUrl(), dto.getMenuIntro());
         } else {
-            foodRepository.putFood(foodId, dto.getFoodName(), dto.getPrice(),
-                    dto.isSoldOut(), dto.getMenuIntro());
+            foodRepository.putFood(foodId, dto.getFoodName(), dto.getPrice(), dto.getMenuIntro());
         }
+    }
+
+    @Transactional
+    public void changeSoldOutStatus(Long foodId, FoodStatusDto dto) {
+        Food food = foodRepository.findOne(foodId);
+        food.changeSoldOutStatus(dto.getSoldOut());
     }
 
     public List<Food> getAllFood(Long restaurantId) {

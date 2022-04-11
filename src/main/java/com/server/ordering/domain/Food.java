@@ -12,7 +12,7 @@ import static javax.persistence.FetchType.*;
 import static javax.persistence.GenerationType.*;
 
 @Entity
-@Getter @Setter
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Food {
 
@@ -39,5 +39,13 @@ public class Food {
         this.soldOut = soldOut;
         this.imageUrl = imageUrl;
         this.menuIntro = menuIntro;
+    }
+
+    public void changeSoldOutStatus(Boolean soldOut) {
+        this.soldOut = soldOut;
+    }
+
+    public void registerRestaurant(Restaurant restaurant) {
+        this.restaurant = restaurant;
     }
 }

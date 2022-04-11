@@ -54,6 +54,6 @@ public class Restaurant {
 
     public void addFood(Food food) {
         this.foods.add(food);
-        food.setRestaurant(this);
+        food.registerRestaurant(this);
     }
 }

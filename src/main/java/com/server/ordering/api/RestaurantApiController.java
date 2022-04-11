@@ -1,20 +1,19 @@
 package com.server.ordering.api;
 
 import com.server.ordering.domain.Food;
+import com.server.ordering.domain.dto.request.FoodStatusDto;
 import com.server.ordering.domain.dto.request.RestaurantInfoDto;
 import com.server.ordering.domain.dto.ResultDto;
 import com.server.ordering.domain.dto.FoodDto;
 import com.server.ordering.domain.dto.request.SalesRequestDto;
 import com.server.ordering.domain.dto.response.DailySalesDto;
 import com.server.ordering.service.FoodService;
-import com.server.ordering.service.OrderService;
 import com.server.ordering.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -82,6 +81,15 @@ public class RestaurantApiController {
             @RequestPart FoodDto dto) {
 
         foodService.putFood(foodId, restaurantId, dto, image);
+        return new ResultDto<>(1, true);
+    }
+
+    /**
+     * 매장 음식 품절 정보 변경
+     */
+    @PutMapping("/api/restaurant/food/{foodId}/status")
+    public ResultDto<Boolean> putFoodStatus(@PathVariable Long foodId, @RequestBody FoodStatusDto dto) {
+        foodService.changeSoldOutStatus(foodId, dto);
         return new ResultDto<>(1, true);
     }
 
