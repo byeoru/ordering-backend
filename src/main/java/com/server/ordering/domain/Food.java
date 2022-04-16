@@ -24,9 +24,6 @@ public class Food {
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
-    @OneToMany(mappedBy = "food", cascade = REMOVE, orphanRemoval = true)
-    private List<Review> reviews = new ArrayList<>();
-
     private String foodName;
     private int price;
     private boolean soldOut;

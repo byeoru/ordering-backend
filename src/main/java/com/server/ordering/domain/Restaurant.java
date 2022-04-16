@@ -11,7 +11,7 @@ import static javax.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
 
 @Entity
-@Getter @Setter
+@Getter
 @NoArgsConstructor(access = PROTECTED)
 @RequiredArgsConstructor
 public class Restaurant {
@@ -32,6 +32,12 @@ public class Restaurant {
     @OneToMany(mappedBy = "restaurant")
     private List<Order> orders = new ArrayList<>();
 
+    @OneToMany(mappedBy = "restaurant", cascade = REMOVE, orphanRemoval = true)
+    private List<RepresentativeMenu> representativeMenus = new ArrayList<>();
+
+    @OneToMany(mappedBy = "restaurant", cascade = REMOVE, orphanRemoval = true)
+    private List<Review> reviews = new ArrayList<>();
+
     @NonNull
     @Column(name = "restaurant_address")
     private String address;
@@ -50,10 +56,32 @@ public class Restaurant {
     @Enumerated(value = EnumType.STRING)
     private RestaurantType restaurantType;
 
-    private String imageUrl;
+    private String profileImageUrl;
+    private String backgroundImageUrl;
 
     public void addFood(Food food) {
         this.foods.add(food);
         food.registerRestaurant(this);
+    }
+
+    public void putProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    public void putBackgroundImageUrl(String backgroundImageUrl) {
+        this.backgroundImageUrl = backgroundImageUrl;
+    }
+
+    public Boolean isAbleToAddRepresentativeMenu() {
+        return representativeMenus.size() < 3;
+    }
+
+    public void addRepresentativeMenu(RepresentativeMenu menu) {
+        representativeMenus.add(menu);
+        menu.registerRestaurant(this);
+    }
+
+    public void registerReview(Review review) {
+        this.reviews.add(review);
     }
 }

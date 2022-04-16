@@ -104,4 +104,33 @@ public class CustomerApiController {
         customerService.deleteAccount(customerId);
         return new ResultDto<>(1, true);
     }
+
+    /**
+     * 고객 리뷰 등록
+     */
+    @PostMapping("/api/customer/review")
+    public ResultDto<Boolean> registerReview(@RequestParam(name = "restaurant_id") Long restaurantId,
+                                             @RequestParam(name = "order_id") Long orderId,
+                                             @RequestBody ReviewDto dto) {
+        Boolean isRegistered = customerService.registerReview(restaurantId, orderId, dto.getReview());
+        return new ResultDto<>(1, isRegistered);
+    }
+
+    /**
+     * 고객 리뷰 수정
+     */
+    @PutMapping("/api/customer/review/{reviewId}")
+    public ResultDto<Boolean> putReview(@PathVariable Long reviewId, @RequestBody ReviewDto dto) {
+        customerService.putReview(reviewId, dto.getReview());
+        return new ResultDto<>(1, true);
+    }
+
+    /**
+     * 고객 리뷰 삭제
+     */
+    @DeleteMapping("/api/customer/review/{reviewId}")
+    public ResultDto<Boolean> putReview(@PathVariable Long reviewId) {
+        customerService.removeReview(reviewId);
+        return new ResultDto<>(1, true);
+    }
 }

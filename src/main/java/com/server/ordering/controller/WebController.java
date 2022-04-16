@@ -1,23 +1,14 @@
 package com.server.ordering.controller;
 
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
-import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import javax.servlet.http.Part;
-
-import java.io.InputStream;
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-public class mainController {
+public class WebController {
 
     private final AmazonS3Client amazonS3Client;
 
@@ -30,12 +21,6 @@ public class mainController {
     public String appDownload() {
         return "downloadApp";
     }
-
-    @GetMapping("/s3")
-    public String s3() {
-        return "index";
-    }
-
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;

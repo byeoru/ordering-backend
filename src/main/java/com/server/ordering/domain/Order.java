@@ -7,9 +7,11 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.server.ordering.domain.OrderStatus.*;
 import static javax.persistence.CascadeType.*;
+import static javax.persistence.EnumType.*;
 import static javax.persistence.FetchType.*;
 import static javax.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
@@ -37,8 +39,7 @@ public class Order {
     @Column(name = "order_date")
     private LocalDateTime orderDate;
 
-    @OneToOne(fetch = LAZY)
-    @JoinColumn(name = "review_id")
+    @OneToOne(mappedBy = "order")
     private Review review;
 
     @NonNull
@@ -47,10 +48,11 @@ public class Order {
     private Restaurant restaurant;
 
     @NonNull
+    @Enumerated(value = STRING)
     private OrderStatus status;
 
     @NonNull
-    @Enumerated(value = EnumType.STRING)
+    @Enumerated(value = STRING)
     private OrderType orderType;
     @NonNull
     private Integer tableNumber;
@@ -70,10 +72,22 @@ public class Order {
     }
 
     public Boolean isAbleToCancel() {
-        return this.status != COMPLETED;
+        return this.status == ORDERED;
+    }
+
+    public Boolean isAbleToCompleted() {
+        return this.status == ORDERED;
     }
 
     public void cancel() {
         this.status = CANCEL;
+    }
+
+    public void registerReview(Review review) {
+        this.review = review;
+    }
+
+    public Boolean isAbleRegisterReview() {
+        return Objects.isNull(this.review);
     }
 }

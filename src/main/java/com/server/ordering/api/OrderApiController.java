@@ -1,5 +1,6 @@
 package com.server.ordering.api;
 
+import com.server.ordering.domain.Restaurant;
 import com.server.ordering.domain.dto.ResultDto;
 import com.server.ordering.domain.dto.request.OrderDto;
 import com.server.ordering.service.OrderService;
@@ -24,5 +25,11 @@ public class OrderApiController {
     public ResultDto<Boolean> cancel(@PathVariable Long orderId) {
         Boolean isCanceled = orderService.orderCancel(orderId);
         return new ResultDto<>(1, isCanceled);
+    }
+
+    @PostMapping("/api/order/{orderId}/completed")
+    public ResultDto<Boolean> completed(@PathVariable Long orderId) {
+        Boolean isCompleted = orderService.setOrderToCompleted(orderId);
+        return new ResultDto<>(1, isCompleted);
     }
 }

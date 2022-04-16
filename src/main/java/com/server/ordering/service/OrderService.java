@@ -1,9 +1,6 @@
 package com.server.ordering.service;
 
-import com.server.ordering.domain.Food;
-import com.server.ordering.domain.Order;
-import com.server.ordering.domain.OrderFood;
-import com.server.ordering.domain.Restaurant;
+import com.server.ordering.domain.*;
 import com.server.ordering.domain.dto.request.OrderFoodDto;
 import com.server.ordering.domain.dto.request.OrderDto;
 import com.server.ordering.domain.member.Customer;
@@ -57,6 +54,16 @@ public class OrderService {
         Order order = orderRepository.findOne(orderId);
         if (order.isAbleToCancel()) {
             order.cancel();
+            return true;
+        }
+        return false;
+    }
+
+    @Transactional
+    public Boolean setOrderToCompleted(Long orderId) {
+        Order order = orderRepository.findOne(orderId);
+        if (order.isAbleToCompleted()) {
+            orderRepository.changeToCompleted(orderId, OrderStatus.COMPLETED);
             return true;
         }
         return false;

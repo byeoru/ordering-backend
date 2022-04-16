@@ -1,16 +1,17 @@
 package com.server.ordering.domain.dto.request;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.server.ordering.domain.FoodCategory;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
-public class FoodStatusDto {
+public class FoodCategoryDto {
 
-    private Boolean soldOut;
+    private FoodCategory foodCategory;
 }

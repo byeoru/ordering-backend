@@ -1,10 +1,12 @@
 package com.server.ordering.service;
 
-import com.server.ordering.domain.MemberType;
-import com.server.ordering.domain.PhoneNumber;
+import com.server.ordering.domain.*;
 import com.server.ordering.domain.dto.request.PasswordChangeDto;
 import com.server.ordering.domain.member.Customer;
 import com.server.ordering.repository.CustomerRepository;
+import com.server.ordering.repository.OrderRepository;
+import com.server.ordering.repository.RestaurantRepository;
+import com.server.ordering.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,9 @@ import java.util.Optional;
 public class CustomerService implements MemberService<Customer> {
 
     private final CustomerRepository customerRepository;
+    private final ReviewRepository reviewRepository;
+    private final RestaurantRepository restaurantRepository;
+    private final OrderRepository orderRepository;
 
     /**
      * 고객 회원가입
@@ -91,5 +96,29 @@ public class CustomerService implements MemberService<Customer> {
     @Override
     public void deleteAccount(Long id) {
         customerRepository.remove(id);
+    }
+
+    @Transactional
+    public Boolean registerReview(Long restaurantId, Long orderId, String reviewText) {
+        Order order = orderRepository.findOneWithReview(orderId);
+        if (order.isAbleRegisterReview()) {
+            Review review = new Review(reviewText);
+            Restaurant restaurant = restaurantRepository.findOne(restaurantId);
+            review.registerOrderAndRestaurant(order, restaurant);
+            reviewRepository.save(review);
+            return true;
+        }
+        return false;
+    }
+
+    @Transactional
+    public void putReview(Long reviewId, String reviewText) {
+        reviewRepository.put(reviewId, reviewText);
+    }
+
+    @Transactional
+    public void removeReview(Long reviewId) {
+        Review review = reviewRepository.findOne(reviewId);
+        reviewRepository.remove(review);
     }
 }

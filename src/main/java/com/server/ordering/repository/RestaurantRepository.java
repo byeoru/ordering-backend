@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -21,6 +22,17 @@ public class RestaurantRepository {
 
     public Restaurant findOne(Long id) {
         return em.find(Restaurant.class, id);
+    }
+
+    public List<Restaurant> findAllWithRepresentativeMenu() {
+        return em.createQuery("select m from Restaurant m left join fetch m.representativeMenus", Restaurant.class)
+                .getResultList();
+    }
+
+    public Restaurant findOneWithRepresentativeMenu(Long id) {
+        return em.createQuery("select m from Restaurant m left join fetch m.representativeMenus where m.id=:id", Restaurant.class)
+                .setParameter("id", id)
+                .getSingleResult();
     }
 
     public void put(String restaurantName, String ownerName, String address, int tableCount, String foodCategory,
