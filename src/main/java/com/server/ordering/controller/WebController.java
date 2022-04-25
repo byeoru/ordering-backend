@@ -24,7 +24,5 @@ public class WebController {
     }
 
     @GetMapping("/banner/2")
-    public String banner2() {
-        return "banner2";
-    }
+    public String banner2() { return "banner2"; }
 }
