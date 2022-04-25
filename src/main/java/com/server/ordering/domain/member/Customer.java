@@ -1,6 +1,6 @@
 package com.server.ordering.domain.member;
 
-import com.server.ordering.domain.Coupon;
+import com.server.ordering.domain.MyCoupon;
 import com.server.ordering.domain.Order;
 import com.server.ordering.domain.PhoneNumber;
 import lombok.*;
@@ -29,7 +29,7 @@ public class Customer extends MemberBase {
     private final List<Order> orders = new ArrayList<>();
 
     @OneToMany(mappedBy = "customer", cascade = REMOVE, orphanRemoval = true)
-    private final List<Coupon> coupons = new ArrayList<>();
+    private final List<MyCoupon> coupons = new ArrayList<>();
 
     public Customer(String nickname, String signInId, String password, PhoneNumber phoneNumber) {
         this.nickname = nickname;

@@ -1,11 +1,14 @@
 package com.server.ordering.api;
 
+import com.server.ordering.domain.Coupon;
 import com.server.ordering.domain.MemberType;
+import com.server.ordering.domain.MyCoupon;
 import com.server.ordering.domain.PhoneNumber;
 import com.server.ordering.domain.dto.*;
 import com.server.ordering.domain.dto.request.*;
 import com.server.ordering.domain.dto.response.CustomerSignInResultDto;
 import com.server.ordering.domain.member.Customer;
+import com.server.ordering.service.CouponService;
 import com.server.ordering.service.CustomerService;
 import com.server.ordering.service.VerificationService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +22,7 @@ public class CustomerApiController {
 
     private final VerificationService verificationService;
     private final CustomerService customerService;
+    private final CouponService couponService;
 
     /**
      *
@@ -131,6 +135,29 @@ public class CustomerApiController {
     @DeleteMapping("/api/customer/review/{reviewId}")
     public ResultDto<Boolean> putReview(@PathVariable Long reviewId) {
         customerService.removeReview(reviewId);
+        return new ResultDto<>(1, true);
+    }
+
+    /**
+     * 고객 쿠폰 등록
+     */
+    @PostMapping("/api/customer/{customerId}/coupon")
+    public ResultDto<Boolean> getCoupon(@PathVariable Long customerId, @RequestBody CouponSerialNumberDto dto) {
+        Coupon coupon = couponService.getCoupon(dto.getSerialNumber());
+        Boolean haveCoupon = couponService.haveThisCoupon(dto.getSerialNumber());
+        if (haveCoupon) {
+            return new ResultDto<>(1, false);
+        }
+        couponService.saveMyCoupon(coupon, customerId);
+        return new ResultDto<>(1, true);
+    }
+
+    /**
+     * 고객 쿠폰 사용
+     */
+    @DeleteMapping("/api/customer/{customerId}/coupon")
+    public ResultDto<Boolean> useCoupon(@PathVariable Long customerId, @RequestBody CouponSerialNumberDto dto) {
+        couponService.useMyCoupon(dto.getSerialNumber(), customerId);
         return new ResultDto<>(1, true);
     }
 }

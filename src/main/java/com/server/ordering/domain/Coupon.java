@@ -1,26 +1,17 @@
 package com.server.ordering.domain;
 
-import com.server.ordering.domain.member.Customer;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.*;
-
-import static javax.persistence.FetchType.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 @Entity
-@Getter @Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Coupon {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "coupon_id")
-    private Long id;
-
-    private String couponSecretText;
-
-    private int money;
-
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
+    @Id
+    private String serialNumber;
+    private int value;
 }
