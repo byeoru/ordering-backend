@@ -13,19 +13,23 @@ import javax.persistence.NoResultException;
 public class MyCouponRepository {
 
     private final EntityManager em;
-    private final JdbcTemplate jdbcTemplate;
 
     public void save(MyCoupon myCoupon) {
         em.persist(myCoupon);
     }
 
-    public MyCoupon findOne(String serialNumber) throws NoResultException {
-        return em.createQuery("select m from MyCoupon m where m.serialNumber=:serialNumber", MyCoupon.class)
+    public void findOneWithCustomer(String serialNumber, Long customerId) throws NoResultException {
+        em.createQuery("select m from MyCoupon m where m.serialNumber =:serialNumber and m.customer.id =:customerId", MyCoupon.class)
                 .setParameter("serialNumber", serialNumber)
+                .setParameter("customerId", customerId)
                 .getSingleResult();
     }
 
     public void remove(String serialNumber, Long customerId) {
-        jdbcTemplate.update("delete from my_coupon where serial_number=? and customer_id=?", serialNumber, customerId);
+        MyCoupon myCoupon = em.createQuery("select m from MyCoupon m where m.serialNumber =: serialNumber and m.customer.id =: customerId", MyCoupon.class)
+                .setParameter("serialNumber", serialNumber)
+                .setParameter("customerId", customerId)
+                .getSingleResult();
+        em.remove(myCoupon);
     }
 }

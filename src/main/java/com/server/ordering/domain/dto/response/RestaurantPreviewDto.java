@@ -1,23 +1,40 @@
 package com.server.ordering.domain.dto.response;
 
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter @Setter
-@AllArgsConstructor
-@NoArgsConstructor(access = PROTECTED)
+@RequiredArgsConstructor
 public class RestaurantPreviewDto {
 
-    private Long restaurantId;
+    protected Long restaurantId;
     // private Integer ratings;
-    private String restaurantName;
-    private String profileImageUrl;
-    private List<String> representativeMenus;
+    protected String restaurantName;
+    protected String profileImageUrl;
+    protected String backgroundImageUrl;
+    protected List<String> representativeMenus = new ArrayList<>();
+
+    public void addRepresentativeFoodName(String foodName) {
+        representativeMenus.add(foodName);
+    }
+
+    public RestaurantPreviewDto(Long restaurantId, String restaurantName, String profileImageUrl, String backgroundImageUrl, List<String> representativeMenus) {
+        this.restaurantId = restaurantId;
+        this.restaurantName = restaurantName;
+        this.profileImageUrl = profileImageUrl;
+        this.backgroundImageUrl = backgroundImageUrl;
+        this.representativeMenus = representativeMenus;
+    }
+
+    public RestaurantPreviewDto(Long restaurantId, String restaurantName, String profileImageUrl, String backgroundImageUrl) {
+        this.restaurantId = restaurantId;
+        this.restaurantName = restaurantName;
+        this.profileImageUrl = profileImageUrl;
+        this.backgroundImageUrl = backgroundImageUrl;
+    }
 }

@@ -11,18 +11,14 @@ import javax.persistence.EntityManager;
 @RequiredArgsConstructor
 public class RepresentativeMenuRepository {
 
-    private final JdbcTemplate jdbcTemplate;
     private final EntityManager em;
-
-    public void save(Long restaurantId, Long foodId) {
-        jdbcTemplate.update("insert into representative_menu (restaurant_id, food_id) values (?, ?)", restaurantId, foodId);
-    }
 
     public void save(RepresentativeMenu representativeMenu) {
         em.persist(representativeMenu);
     }
 
     public void remove(String id) {
-        jdbcTemplate.update("delete from representative_menu where id=?", id);
+        RepresentativeMenu representativeMenu = em.find(RepresentativeMenu.class, id);
+        em.remove(representativeMenu);
     }
 }

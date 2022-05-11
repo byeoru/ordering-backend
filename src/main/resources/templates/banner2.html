@@ -11,12 +11,12 @@
 
 
     <!-- 부트스트랩 CSS-->
-    <link rel="stylesheet" th:href="'|@{https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css}|'">
+    <link rel="stylesheet" th:href="@{https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css}">
 
     <!-- AOS(스크롤 시 애니메이션 시작) 라이브러리-->
-    <link th:href="'|@{https://unpkg.com/aos@2.3.1/dist/aos.css}|'" rel="stylesheet">
-    <script th:src="'|@{https://unpkg.com/aos@2.3.1/dist/aos.js}|'"></script>
-    <script th:src="'|@{https://code.jquery.com/jquery-1.11.3.min.js}|'"></script>
+    <link th:href="@{https://unpkg.com/aos@2.3.1/dist/aos.css}" rel="stylesheet">
+    <script th:src="@{https://unpkg.com/aos@2.3.1/dist/aos.js}"></script>
+    <script th:src="@{https://code.jquery.com/jquery-1.11.3.min.js}"></script>
 
     <link rel="stylesheet" th:href="@{/styles/banner.css}">
 </head>
@@ -36,28 +36,33 @@
 
 <div class="row" style="background-color: white;">
     <div class="col-md-12" style="background-color: white; text-align: center; margin-bottom: 50px;">
-        <img th:src="@{/images/coupon_inside_title_background.gif}" width=100%, height=auto>
+        <img th:src="@{/images/coupon_inside_title_background.gif}" alt="coupon_inside_title_background" width=100%, height=auto>
+    </div>
+</div>
+<div class="row" style="background-color:white">
+    <div class="col-md-12" style="text-align: center; margin-bottom: 30px;">
+        <img th:src="@{/images/eventweb_2_ordering_short.gif}" alt="eventweb_2_ordering_short" width=100%, height=auto>
     </div>
 </div>
 
 <div class="row" style="background-color: white;">
     <div class="col-md-12" style="text-align: center; margin-bottom: 30px;">
-                <span style="font-size: 48px">
-                    <p data-aos="flip-right" class="bm-font" style="letter-spacing:0.01em; color: #E1695E" ><b>오더링 회원끼린</b></p>
-                </span>
+        <span style="font-size: 48px">
+            <p data-aos="flip-right" class="bm-font" style="letter-spacing:0.01em; color: #E1695E" ><b>오더링 회원끼린</b></p>
+        </span>
     </div>
     <div class="col-md-4" style="text-align: center; margin-bottom: 100px;">
-                <span style="font-size: 36px">
-                    <span data-aos="fade-in" data-aos-duration="500" data-aos-delay="300" class="bmeul-font" style="letter-spacing:0.01em;">
-                        <b>니꺼</b>
-                    </span>
-                    <span data-aos="fade-in" data-aos-duration="500" data-aos-delay="700" class="bmeul-font" style="letter-spacing:0.01em;">
-                        <b>내꺼</b>
-                    </span>
-                    <span data-aos="fade-in" data-aos-duration="500" data-aos-delay="1100" class="bmeul-font" style="letter-spacing:0.01em">
-                        <b>가 없으니까!</b>
-                    </span>
-                </span>
+        <span style="font-size: 36px">
+            <span data-aos="fade-in" data-aos-duration="500" data-aos-delay="300" class="bmeul-font" style="letter-spacing:0.01em;">
+                <b>니꺼</b>
+            </span>
+            <span data-aos="fade-in" data-aos-duration="500" data-aos-delay="700" class="bmeul-font" style="letter-spacing:0.01em;">
+                <b>내꺼</b>
+            </span>
+            <span data-aos="fade-in" data-aos-duration="500" data-aos-delay="1100" class="bmeul-font" style="letter-spacing:0.01em">
+                <b>가 없으니까!</b>
+            </span>
+        </span>
     </div>
 
     <div class="col-md-12">

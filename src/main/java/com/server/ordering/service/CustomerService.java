@@ -72,8 +72,7 @@ public class CustomerService implements MemberService<Customer> {
     @Transactional
     public void putPhoneNumber(Long customerId, String phoneNumber) {
         Customer customer = customerRepository.findOneWithPhoneNumber(customerId);
-        PhoneNumber number = new PhoneNumber(phoneNumber, MemberType.CUSTOMER);
-        customer.putPhoneNumber(number);
+        customer.getPhoneNumber().putPhoneNumber(phoneNumber);
     }
 
     /**
@@ -113,7 +112,8 @@ public class CustomerService implements MemberService<Customer> {
 
     @Transactional
     public void putReview(Long reviewId, String reviewText) {
-        reviewRepository.put(reviewId, reviewText);
+        Review review = reviewRepository.findOne(reviewId);
+        review.putReview(reviewText);
     }
 
     @Transactional

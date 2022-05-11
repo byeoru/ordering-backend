@@ -1,7 +1,6 @@
 package com.server.ordering.repository;
 
 import com.server.ordering.domain.member.Customer;
-import com.server.ordering.domain.member.Owner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +25,12 @@ public class CustomerRepository implements MemberRepository<Customer> {
         return em.find(Customer.class, id);
     }
 
+    public Customer findOneWithBasket(Long id) {
+        return em.createQuery("select distinct m from Customer m left join fetch m.baskets where m.id = :id", Customer.class)
+                .setParameter("id", id)
+                .getSingleResult();
+    }
+
     @Override
     public Customer findById(String signInId) throws PersistenceException {
         return em.createQuery("select m from Customer m where m.signInId = :signInId", Customer.class)
@@ -42,7 +47,7 @@ public class CustomerRepository implements MemberRepository<Customer> {
     }
 
     public Customer findOneWithPhoneNumber(Long customerId) throws PersistenceException {
-        return em.createQuery("select m from Owner m left join fetch m.phoneNumber where m.id = :id", Customer.class)
+        return em.createQuery("select m from Customer m left join fetch m.phoneNumber where m.id = :id", Customer.class)
                 .setParameter("id", customerId)
                 .getSingleResult();
     }

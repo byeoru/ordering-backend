@@ -1,6 +1,5 @@
 package com.server.ordering.domain.dto.request;
 
-import com.server.ordering.domain.OrderType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,8 +10,8 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
-public class OrderDto {
+public class RestaurantInfoWithLocationDto extends RestaurantInfoDto {
 
-    private int tableNumber;
-    private OrderType orderType;
+    private double latitude;
+    private double longitude;
 }

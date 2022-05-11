@@ -12,7 +12,6 @@ import javax.persistence.EntityManager;
 public class ReviewRepository {
 
     private final EntityManager em;
-    private final JdbcTemplate jdbcTemplate;
 
     public void save(Review review) {
         em.persist(review);
@@ -20,10 +19,6 @@ public class ReviewRepository {
 
     public Review findOne(Long reviewId) {
         return em.find(Review.class, reviewId);
-    }
-
-    public void put(Long reviewId, String reviewText) {
-        jdbcTemplate.update("update review set review=? where review_id=?", reviewText, reviewId);
     }
 
     public void remove(Review review) {

@@ -8,7 +8,7 @@ import static javax.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
 
 @Entity
-@Getter @Setter
+@Getter
 @NoArgsConstructor(access = PROTECTED)
 @RequiredArgsConstructor
 public class PhoneNumber {
@@ -23,4 +23,8 @@ public class PhoneNumber {
     @NonNull
     @Enumerated(value = EnumType.STRING)
     private MemberType memberType;
+
+    public void putPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 }

@@ -35,4 +35,8 @@ public class Review {
         order.registerReview(this);
         restaurant.registerReview(this);
     }
+
+    public void putReview(String text) {
+        this.review = text;
+    }
 }

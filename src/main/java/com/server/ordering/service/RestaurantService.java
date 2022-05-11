@@ -2,22 +2,27 @@ package com.server.ordering.service;
 
 import com.server.ordering.S3Service;
 import com.server.ordering.domain.Food;
+import com.server.ordering.domain.FoodCategory;
 import com.server.ordering.domain.RepresentativeMenu;
 import com.server.ordering.domain.Restaurant;
-import com.server.ordering.domain.dto.FoodDto;
 import com.server.ordering.domain.dto.request.RestaurantInfoDto;
+import com.server.ordering.domain.dto.request.WaitingTimeDto;
 import com.server.ordering.domain.dto.response.DailySalesDto;
+import com.server.ordering.domain.dto.response.RestaurantPreviewWithDistanceDto;
 import com.server.ordering.domain.member.Owner;
 import com.server.ordering.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.PersistenceException;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -37,14 +42,15 @@ public class RestaurantService {
     public Optional<Long> registerRestaurant(Restaurant restaurant, Long ownerId) throws PersistenceException {
         restaurantRepository.save(restaurant);
         Owner owner = ownerRepository.findOne(ownerId);
-        owner.setRestaurant(restaurant);
+        owner.registerRestaurant(restaurant);
         return Optional.of(restaurant.getId());
     }
 
     @Transactional
     public void putRestaurant(Long restaurantId, RestaurantInfoDto dto) throws PersistenceException {
-        restaurantRepository.put(dto.getRestaurantName(), dto.getOwnerName(), dto.getAddress(),
-                dto.getTableCount(), dto.getFoodCategory().toString(), dto.getRestaurantType().toString(), restaurantId);
+        Restaurant restaurant = restaurantRepository.findOne(restaurantId);
+        restaurant.putRestaurant(dto.getRestaurantName(), dto.getOwnerName(), dto.getAddress(),
+                dto.getTableCount(), dto.getFoodCategory(), dto.getRestaurantType());
     }
 
     public List<DailySalesDto> getMonthlySalesOfRestaurant(Long restaurantId, String from, String before) {
@@ -89,7 +95,19 @@ public class RestaurantService {
     }
 
     @Transactional
-    public List<Restaurant> getAllForPreview() {
-        return restaurantRepository.findAllWithRepresentativeMenu();
+    public List<RestaurantPreviewWithDistanceDto> getAllForPreview(double latitude, double longitude, FoodCategory foodCategory) {
+        GeometryFactory factory = new GeometryFactory(new PrecisionModel(), 4326);
+        Point point = factory.createPoint(new Coordinate(longitude, latitude));
+        return restaurantRepository.findAllWithRepresentativeMenu(point, foodCategory);
+    }
+
+    @Transactional
+    public void putWaitingForOrder(Long restaurantId, WaitingTimeDto waitingTimeDto) {
+        Restaurant restaurant = restaurantRepository.findOne(restaurantId);
+        restaurant.putWaitingForOrder(waitingTimeDto.getMinutes());
+    }
+
+    public Restaurant findRestaurant(Long restaurantId) {
+        return restaurantRepository.findOne(restaurantId);
     }
 }

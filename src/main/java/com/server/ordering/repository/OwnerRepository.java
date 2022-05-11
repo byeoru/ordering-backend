@@ -14,7 +14,6 @@ import java.util.List;
 public class OwnerRepository implements MemberRepository<Owner> {
 
     private final EntityManager em;
-    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public void save(Owner owner) throws PersistenceException {

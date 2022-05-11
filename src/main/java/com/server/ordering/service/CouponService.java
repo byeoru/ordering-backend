@@ -38,9 +38,9 @@ public class CouponService {
         return coupon;
     }
 
-    public Boolean haveThisCoupon(String serialNumber) {
+    public Boolean haveThisCoupon(String serialNumber, Long customerId) {
         try {
-            myCouponRepository.findOne(serialNumber);
+            myCouponRepository.findOneWithCustomer(serialNumber, customerId);
             return true;
         } catch (NoResultException e) {
             return false;

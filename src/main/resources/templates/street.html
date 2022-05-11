@@ -11,7 +11,7 @@
 <div id="layer" style="display:block;position:fixed;overflow:hidden;z-index:1;-webkit-overflow-scrolling:touch;">
 
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script>
 <script>
 
@@ -40,10 +40,9 @@
 
     function sample2_execDaumPostcode() {
         new daum.Postcode({
-             oncomplete: function(data) {
+             oncomplete: async function(data) {
 
                 // 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
-                console.log(data);
                 // 각 주소의 노출 규칙에 따라 주소를 조합한다.
                 // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
                 let fullAddr = data.address; // 최종 주소 변수
@@ -85,7 +84,9 @@
                     fullRoadAddr += extraRoadAddr;
                 }
 
-                window.Android.processDATA(data.zonecode + ", " + fullRoadAddr);
+                const fullAddress = data.zonecode + ", " + fullRoadAddr;
+                const { latitude, longitude } = await getLatitudeAndLongitude(fullRoadAddr);
+                window.Android.processDATA(fullAddress, latitude, longitude);
             },
             width: '100%',
             height: '100%'
@@ -98,6 +99,16 @@
         initLayerPosition();
 
 
+    }
+
+    async function getLatitudeAndLongitude (fullRoadAddress) {
+        const { data: { documents } } = await axios({
+            method: 'get',
+            url: `https://dapi.kakao.com/v2/local/search/address.json?analyze_type=exact&page=1&size=10&query=${fullRoadAddress}`,
+            headers: {'Authorization': 'KakaoAK 53fd1b4e7d71062d046dd9b29e878718'}
+        });
+        const { y: latitude, x:longitude } = documents[0];
+        return { latitude, longitude };
     }
 
     // 브라우저의 크기 변경에 따라 레이어를 가운데로 이동시키고자 하실때에는

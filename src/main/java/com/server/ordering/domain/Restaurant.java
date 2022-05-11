@@ -1,6 +1,7 @@
 package com.server.ordering.domain;
 
 import lombok.*;
+import org.locationtech.jts.geom.Point;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -42,8 +43,8 @@ public class Restaurant {
     @Column(name = "restaurant_address")
     private String address;
 
-    @Embedded
-    private Location location;
+    @NonNull
+    private Point location;
 
     @NonNull
     private int tableCount;
@@ -59,9 +60,24 @@ public class Restaurant {
     private String profileImageUrl;
     private String backgroundImageUrl;
 
+    private Integer waitingForOrder;
+
+    private int waitingTotalCount;
+    private int waitingCurrentCount;
+
     public void addFood(Food food) {
         this.foods.add(food);
         food.registerRestaurant(this);
+    }
+
+    public void putRestaurant(String restaurantName, String ownerName, String address,
+                              int tableCount, FoodCategory foodCategory, RestaurantType restaurantType) {
+        this.restaurantName = restaurantName;
+        this.ownerName = ownerName;
+        this.address = address;
+        this.tableCount = tableCount;
+        this.foodCategory = foodCategory;
+        this.restaurantType = restaurantType;
     }
 
     public void putProfileImageUrl(String profileImageUrl) {
@@ -71,6 +87,8 @@ public class Restaurant {
     public void putBackgroundImageUrl(String backgroundImageUrl) {
         this.backgroundImageUrl = backgroundImageUrl;
     }
+
+    public void putWaitingForOrder(Integer minutes) { this.waitingForOrder = minutes; }
 
     public Boolean isAbleToAddRepresentativeMenu() {
         return representativeMenus.size() < 3;
@@ -83,5 +101,9 @@ public class Restaurant {
 
     public void registerReview(Review review) {
         this.reviews.add(review);
+    }
+
+    public void addWaitingCnt() {
+        waitingTotalCount++;
     }
 }

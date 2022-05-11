@@ -22,11 +22,6 @@ public class VerificationService {
     private final PhoneNumberRepository phoneNumberRepository;
     private final Properties pt;
 
-    @Transactional
-    public void registerPhoneNumber(PhoneNumber phoneNumber) {
-        phoneNumberRepository.save(phoneNumber);
-    }
-
     public boolean isPhoneNumberDuplicated(MemberType memberType, String phoneNumber) throws PersistenceException {
         try {
             phoneNumberRepository.findPhoneNumber(memberType, phoneNumber);

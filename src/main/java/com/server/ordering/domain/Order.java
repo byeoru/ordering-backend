@@ -19,8 +19,8 @@ import static lombok.AccessLevel.*;
 @Entity
 @Getter @Setter
 @Table(name = "orders")
+@RequiredArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
-@RequiredArgsConstructor(access = PUBLIC)
 public class Order {
 
     @Id @GeneratedValue(strategy = IDENTITY)
@@ -35,9 +35,8 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = ALL, orphanRemoval = true)
     private final List<OrderFood> orderFoods = new ArrayList<>();
 
-    @NonNull
-    @Column(name = "order_date")
-    private LocalDateTime orderDate;
+    @Column(name = "order_time")
+    private LocalDateTime orderTime;
 
     @OneToOne(mappedBy = "order")
     private Review review;
@@ -55,7 +54,7 @@ public class Order {
     @Enumerated(value = STRING)
     private OrderType orderType;
     @NonNull
-    private Integer tableNumber;
+    private int tableNumber;
     @NonNull
     private int totalPrice;
 
@@ -66,7 +65,7 @@ public class Order {
 
     public static Order createOrder(Customer customer, Restaurant restaurant, List<OrderFood> orderFoods,
                                     OrderType orderType, Integer tableNumber, int totalPrice) {
-        Order order = new Order(customer, LocalDateTime.now(), restaurant, ORDERED, orderType, tableNumber, totalPrice);
+        Order order = new Order(customer, restaurant, ORDERED, orderType, tableNumber, totalPrice);
         orderFoods.forEach(order::addOrderFood);
         return order;
     }
@@ -90,4 +89,8 @@ public class Order {
     public Boolean isAbleRegisterReview() {
         return Objects.isNull(this.review);
     }
+
+    public void registerOrderTime() { this.orderTime = LocalDateTime.now(); }
+
+    public void completed() { this.status = COMPLETED; }
 }

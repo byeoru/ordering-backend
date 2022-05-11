@@ -2,7 +2,6 @@ package com.server.ordering.api;
 
 import com.server.ordering.domain.Coupon;
 import com.server.ordering.domain.MemberType;
-import com.server.ordering.domain.MyCoupon;
 import com.server.ordering.domain.PhoneNumber;
 import com.server.ordering.domain.dto.*;
 import com.server.ordering.domain.dto.request.*;
@@ -144,7 +143,7 @@ public class CustomerApiController {
     @PostMapping("/api/customer/{customerId}/coupon")
     public ResultDto<Boolean> getCoupon(@PathVariable Long customerId, @RequestBody CouponSerialNumberDto dto) {
         Coupon coupon = couponService.getCoupon(dto.getSerialNumber());
-        Boolean haveCoupon = couponService.haveThisCoupon(dto.getSerialNumber());
+        Boolean haveCoupon = couponService.haveThisCoupon(dto.getSerialNumber(), customerId);
         if (haveCoupon) {
             return new ResultDto<>(1, false);
         }

@@ -9,8 +9,8 @@ import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.FetchType.*;
 import static lombok.AccessLevel.*;
 
-@MappedSuperclass
 @Getter
+@MappedSuperclass
 @NoArgsConstructor(access = PROTECTED)
 public abstract class MemberBase {
 
@@ -20,10 +20,6 @@ public abstract class MemberBase {
     @OneToOne(fetch = LAZY, cascade = ALL, orphanRemoval = true)
     @JoinColumn(name = "phone_number")
     protected PhoneNumber phoneNumber;
-
-    public void putPhoneNumber(PhoneNumber phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
 
     public void putPassword(String password) {
         this.password = password;

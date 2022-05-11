@@ -11,6 +11,9 @@ import com.server.ordering.service.OwnerService;
 import com.server.ordering.service.RestaurantService;
 import com.server.ordering.service.VerificationService;
 import lombok.RequiredArgsConstructor;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,7 +29,6 @@ public class OwnerApiController {
     private final RestaurantService restaurantService;
 
     /**
-     *
      * 인증번호 받기
      */
     @PostMapping("/api/owner/verification/get")
@@ -42,7 +44,6 @@ public class OwnerApiController {
     }
 
     /**
-     *
      * 인증번호 체크
      */
     @PostMapping("/api/owner/verification/check")
@@ -52,7 +53,6 @@ public class OwnerApiController {
     }
 
     /**
-     *
      * 점주 회원 가입
      */
     @PostMapping("/api/owner/signup")
@@ -69,7 +69,6 @@ public class OwnerApiController {
     }
 
     /**
-     *
      * 점주 로그인
      */
     @PostMapping("/api/owner/signin")
@@ -90,7 +89,6 @@ public class OwnerApiController {
     }
 
     /**
-     *
      * 점주 휴대폰번호 변경
      */
     @PutMapping("/api/owner/{ownerId}/phone_number")
@@ -100,7 +98,6 @@ public class OwnerApiController {
     }
 
     /**
-     *
      * 점주 비밀번호 변경
      */
     @PutMapping("/api/owner/{ownerId}/password")
@@ -110,7 +107,6 @@ public class OwnerApiController {
     }
 
     /**
-     *
      * 점주 계정 삭제
      */
     @DeleteMapping("/api/owner/{ownerId}")
@@ -120,14 +116,16 @@ public class OwnerApiController {
     }
 
     /**
-     *
      * 점주 매장 등록
      */
     @PostMapping("/api/owner/{ownerId}/restaurant")
     public ResultDto<Optional<Long>> registerRestaurant(
             @PathVariable Long ownerId,
-            @RequestBody RestaurantInfoDto dto) {
-        Restaurant restaurant = new Restaurant(dto.getRestaurantName(), dto.getOwnerName(), dto.getAddress(),
+            @RequestBody RestaurantInfoWithLocationDto dto) throws ParseException {
+
+        String pointWKT = String.format("POINT(%s %s)", dto.getLongitude(), dto.getLatitude());
+        Point location = (Point) new WKTReader().read(pointWKT);
+        Restaurant restaurant = new Restaurant(dto.getRestaurantName(), dto.getOwnerName(), dto.getAddress(), location,
                 dto.getTableCount(), dto.getFoodCategory(), dto.getRestaurantType());
         Optional<Long> optionalId = restaurantService.registerRestaurant(restaurant, ownerId);
         return new ResultDto<>(1, optionalId);

@@ -1,5 +1,6 @@
 package com.server.ordering.domain.member;
 
+import com.server.ordering.domain.Basket;
 import com.server.ordering.domain.MyCoupon;
 import com.server.ordering.domain.Order;
 import com.server.ordering.domain.PhoneNumber;
@@ -25,6 +26,11 @@ public class Customer extends MemberBase {
 
     private String nickname;
 
+    private Long basketKey;
+
+    @OneToMany(mappedBy = "customer", cascade = REMOVE, orphanRemoval = true)
+    private final List<Basket> baskets = new ArrayList<>();
+
     @OneToMany(mappedBy = "customer", cascade = REMOVE, orphanRemoval = true)
     private final List<Order> orders = new ArrayList<>();
 
@@ -36,5 +42,9 @@ public class Customer extends MemberBase {
         this.signInId = signInId;
         this.password = password;
         this.phoneNumber = phoneNumber;
+    }
+
+    public void changeBasketKey(Long restaurantId) {
+        this.basketKey = restaurantId;
     }
 }

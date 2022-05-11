@@ -14,6 +14,9 @@ public class CouponApiController {
 
     private final CouponService couponService;
 
+    /**
+     * 쿠폰 등록
+     */
     @PostMapping("/api/coupon")
     public ResultDto<Boolean> registerCoupon(@RequestBody CouponDto dto) {
         couponService.saveCoupon(dto);

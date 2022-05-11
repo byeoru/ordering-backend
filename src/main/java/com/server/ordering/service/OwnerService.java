@@ -1,7 +1,5 @@
 package com.server.ordering.service;
 
-import com.server.ordering.domain.MemberType;
-import com.server.ordering.domain.PhoneNumber;
 import com.server.ordering.domain.dto.request.PasswordChangeDto;
 import com.server.ordering.domain.member.Owner;
 import com.server.ordering.repository.OwnerRepository;
@@ -68,8 +66,7 @@ public class OwnerService implements MemberService<Owner> {
     @Transactional
     public void putPhoneNumber(Long ownerId, String phoneNumber) {
         Owner owner = ownerRepository.findOneWithPhoneNumber(ownerId);
-        PhoneNumber number = new PhoneNumber(phoneNumber, MemberType.OWNER);
-        owner.putPhoneNumber(number);
+        owner.getPhoneNumber().putPhoneNumber(phoneNumber);
     }
 
     /**
@@ -83,10 +80,6 @@ public class OwnerService implements MemberService<Owner> {
             return true;
         }
         return false;
-    }
-
-    public Owner findOwner(Long id) {
-        return ownerRepository.findOne(id);
     }
 
     /**

@@ -18,9 +18,9 @@ public class PhoneNumberRepository {
         em.persist(phoneNumber);
     }
 
-    public PhoneNumber findPhoneNumber(MemberType memberType, String phoneNumber) throws NoResultException {
-        return em.createQuery("select m from PhoneNumber m " +
-                "where m.phoneNumber = :phoneNumber and m.memberType = :memberType", PhoneNumber.class)
+    public void findPhoneNumber(MemberType memberType, String phoneNumber) throws NoResultException {
+        em.createQuery("select m from PhoneNumber m " +
+                        "where m.phoneNumber = :phoneNumber and m.memberType = :memberType", PhoneNumber.class)
                 .setParameter("phoneNumber", phoneNumber)
                 .setParameter("memberType", memberType)
                 .getSingleResult();

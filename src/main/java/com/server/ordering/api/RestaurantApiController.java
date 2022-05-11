@@ -3,20 +3,18 @@ package com.server.ordering.api;
 import com.server.ordering.domain.Food;
 import com.server.ordering.domain.RepresentativeMenu;
 import com.server.ordering.domain.Restaurant;
-import com.server.ordering.domain.dto.request.FoodStatusDto;
-import com.server.ordering.domain.dto.request.RestaurantInfoDto;
+import com.server.ordering.domain.dto.request.*;
 import com.server.ordering.domain.dto.ResultDto;
 import com.server.ordering.domain.dto.FoodDto;
-import com.server.ordering.domain.dto.request.SalesRequestDto;
 import com.server.ordering.domain.dto.response.DailySalesDto;
 import com.server.ordering.domain.dto.response.RestaurantPreviewDto;
+import com.server.ordering.domain.dto.response.RestaurantPreviewWithDistanceDto;
 import com.server.ordering.service.FoodService;
 import com.server.ordering.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -149,17 +147,35 @@ public class RestaurantApiController {
     }
 
     /**
-     * 매장 목록 반환
-     * // 추후 API연동 완료되면 변경 예정
+     * 매장 preview data 반환
+     */
+    @PostMapping("/api/restaurant/{restaurantId}/preview")
+    public ResultDto<RestaurantPreviewDto> getRestaurantPreview(@PathVariable Long restaurantId) {
+        Restaurant restaurant = restaurantService.findRestaurant(restaurantId);
+        List<String> representativeMenuNames = restaurant.getRepresentativeMenus()
+                .stream().map(RepresentativeMenu::getFoodName).collect(Collectors.toList());
+        RestaurantPreviewDto previewDto = new RestaurantPreviewDto(restaurantId, restaurant.getRestaurantName(),
+                restaurant.getProfileImageUrl(), restaurant.getBackgroundImageUrl(), representativeMenuNames);
+
+        return new ResultDto<>(1, previewDto);
+    }
+
+    /**
+     * 현재 사용자 위치에서 반경 3km 이내의 매장 리스트를 반환
      */
     @PostMapping("/api/restaurants")
-    public ResultDto<List<RestaurantPreviewDto>> getRestaurantList() {
-        List<Restaurant> restaurants = restaurantService.getAllForPreview();
-        List<RestaurantPreviewDto> previewDtos = restaurants.stream().map(restaurant -> {
-            List<RepresentativeMenu> representativeMenus = new ArrayList<>(restaurant.getRepresentativeMenus());
-            List<String> foodNames = representativeMenus.stream().map(RepresentativeMenu::getFoodName).collect(Collectors.toList());
-            return new RestaurantPreviewDto(restaurant.getId(), restaurant.getRestaurantName(), restaurant.getProfileImageUrl(), foodNames);
-        }).collect(Collectors.toList());
-        return new ResultDto<>(previewDtos.size(), previewDtos);
+    public ResultDto<List<RestaurantPreviewWithDistanceDto>> getRestaurantList(@RequestBody RestaurantPreviewListReqDto dto) {
+        List<RestaurantPreviewWithDistanceDto> previews = restaurantService.getAllForPreview(dto.getLatitude(), dto.getLongitude(), dto.getFoodCategory());
+        return new ResultDto<>(previews.size(), previews);
+    }
+
+    /**
+     * 매장 주문 예상 대기시간 설정/변경
+     */
+    @PutMapping("/api/restaurant/{restaurantId}/waiting_time_for_order")
+    public ResultDto<Boolean> putWaitingTimeForOrder(@PathVariable Long restaurantId,
+                                                     @RequestBody WaitingTimeDto dto) {
+        restaurantService.putWaitingForOrder(restaurantId, dto);
+        return new ResultDto<>(1, true);
     }
 }

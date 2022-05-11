@@ -31,7 +31,7 @@ public class Owner extends MemberBase {
         this.phoneNumber = phoneNumber;
     }
 
-    public void setRestaurant(Restaurant restaurant) {
+    public void registerRestaurant(Restaurant restaurant) {
         this.restaurant = restaurant;
     }
 }
