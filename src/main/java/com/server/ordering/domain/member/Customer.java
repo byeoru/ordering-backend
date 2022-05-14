@@ -1,9 +1,6 @@
 package com.server.ordering.domain.member;
 
-import com.server.ordering.domain.Basket;
-import com.server.ordering.domain.MyCoupon;
-import com.server.ordering.domain.Order;
-import com.server.ordering.domain.PhoneNumber;
+import com.server.ordering.domain.*;
 import lombok.*;
 
 import javax.persistence.*;
@@ -37,6 +34,9 @@ public class Customer extends MemberBase {
     @OneToMany(mappedBy = "customer", cascade = REMOVE, orphanRemoval = true)
     private final List<MyCoupon> coupons = new ArrayList<>();
 
+    @OneToOne(mappedBy = "customer", cascade = REMOVE, orphanRemoval = true)
+    private Waiting waiting;
+
     public Customer(String nickname, String signInId, String password, PhoneNumber phoneNumber) {
         this.nickname = nickname;
         this.signInId = signInId;
@@ -46,5 +46,9 @@ public class Customer extends MemberBase {
 
     public void changeBasketKey(Long restaurantId) {
         this.basketKey = restaurantId;
+    }
+
+    public Boolean isAbleToWaiting() {
+        return this.waiting == null;
     }
 }

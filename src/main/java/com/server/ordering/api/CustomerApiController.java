@@ -3,13 +3,16 @@ package com.server.ordering.api;
 import com.server.ordering.domain.Coupon;
 import com.server.ordering.domain.MemberType;
 import com.server.ordering.domain.PhoneNumber;
+import com.server.ordering.domain.Waiting;
 import com.server.ordering.domain.dto.*;
 import com.server.ordering.domain.dto.request.*;
 import com.server.ordering.domain.dto.response.CustomerSignInResultDto;
+import com.server.ordering.domain.dto.response.MyWaitingInfoDto;
 import com.server.ordering.domain.member.Customer;
 import com.server.ordering.service.CouponService;
 import com.server.ordering.service.CustomerService;
 import com.server.ordering.service.VerificationService;
+import com.server.ordering.service.WaitingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +25,7 @@ public class CustomerApiController {
     private final VerificationService verificationService;
     private final CustomerService customerService;
     private final CouponService couponService;
+    private final WaitingService waitingService;
 
     /**
      *
@@ -158,5 +162,16 @@ public class CustomerApiController {
     public ResultDto<Boolean> useCoupon(@PathVariable Long customerId, @RequestBody CouponSerialNumberDto dto) {
         couponService.useMyCoupon(dto.getSerialNumber(), customerId);
         return new ResultDto<>(1, true);
+    }
+
+    /**
+     * 내 웨이팅 조회
+     */
+    @PostMapping("/api/customer/{customerId}/waiting")
+    public ResultDto<MyWaitingInfoDto> getMyWaitingInfo(@PathVariable Long customerId) {
+        Waiting waiting = waitingService.findOneFromCustomer(customerId);
+        Long numberInFrontOfMe = waitingService.getNumberInFrontOfMe(waiting.getMyWaitingNumber(), waiting.getRestaurant().getId());
+        MyWaitingInfoDto myWaitingDto = new MyWaitingInfoDto(waiting.getId(), waiting.getMyWaitingNumber(), numberInFrontOfMe);
+        return new ResultDto<>(1, myWaitingDto);
     }
 }

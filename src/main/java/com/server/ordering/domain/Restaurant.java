@@ -47,7 +47,7 @@ public class Restaurant {
     private Point location;
 
     @NonNull
-    private int tableCount;
+    private Integer tableCount;
 
     @NonNull
     @Enumerated(value = EnumType.STRING)
@@ -60,10 +60,12 @@ public class Restaurant {
     private String profileImageUrl;
     private String backgroundImageUrl;
 
-    private Integer waitingForOrder;
+    private Integer orderingWaitingTime;
+    private Integer admissionWaitingTime;
 
-    private int waitingTotalCount;
-    private int waitingCurrentCount;
+    @Version
+    private Integer waitingTotalCount;
+    private Integer waitingCurrentCount;
 
     public void addFood(Food food) {
         this.foods.add(food);
@@ -88,7 +90,9 @@ public class Restaurant {
         this.backgroundImageUrl = backgroundImageUrl;
     }
 
-    public void putWaitingForOrder(Integer minutes) { this.waitingForOrder = minutes; }
+    public void putOrderWaitingTime(Integer minutes) { this.orderingWaitingTime = minutes; }
+
+    public void putAdmissionWaitingTime(Integer minutes) { this.admissionWaitingTime = minutes; }
 
     public Boolean isAbleToAddRepresentativeMenu() {
         return representativeMenus.size() < 3;

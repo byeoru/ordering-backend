@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import java.util.*;
 
 @Repository
@@ -25,6 +26,10 @@ public class RestaurantRepository {
 
     public Restaurant findOne(Long id) {
         return em.find(Restaurant.class, id);
+    }
+
+    public Restaurant findOneLock(Long id) {
+        return em.find(Restaurant.class, id, LockModeType.OPTIMISTIC);
     }
 
     public List<RestaurantPreviewWithDistanceDto> findAllWithRepresentativeMenu(Point customerLocation, FoodCategory foodCategory) {

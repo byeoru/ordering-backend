@@ -11,10 +11,9 @@
 <div id="layer" style="display:block;position:fixed;overflow:hidden;z-index:1;-webkit-overflow-scrolling:touch;">
 
 </div>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script>
 <script>
-
 
     window.addEventListener("message", onReceivedPostMessage, false);
 
@@ -102,10 +101,11 @@
     }
 
     async function getLatitudeAndLongitude (fullRoadAddress) {
+
         const { data: { documents } } = await axios({
             method: 'get',
             url: `https://dapi.kakao.com/v2/local/search/address.json?analyze_type=exact&page=1&size=10&query=${fullRoadAddress}`,
-            headers: {'Authorization': 'KakaoAK 53fd1b4e7d71062d046dd9b29e878718'}
+            headers: {'Authorization': '[[${kakaoApiKey}]]'}
         });
         const { y: latitude, x:longitude } = documents[0];
         return { latitude, longitude };

@@ -27,6 +27,10 @@ public class CustomerService implements MemberService<Customer> {
     private final RestaurantRepository restaurantRepository;
     private final OrderRepository orderRepository;
 
+    public Customer findCustomerWithWaiting(Long customerId) {
+        return customerRepository.findOneWithWaiting(customerId);
+    }
+
     /**
      * 고객 회원가입
      * @return 가입한 고객 ID 반환

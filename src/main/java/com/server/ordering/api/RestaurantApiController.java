@@ -172,10 +172,20 @@ public class RestaurantApiController {
     /**
      * 매장 주문 예상 대기시간 설정/변경
      */
-    @PutMapping("/api/restaurant/{restaurantId}/waiting_time_for_order")
-    public ResultDto<Boolean> putWaitingTimeForOrder(@PathVariable Long restaurantId,
-                                                     @RequestBody WaitingTimeDto dto) {
-        restaurantService.putWaitingForOrder(restaurantId, dto);
+    @PutMapping("/api/restaurant/{restaurantId}/order_waiting_time")
+    public ResultDto<Boolean> putOrderWaitingTime(@PathVariable Long restaurantId,
+                                                  @RequestBody WaitingTimeDto dto) {
+        restaurantService.putOrderWaitingTime(restaurantId, dto);
+        return new ResultDto<>(1, true);
+    }
+
+    /**
+     * 매장 입장 예상 대기시간 설정/변경
+     */
+    @PutMapping("/api/restaurant/{restaurantId}/admission_waiting_time")
+    public ResultDto<Boolean> putAdmissionWaitingTime(@PathVariable Long restaurantId,
+                                                      @RequestBody WaitingTimeDto dto) {
+        restaurantService.putAdmissionWaitingTime(restaurantId, dto);
         return new ResultDto<>(1, true);
     }
 }

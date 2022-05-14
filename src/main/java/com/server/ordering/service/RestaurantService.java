@@ -102,9 +102,15 @@ public class RestaurantService {
     }
 
     @Transactional
-    public void putWaitingForOrder(Long restaurantId, WaitingTimeDto waitingTimeDto) {
+    public void putOrderWaitingTime(Long restaurantId, WaitingTimeDto waitingTimeDto) {
         Restaurant restaurant = restaurantRepository.findOne(restaurantId);
-        restaurant.putWaitingForOrder(waitingTimeDto.getMinutes());
+        restaurant.putOrderWaitingTime(waitingTimeDto.getMinutes());
+    }
+
+    @Transactional
+    public void putAdmissionWaitingTime(Long restaurantId, WaitingTimeDto waitingTimeDto) {
+        Restaurant restaurant = restaurantRepository.findOne(restaurantId);
+        restaurant.putAdmissionWaitingTime(waitingTimeDto.getMinutes());
     }
 
     public Restaurant findRestaurant(Long restaurantId) {
