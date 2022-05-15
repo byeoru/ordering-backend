@@ -2,6 +2,7 @@ package com.server.ordering.service;
 
 import com.server.ordering.domain.*;
 import com.server.ordering.domain.dto.request.PasswordChangeDto;
+import com.server.ordering.domain.dto.request.ReviewDto;
 import com.server.ordering.domain.member.Customer;
 import com.server.ordering.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -104,10 +105,10 @@ public class CustomerService implements MemberService<Customer> {
      * 고객 리뷰 등록
      */
     @Transactional
-    public Boolean registerReview(Long restaurantId, Long orderId, String reviewText) {
+    public Boolean registerReview(Long restaurantId, Long orderId, ReviewDto dto) {
         Order order = orderRepository.findOneWithReview(orderId);
         if (order.isAbleRegisterReview()) {
-            Review review = new Review(reviewText);
+            Review review = new Review(dto.getReview(), dto.getRating());
             Restaurant restaurant = restaurantRepository.findOne(restaurantId);
             review.registerOrderAndRestaurant(order, restaurant);
             reviewRepository.save(review);
@@ -120,9 +121,9 @@ public class CustomerService implements MemberService<Customer> {
      * 리뷰 수정
      */
     @Transactional
-    public void putReview(Long reviewId, String reviewText) {
+    public void putReview(Long reviewId, ReviewDto dto) {
         Review review = reviewRepository.findOne(reviewId);
-        review.putReview(reviewText);
+        review.putReview(dto.getReview(), dto.getRating());
     }
 
     /**

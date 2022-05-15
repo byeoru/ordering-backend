@@ -21,6 +21,9 @@ public class Review {
     @NonNull
     private String review;
 
+    @NonNull
+    private float rating;
+
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
@@ -36,7 +39,8 @@ public class Review {
         restaurant.registerReview(this);
     }
 
-    public void putReview(String text) {
+    public void putReview(String text, float rating) {
         this.review = text;
+        this.rating = rating;
     }
 }

@@ -119,7 +119,7 @@ public class CustomerApiController {
     public ResultDto<Boolean> registerReview(@RequestParam(name = "restaurant_id") Long restaurantId,
                                              @RequestParam(name = "order_id") Long orderId,
                                              @RequestBody ReviewDto dto) {
-        Boolean isRegistered = customerService.registerReview(restaurantId, orderId, dto.getReview());
+        Boolean isRegistered = customerService.registerReview(restaurantId, orderId, dto);
         return new ResultDto<>(1, isRegistered);
     }
 
@@ -128,7 +128,7 @@ public class CustomerApiController {
      */
     @PutMapping("/api/customer/review/{reviewId}")
     public ResultDto<Boolean> putReview(@PathVariable Long reviewId, @RequestBody ReviewDto dto) {
-        customerService.putReview(reviewId, dto.getReview());
+        customerService.putReview(reviewId, dto);
         return new ResultDto<>(1, true);
     }
 
