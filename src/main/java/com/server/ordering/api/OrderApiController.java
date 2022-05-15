@@ -1,7 +1,7 @@
 package com.server.ordering.api;
 
 import com.server.ordering.domain.dto.ResultDto;
-import com.server.ordering.domain.dto.request.BasketDto;
+import com.server.ordering.domain.dto.request.BasketRequestDto;
 import com.server.ordering.domain.dto.request.OrderDto;
 import com.server.ordering.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +19,10 @@ public class OrderApiController {
     @PostMapping("/api/order/basket")
     public ResultDto<Boolean> addToBasket(@RequestParam(name = "customer_id") Long customerId,
                                           @RequestParam(name = "restaurant_id") Long restaurantId,
-                                          @RequestBody BasketDto dto) {
+                                          @RequestBody BasketRequestDto dto) {
         Boolean bAbleToAddToBasket = orderService.isAbleToAddToBasket(customerId, restaurantId);
         if (bAbleToAddToBasket) {
-            orderService.addToBasket(customerId, restaurantId, dto.getFoodId(), dto);
+            orderService.addToBasket(customerId, restaurantId, dto);
             return new ResultDto<>(1, true);
         }
         return new ResultDto<>(1, false);

@@ -60,12 +60,11 @@ public class Restaurant {
     private String profileImageUrl;
     private String backgroundImageUrl;
 
-    private Integer orderingWaitingTime;
-    private Integer admissionWaitingTime;
+    private int orderingWaitingTime;
+    private int admissionWaitingTime;
 
     @Version
     private Integer waitingTotalCount;
-    private Integer waitingCurrentCount;
 
     public void addFood(Food food) {
         this.foods.add(food);

@@ -1,7 +1,7 @@
 package com.server.ordering.service;
 
 import com.server.ordering.domain.*;
-import com.server.ordering.domain.dto.request.BasketDto;
+import com.server.ordering.domain.dto.request.BasketRequestDto;
 import com.server.ordering.domain.dto.request.OrderDto;
 import com.server.ordering.domain.member.Customer;
 import com.server.ordering.repository.*;
@@ -38,10 +38,10 @@ public class OrderService {
     }
 
     @Transactional
-    public void addToBasket(Long customerId, Long restaurantId, Long foodId, BasketDto basketDto) {
+    public void addToBasket(Long customerId, Long restaurantId, BasketRequestDto basketDto) {
         Customer customer = customerRepository.findOne(customerId);
-        Food food = foodRepository.findOne(foodId);
-        Basket basket = Basket.CreateBasket(customer, food, basketDto.getPrice(), basketDto.getCount());
+        Food food = foodRepository.findOne(basketDto.getFoodId());
+        Basket basket = Basket.CreateBasket(customer, food, food.getPrice(), basketDto.getCount());
         basketRepository.save(basket);
         if (customer.getBasketKey() == null) {
             customer.changeBasketKey(restaurantId);

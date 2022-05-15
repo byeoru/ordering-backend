@@ -10,10 +10,11 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
-public class MyWaitingInfoDto {
+public class BasketResponseDto {
 
-    private Long waitingId;
-    private Integer myWaitingNumber;
-    private Long numInFrontOfMe;
-    private int estimatedWaitingTime;
+    private Long basketId;
+    private String foodName;
+    private String imageUrl;
+    private int price;
+    private int count;
 }

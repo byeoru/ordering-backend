@@ -6,21 +6,22 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
 public class BasketRepository {
 
     private final EntityManager em;
-    private final JdbcTemplate jdbcTemplate;
 
     public void save(Basket basket) {
         em.persist(basket);
     }
 
-    public void save(Long customerId, Long foodId, int price, int count) {
-        jdbcTemplate.update("insert into basket (customer_id, food_id, price, count) values (?,?,?,?)",
-                customerId, foodId, price, count);
+    public List<Basket> findAllWithFoodByCustomerId(Long customerId) {
+        return em.createQuery("select m from Basket m left join fetch m.food where m.customer.id = :customerId", Basket.class)
+                .setParameter("customerId", customerId)
+                .getResultList();
     }
 
     public void remove(Long basketId) {

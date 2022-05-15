@@ -3,16 +3,14 @@ package com.server.ordering.service;
 import com.server.ordering.domain.*;
 import com.server.ordering.domain.dto.request.PasswordChangeDto;
 import com.server.ordering.domain.member.Customer;
-import com.server.ordering.repository.CustomerRepository;
-import com.server.ordering.repository.OrderRepository;
-import com.server.ordering.repository.RestaurantRepository;
-import com.server.ordering.repository.ReviewRepository;
+import com.server.ordering.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NoResultException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -26,6 +24,7 @@ public class CustomerService implements MemberService<Customer> {
     private final ReviewRepository reviewRepository;
     private final RestaurantRepository restaurantRepository;
     private final OrderRepository orderRepository;
+    private final BasketRepository basketRepository;
 
     public Customer findCustomerWithWaiting(Long customerId) {
         return customerRepository.findOneWithWaiting(customerId);
@@ -101,6 +100,9 @@ public class CustomerService implements MemberService<Customer> {
         customerRepository.remove(id);
     }
 
+    /**
+     * 고객 리뷰 등록
+     */
     @Transactional
     public Boolean registerReview(Long restaurantId, Long orderId, String reviewText) {
         Order order = orderRepository.findOneWithReview(orderId);
@@ -114,15 +116,28 @@ public class CustomerService implements MemberService<Customer> {
         return false;
     }
 
+    /**
+     * 리뷰 수정
+     */
     @Transactional
     public void putReview(Long reviewId, String reviewText) {
         Review review = reviewRepository.findOne(reviewId);
         review.putReview(reviewText);
     }
 
+    /**
+     * 리뷰 삭제
+     */
     @Transactional
     public void removeReview(Long reviewId) {
         Review review = reviewRepository.findOne(reviewId);
         reviewRepository.remove(review);
+    }
+
+    /**
+     * 장바구니 리스트 반환
+     */
+    public List<Basket> findBasketWithFood(Long customerId) {
+        return basketRepository.findAllWithFoodByCustomerId(customerId);
     }
 }

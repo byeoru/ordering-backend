@@ -7,9 +7,8 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
-public class BasketDto {
+public class BasketRequestDto {
 
     private Long foodId;
-    private int price;
     private int count;
 }

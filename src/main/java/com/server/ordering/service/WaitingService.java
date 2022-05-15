@@ -45,8 +45,8 @@ public class WaitingService {
     /**
      * 고객 PK로 웨이팅 조회
      */
-    public Waiting findOneFromCustomer(Long customerId) {
-        return waitingRepository.findOne(customerId);
+    public Waiting findOneWithRestaurantByCustomer(Long customerId) {
+        return waitingRepository.findOneWithRestaurant(customerId);
     }
 
     /**

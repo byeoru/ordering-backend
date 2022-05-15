@@ -1,11 +1,9 @@
 package com.server.ordering.api;
 
-import com.server.ordering.domain.Coupon;
-import com.server.ordering.domain.MemberType;
-import com.server.ordering.domain.PhoneNumber;
-import com.server.ordering.domain.Waiting;
+import com.server.ordering.domain.*;
 import com.server.ordering.domain.dto.*;
 import com.server.ordering.domain.dto.request.*;
+import com.server.ordering.domain.dto.response.BasketResponseDto;
 import com.server.ordering.domain.dto.response.CustomerSignInResultDto;
 import com.server.ordering.domain.dto.response.MyWaitingInfoDto;
 import com.server.ordering.domain.member.Customer;
@@ -16,7 +14,9 @@ import com.server.ordering.service.WaitingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -169,9 +169,20 @@ public class CustomerApiController {
      */
     @PostMapping("/api/customer/{customerId}/waiting")
     public ResultDto<MyWaitingInfoDto> getMyWaitingInfo(@PathVariable Long customerId) {
-        Waiting waiting = waitingService.findOneFromCustomer(customerId);
-        Long numberInFrontOfMe = waitingService.getNumberInFrontOfMe(waiting.getMyWaitingNumber(), waiting.getRestaurant().getId());
-        MyWaitingInfoDto myWaitingDto = new MyWaitingInfoDto(waiting.getId(), waiting.getMyWaitingNumber(), numberInFrontOfMe);
+        Waiting waiting = waitingService.findOneWithRestaurantByCustomer(customerId);
+        long numberInFrontOfMe = waitingService.getNumberInFrontOfMe(waiting.getMyWaitingNumber(), waiting.getRestaurant().getId());
+        MyWaitingInfoDto myWaitingDto = new MyWaitingInfoDto(waiting.getId(), waiting.getMyWaitingNumber(), numberInFrontOfMe, waiting.getRestaurant().getAdmissionWaitingTime() * (int) numberInFrontOfMe);
         return new ResultDto<>(1, myWaitingDto);
+    }
+
+    /**
+     * 장바구니 리스트 조회
+     */
+    @PostMapping("/api/customer/{customerId}/baskets")
+    public ResultDto<List<BasketResponseDto>> getBasketList(@PathVariable Long customerId) {
+        List<Basket> baskets = customerService.findBasketWithFood(customerId);
+        List<BasketResponseDto> basketResponseDtos = baskets.stream().map(basket -> new BasketResponseDto(basket.getId(), basket.getFood().getFoodName(),
+                basket.getFood().getImageUrl(), basket.getPrice(), basket.getCount())).collect(Collectors.toList());
+        return new ResultDto<>(basketResponseDtos.size(), basketResponseDtos);
     }
 }

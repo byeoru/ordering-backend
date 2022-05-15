@@ -30,6 +30,12 @@ public class WaitingRepository {
                 .getSingleResult();
     }
 
+    public Waiting findOneWithRestaurant(Long customerId) {
+        return em.createQuery("select m from Waiting m left join fetch m.restaurant where m.customer.id = :customerId", Waiting.class)
+                .setParameter("customerId", customerId)
+                .getSingleResult();
+    }
+
     public Long getCountInFrontOfMe(Integer myWaitingNum, Long restaurantId) {
         Map<String, Object> result = jdbcTemplate.queryForMap("select count(*) as in_front_of_me from (select * from waiting where restaurant_id = ?) f where f.my_waiting_number < ?", restaurantId, myWaitingNum);
         return (Long) result.get("in_front_of_me");
