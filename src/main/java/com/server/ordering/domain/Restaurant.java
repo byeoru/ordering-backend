@@ -1,5 +1,6 @@
 package com.server.ordering.domain;
 
+import com.server.ordering.domain.member.Owner;
 import lombok.*;
 import org.locationtech.jts.geom.Point;
 
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static javax.persistence.CascadeType.REMOVE;
+import static javax.persistence.FetchType.*;
 import static javax.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
 
@@ -26,6 +28,9 @@ public class Restaurant {
 
     @NonNull
     private String ownerName;
+
+    @OneToOne(mappedBy = "restaurant", fetch = LAZY)
+    private Owner owner;
 
     @OneToMany(mappedBy = "restaurant", cascade = REMOVE, orphanRemoval = true)
     private List<Food> foods = new ArrayList<>();
@@ -60,11 +65,13 @@ public class Restaurant {
     private String profileImageUrl;
     private String backgroundImageUrl;
 
-    private int orderingWaitingTime;
-    private int admissionWaitingTime;
+    @NonNull
+    private Integer orderingWaitingTime;
+    @NonNull
+    private Integer admissionWaitingTime;
 
     @Version
-    private Integer waitingTotalCount;
+    private int waitingCount;
 
     public void addFood(Food food) {
         this.foods.add(food);
@@ -107,6 +114,6 @@ public class Restaurant {
     }
 
     public void addWaitingCnt() {
-        waitingTotalCount++;
+        waitingCount++;
     }
 }

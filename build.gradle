@@ -31,7 +31,6 @@ dependencies {
     implementation group: "com.twilio.sdk", name: "twilio", version: "8.27.0"
     // AWS S3
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
-    //implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.0'
 
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
@@ -40,6 +39,11 @@ dependencies {
 
     // Log4JDBC
     //implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
+
+    // firebase sdk
+    implementation 'com.google.firebase:firebase-admin:8.1.0'
+    // okhttp
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
 }
 
 tasks.named('test') {

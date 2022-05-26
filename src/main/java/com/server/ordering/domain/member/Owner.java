@@ -26,9 +26,7 @@ public class Owner extends MemberBase {
     private Restaurant restaurant;
 
     public Owner(String signInId, String password, PhoneNumber phoneNumber) {
-        this.signInId = signInId;
-        this.password = password;
-        this.phoneNumber = phoneNumber;
+        super(signInId, password, phoneNumber);
     }
 
     public void registerRestaurant(Restaurant restaurant) {

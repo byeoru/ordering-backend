@@ -3,14 +3,17 @@ package com.server.ordering.api;
 import com.server.ordering.domain.Food;
 import com.server.ordering.domain.RepresentativeMenu;
 import com.server.ordering.domain.Restaurant;
+import com.server.ordering.domain.Waiting;
 import com.server.ordering.domain.dto.request.*;
 import com.server.ordering.domain.dto.ResultDto;
 import com.server.ordering.domain.dto.FoodDto;
-import com.server.ordering.domain.dto.response.DailySalesDto;
+import com.server.ordering.domain.dto.response.SalesResponseDto;
 import com.server.ordering.domain.dto.response.RestaurantPreviewDto;
 import com.server.ordering.domain.dto.response.RestaurantPreviewWithDistanceDto;
+import com.server.ordering.domain.dto.response.WaitingPreviewDto;
 import com.server.ordering.service.FoodService;
 import com.server.ordering.service.RestaurantService;
+import com.server.ordering.service.WaitingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +28,7 @@ public class RestaurantApiController {
 
     private final RestaurantService restaurantService;
     private final FoodService foodService;
+    private final WaitingService waitingService;
 
     /**
      * 매장 정보 변경
@@ -104,9 +108,18 @@ public class RestaurantApiController {
     /**
      * 매장 한 달 매출 반환
      */
-    @PostMapping("/api/restaurant/{restaurantId}/sales")
-    public ResultDto<List<DailySalesDto>> getDailySales(@PathVariable Long restaurantId, @RequestBody SalesRequestDto dto) {
-        List<DailySalesDto> sales = restaurantService.getMonthlySalesOfRestaurant(restaurantId, dto.getFrom(), dto.getBefore());
+    @PostMapping("/api/restaurant/{restaurantId}/daily_sales")
+    public ResultDto<List<SalesResponseDto>> getDailySales(@PathVariable Long restaurantId, @RequestBody SalesRequestDto dto) {
+        List<SalesResponseDto> sales = restaurantService.getDailySalesOfRestaurant(restaurantId, dto.getRequestDateFormat());
+        return new ResultDto<>(sales.size(), sales);
+    }
+
+    /**
+     * 특정 연도의 매장 월별 매출 반환
+     */
+    @PostMapping("/api/restaurant/{restaurantId}/monthly_sales")
+    public ResultDto<List<SalesResponseDto>> getMonthlySales(@PathVariable Long restaurantId, @RequestBody SalesRequestDto dto) {
+        List<SalesResponseDto> sales = restaurantService.getMonthlySalesOfRestaurant(restaurantId, dto.getRequestDateFormat());
         return new ResultDto<>(sales.size(), sales);
     }
 
@@ -165,7 +178,7 @@ public class RestaurantApiController {
      */
     @PostMapping("/api/restaurants")
     public ResultDto<List<RestaurantPreviewWithDistanceDto>> getRestaurantList(@RequestBody RestaurantPreviewListReqDto dto) {
-        List<RestaurantPreviewWithDistanceDto> previews = restaurantService.getAllForPreview(dto.getLatitude(), dto.getLongitude(), dto.getFoodCategory());
+        List<RestaurantPreviewWithDistanceDto> previews = restaurantService.getAllForPreview(dto);
         return new ResultDto<>(previews.size(), previews);
     }
 
@@ -187,5 +200,15 @@ public class RestaurantApiController {
                                                       @RequestBody WaitingTimeDto dto) {
         restaurantService.putAdmissionWaitingTime(restaurantId, dto);
         return new ResultDto<>(1, true);
+    }
+
+    /**
+     * 매장 웨이팅 리스트 반환
+     */
+    @PostMapping("/api/restaurant/{restaurantId}/waitings")
+    public ResultDto<List<WaitingPreviewDto>> getWaitingList(@PathVariable Long restaurantId) {
+        List<Waiting> waitings = waitingService.findAllWithPhoneNumberRestaurantWaiting(restaurantId);
+        List<WaitingPreviewDto> waitingPreviewDtos = waitings.stream().map(WaitingPreviewDto::new).collect(Collectors.toList());
+        return new ResultDto<>(waitingPreviewDtos.size(), waitingPreviewDtos);
     }
 }

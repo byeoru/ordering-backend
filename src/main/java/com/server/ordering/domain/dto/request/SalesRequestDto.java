@@ -12,6 +12,6 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 public class SalesRequestDto {
 
-    private String from;
-    private String before;
+    private String requestDateFormat; // 조회하고 싶은 YYYY 또는 YYYY-mm
+    // ex) 2022년도 1~12달의 월별 매출 조회: 2022, 2022년도 5월달의 일별 매출 조회: 2022-05
 }

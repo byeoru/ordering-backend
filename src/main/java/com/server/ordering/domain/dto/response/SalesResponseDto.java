@@ -1,4 +1,4 @@
-package com.server.ordering.domain.dto.request;
+package com.server.ordering.domain.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,9 +10,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
-public class OrderFoodDto {
+public class SalesResponseDto {
 
-    private Long foodId;
-    private int count;
-    private int price;
+    private String sales;
 }

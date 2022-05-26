@@ -17,7 +17,8 @@ public class RestaurantInfoWithImgUrlDto extends RestaurantInfoDto {
 
     public RestaurantInfoWithImgUrlDto(Restaurant restaurant) {
         super(restaurant.getRestaurantName(), restaurant.getOwnerName(), restaurant.getAddress(),
-                restaurant.getTableCount(), restaurant.getFoodCategory(), restaurant.getRestaurantType());
+                restaurant.getTableCount(), restaurant.getFoodCategory(),
+                restaurant.getRestaurantType(), restaurant.getAdmissionWaitingTime(), restaurant.getOrderingWaitingTime());
 
         this.profileImageUrl = restaurant.getProfileImageUrl();
         this.backgroundImageUrl = restaurant.getBackgroundImageUrl();

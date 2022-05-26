@@ -48,8 +48,8 @@ public class CouponService {
     }
 
     @Transactional
-    public void useMyCoupon(String serialNumber, Long customerId) {
-        myCouponRepository.remove(serialNumber, customerId);
+    public void useMyCoupon(Long couponId) {
+        myCouponRepository.remove(couponId);
     }
 
     @Transactional

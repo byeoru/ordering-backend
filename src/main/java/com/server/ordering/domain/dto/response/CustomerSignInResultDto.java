@@ -11,4 +11,5 @@ public class CustomerSignInResultDto {
 
     private Long customerId;
     private String nickname;
+    private int basketCount;
 }

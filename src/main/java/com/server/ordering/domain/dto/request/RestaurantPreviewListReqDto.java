@@ -13,7 +13,7 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 public class RestaurantPreviewListReqDto {
 
-    private double latitude;
-    private double longitude;
-    private FoodCategory foodCategory;
+    private double latitude; // 고객의 현재 위도
+    private double longitude;// 고객의 현재 경도
+    private FoodCategory foodCategory; // 음식 카테고리
 }

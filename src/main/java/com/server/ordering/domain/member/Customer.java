@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static javax.persistence.CascadeType.*;
+import static javax.persistence.FetchType.*;
 import static javax.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
 
@@ -34,14 +35,12 @@ public class Customer extends MemberBase {
     @OneToMany(mappedBy = "customer", cascade = REMOVE, orphanRemoval = true)
     private final List<MyCoupon> coupons = new ArrayList<>();
 
-    @OneToOne(mappedBy = "customer", cascade = REMOVE, orphanRemoval = true)
+    @OneToOne(mappedBy = "customer", cascade = REMOVE, orphanRemoval = true, fetch = LAZY)
     private Waiting waiting;
 
     public Customer(String nickname, String signInId, String password, PhoneNumber phoneNumber) {
+        super(signInId, password, phoneNumber);
         this.nickname = nickname;
-        this.signInId = signInId;
-        this.password = password;
-        this.phoneNumber = phoneNumber;
     }
 
     public void changeBasketKey(Long restaurantId) {

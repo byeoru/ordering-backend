@@ -3,6 +3,7 @@ package com.server.ordering.service;
 import com.server.ordering.domain.*;
 import com.server.ordering.domain.dto.request.PasswordChangeDto;
 import com.server.ordering.domain.dto.request.ReviewDto;
+import com.server.ordering.domain.dto.request.SignInDto;
 import com.server.ordering.domain.member.Customer;
 import com.server.ordering.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class CustomerService implements MemberService<Customer> {
     private final RestaurantRepository restaurantRepository;
     private final OrderRepository orderRepository;
     private final BasketRepository basketRepository;
+    private final MyCouponRepository myCouponRepository;
 
     public Customer findCustomerWithWaiting(Long customerId) {
         return customerRepository.findOneWithWaiting(customerId);
@@ -46,10 +48,12 @@ public class CustomerService implements MemberService<Customer> {
      * 고객 로그인
      * @return 로그인 성공 시 ID를, 실패 시 NULL을 Optional로 반환
      */
+    @Transactional
     @Override
-    public Optional<Customer> signIn(String email, String password) {
+    public Optional<Customer> signIn(SignInDto signInDto) {
         try {
-            Customer customer = customerRepository.findByIdAndPassword(email, password);
+            Customer customer = customerRepository.findByIdAndPassword(signInDto.getSignInId(), signInDto.getPassword());
+            customer.putFirebaseToken(signInDto.getFirebaseToken());
             return Optional.of(customer);
         } catch (NoResultException e) {
             return Optional.empty();
@@ -140,5 +144,19 @@ public class CustomerService implements MemberService<Customer> {
      */
     public List<Basket> findBasketWithFood(Long customerId) {
         return basketRepository.findAllWithFoodByCustomerId(customerId);
+    }
+
+    /**
+     * 장바구니 음식 개수 반환
+     */
+    public int getBasketCount(Long customerId) {
+        return basketRepository.getBasketCount(customerId);
+    }
+
+    /**
+     * 내 쿠폰 조회
+     */
+    public List<MyCoupon> findMyCoupon(Long customerId) {
+        return myCouponRepository.findAll(customerId);
     }
 }

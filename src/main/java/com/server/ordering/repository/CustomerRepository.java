@@ -3,11 +3,9 @@ package com.server.ordering.repository;
 import com.server.ordering.domain.member.Customer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
-import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -27,6 +25,12 @@ public class CustomerRepository implements MemberRepository<Customer> {
 
     public Customer findOneWithBasket(Long id) {
         return em.createQuery("select distinct m from Customer m left join fetch m.baskets where m.id = :id", Customer.class)
+                .setParameter("id", id)
+                .getSingleResult();
+    }
+
+    public Customer findOneWithBasketWithFood(Long id) {
+        return em.createQuery("select distinct m from Customer m left join fetch m.baskets b left join fetch b.food where m.id = :id", Customer.class)
                 .setParameter("id", id)
                 .getSingleResult();
     }
@@ -62,12 +66,5 @@ public class CustomerRepository implements MemberRepository<Customer> {
     public void remove(Long id) throws PersistenceException {
         Customer customer = em.find(Customer.class, id);
         em.remove(customer);
-    }
-
-    // Test
-    @Transactional
-    public List<Customer> findAll() {
-        return em.createQuery("select m from Customer m", Customer.class)
-                .getResultList();
     }
 }

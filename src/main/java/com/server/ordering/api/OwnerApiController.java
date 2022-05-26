@@ -73,7 +73,7 @@ public class OwnerApiController {
      */
     @PostMapping("/api/owner/signin")
     public ResultDto<OwnerSignInResultDto> signIn(@RequestBody SignInDto dto) {
-        Optional<Owner> optionalOwner = ownerService.signIn(dto.getSignInId(), dto.getPassword());
+        Optional<Owner> optionalOwner = ownerService.signIn(dto);
 
         if (optionalOwner.isPresent()) {
             Owner owner = optionalOwner.get();
@@ -126,7 +126,7 @@ public class OwnerApiController {
         String pointWKT = String.format("POINT(%s %s)", dto.getLongitude(), dto.getLatitude());
         Point location = (Point) new WKTReader().read(pointWKT);
         Restaurant restaurant = new Restaurant(dto.getRestaurantName(), dto.getOwnerName(), dto.getAddress(), location,
-                dto.getTableCount(), dto.getFoodCategory(), dto.getRestaurantType());
+                dto.getTableCount(), dto.getFoodCategory(), dto.getRestaurantType(), dto.getOrderingWaitingTime(), dto.getAdmissionWaitingTime());
         Optional<Long> optionalId = restaurantService.registerRestaurant(restaurant, ownerId);
         return new ResultDto<>(1, optionalId);
     }

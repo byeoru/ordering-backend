@@ -1,6 +1,7 @@
 package com.server.ordering.service;
 
 import com.server.ordering.domain.dto.request.PasswordChangeDto;
+import com.server.ordering.domain.dto.request.SignInDto;
 import com.server.ordering.domain.member.Owner;
 import com.server.ordering.repository.OwnerRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,10 +38,12 @@ public class OwnerService implements MemberService<Owner> {
      * 점주 로그인
      * @return 로그인 성공 시 owner, 실패 시 null을 Optional로 반환
      */
+    @Transactional
     @Override
-    public Optional<Owner> signIn(String signInId, String password) throws PersistenceException {
+    public Optional<Owner> signIn(SignInDto signInDto) throws PersistenceException {
         try {
-            Owner owner = ownerRepository.findOneWithRestaurantByIdAndPassword(signInId, password);
+            Owner owner = ownerRepository.findOneWithRestaurantByIdAndPassword(signInDto.getSignInId(), signInDto.getPassword());
+            owner.putFirebaseToken(signInDto.getFirebaseToken());
             return Optional.of(owner);
         } catch (NoResultException e) {
             return Optional.empty();

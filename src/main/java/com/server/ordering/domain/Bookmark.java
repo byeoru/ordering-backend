@@ -11,7 +11,7 @@ import static javax.persistence.FetchType.*;
 @Entity
 @Getter @Setter
 @Table(name = "likes")
-public class Like {
+public class Bookmark {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "like_id")

@@ -3,7 +3,7 @@ package com.server.ordering.api;
 import com.server.ordering.domain.*;
 import com.server.ordering.domain.dto.*;
 import com.server.ordering.domain.dto.request.*;
-import com.server.ordering.domain.dto.response.BasketResponseDto;
+import com.server.ordering.domain.dto.response.BasketFood;
 import com.server.ordering.domain.dto.response.CustomerSignInResultDto;
 import com.server.ordering.domain.dto.response.MyWaitingInfoDto;
 import com.server.ordering.domain.member.Customer;
@@ -76,10 +76,11 @@ public class CustomerApiController {
      */
     @PostMapping("/api/customer/signin")
     public ResultDto<CustomerSignInResultDto> signIn(@RequestBody SignInDto dto) {
-        Optional<Customer> optionalCustomer = customerService.signIn(dto.getSignInId(), dto.getPassword());
-        return optionalCustomer.map(customer -> new ResultDto<>(1,
-                        new CustomerSignInResultDto(customer.getId(), customer.getNickname())))
-                .orElseGet(() -> new ResultDto<>(1, null));
+        Optional<Customer> optionalCustomer = customerService.signIn(dto);
+        return optionalCustomer.map(customer -> {
+            int basketCount = customerService.getBasketCount(customer.getId());
+            return new ResultDto<>(1, new CustomerSignInResultDto(customer.getId(), customer.getNickname(), basketCount));
+        }).orElseGet(() -> new ResultDto<>(1, null));
     }
 
     /**
@@ -158,9 +159,9 @@ public class CustomerApiController {
     /**
      * 고객 쿠폰 사용
      */
-    @DeleteMapping("/api/customer/{customerId}/coupon")
-    public ResultDto<Boolean> useCoupon(@PathVariable Long customerId, @RequestBody CouponSerialNumberDto dto) {
-        couponService.useMyCoupon(dto.getSerialNumber(), customerId);
+    @DeleteMapping("/api/customer/coupon/{couponId}")
+    public ResultDto<Boolean> useCoupon(@PathVariable Long couponId) {
+        couponService.useMyCoupon(couponId);
         return new ResultDto<>(1, true);
     }
 
@@ -169,9 +170,19 @@ public class CustomerApiController {
      */
     @PostMapping("/api/customer/{customerId}/waiting")
     public ResultDto<MyWaitingInfoDto> getMyWaitingInfo(@PathVariable Long customerId) {
+
         Waiting waiting = waitingService.findOneWithRestaurantByCustomer(customerId);
-        long numberInFrontOfMe = waitingService.getNumberInFrontOfMe(waiting.getMyWaitingNumber(), waiting.getRestaurant().getId());
-        MyWaitingInfoDto myWaitingDto = new MyWaitingInfoDto(waiting.getId(), waiting.getMyWaitingNumber(), numberInFrontOfMe, waiting.getRestaurant().getAdmissionWaitingTime() * (int) numberInFrontOfMe);
+
+        // 접수한 웨이팅이 없다면 Null 반환
+        if (waiting == null) {
+            return new ResultDto<>(1, null);
+        }
+
+        // 앞에 남은 사람 수
+        long numberInFrontOfMe = waitingService.
+                getNumberInFrontOfMe(waiting.getMyWaitingNumber(), waiting.getRestaurant().getId());
+
+        MyWaitingInfoDto myWaitingDto = new MyWaitingInfoDto(waiting, numberInFrontOfMe);
         return new ResultDto<>(1, myWaitingDto);
     }
 
@@ -179,10 +190,19 @@ public class CustomerApiController {
      * 장바구니 리스트 조회
      */
     @PostMapping("/api/customer/{customerId}/baskets")
-    public ResultDto<List<BasketResponseDto>> getBasketList(@PathVariable Long customerId) {
+    public ResultDto<List<BasketFood>> getBasketList(@PathVariable Long customerId) {
         List<Basket> baskets = customerService.findBasketWithFood(customerId);
-        List<BasketResponseDto> basketResponseDtos = baskets.stream().map(basket -> new BasketResponseDto(basket.getId(), basket.getFood().getFoodName(),
-                basket.getFood().getImageUrl(), basket.getPrice(), basket.getCount())).collect(Collectors.toList());
+        List<BasketFood> basketResponseDtos = baskets.stream().map(BasketFood::new).collect(Collectors.toList());
         return new ResultDto<>(basketResponseDtos.size(), basketResponseDtos);
+    }
+
+    /**
+     * 내 쿠폰 리스트 조회
+     */
+    @PostMapping("/api/customer/{customerId}/my_coupons")
+    public ResultDto<List<CouponDto>> getMyCouponList(@PathVariable Long customerId) {
+        List<MyCoupon> myCoupons = customerService.findMyCoupon(customerId);
+        List<CouponDto> couponDtos = myCoupons.stream().map(CouponDto::new).collect(Collectors.toList());
+        return new ResultDto<>(couponDtos.size(), couponDtos);
     }
 }

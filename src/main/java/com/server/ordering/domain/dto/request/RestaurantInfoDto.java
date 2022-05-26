@@ -20,5 +20,6 @@ public class RestaurantInfoDto {
     private int tableCount;
     private FoodCategory foodCategory;
     private RestaurantType restaurantType;
+    private Integer admissionWaitingTime;
+    private Integer orderingWaitingTime;
 }
-

@@ -28,6 +28,12 @@ public class RestaurantRepository {
         return em.find(Restaurant.class, id);
     }
 
+    public Restaurant findOneWithOwner(Long id) {
+        return em.createQuery("select m from Restaurant m left join fetch m.owner where m.id =:id", Restaurant.class)
+                .setParameter("id", id)
+                .getSingleResult();
+    }
+
     public Restaurant findOneLock(Long id) {
         return em.find(Restaurant.class, id, LockModeType.OPTIMISTIC);
     }
@@ -36,7 +42,8 @@ public class RestaurantRepository {
 
         String query = "select * from(select * , " +
                 "(ST_Distance_Sphere(ST_GeomFromText(?, 4326), location, 6373000)) as distance_meter " +
-                "from restaurant order by distance_meter) result left join representative_menu on result.restaurant_id = representative_menu.restaurant_id " +
+                "from restaurant order by distance_meter) result left join representative_menu " +
+                "on result.restaurant_id = representative_menu.restaurant_id " +
                 "where result.distance_meter <= 3000 and food_category=? order by result.distance_meter";
 
         return jdbcTemplate.query(query, (ResultSetExtractor<List<RestaurantPreviewWithDistanceDto>>) rs -> {
@@ -58,7 +65,6 @@ public class RestaurantRepository {
                             backgroundImageUrl, distanceMeter);
                     previews.put(restaurantId, preview);
                 }
-
                 if (representativeFoodName != null) {
                     preview.addRepresentativeFoodName(representativeFoodName);
                 }

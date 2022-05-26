@@ -5,6 +5,9 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -36,7 +39,7 @@ public class Order {
     private final List<OrderFood> orderFoods = new ArrayList<>();
 
     @Column(name = "order_time")
-    private LocalDateTime orderTime;
+    private ZonedDateTime orderTime;
 
     @OneToOne(mappedBy = "order")
     private Review review;
@@ -54,9 +57,9 @@ public class Order {
     @Enumerated(value = STRING)
     private OrderType orderType;
     @NonNull
-    private int tableNumber;
+    private Integer tableNumber;
     @NonNull
-    private int totalPrice;
+    private Integer totalPrice;
 
     public void addOrderFood(OrderFood orderFood) {
         this.orderFoods.add(orderFood);
@@ -74,12 +77,16 @@ public class Order {
         return this.status == ORDERED;
     }
 
-    public Boolean isAbleToCompleted() {
+    public Boolean isAbleToOwnerCancel() {
+        return this.status == ORDERED || this.status == CHECKED;
+    }
+
+    public Boolean isAbleToCheck() {
         return this.status == ORDERED;
     }
 
-    public void cancel() {
-        this.status = CANCEL;
+    public Boolean isAbleToComplete() {
+        return this.status == CHECKED;
     }
 
     public void registerReview(Review review) {
@@ -90,7 +97,19 @@ public class Order {
         return Objects.isNull(this.review);
     }
 
-    public void registerOrderTime() { this.orderTime = LocalDateTime.now(); }
+    public void registerOrderTime() { this.orderTime = ZonedDateTime.now(); }
 
-    public void completed() { this.status = COMPLETED; }
+    public void cancel() {
+        this.status = CANCELED;
+    }
+
+    public void check() { this.status = CHECKED; }
+
+    public void complete() {
+        this.status = COMPLETED;
+    }
+
+    public void removeAllOrderFood() {
+        orderFoods.clear();
+    }
 }

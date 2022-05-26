@@ -8,6 +8,10 @@ import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
 import static javax.persistence.FetchType.*;
 import static javax.persistence.GenerationType.*;
 import static lombok.AccessLevel.PROTECTED;
@@ -35,5 +39,16 @@ public class Waiting {
     @NonNull
     private Integer myWaitingNumber;
     @NonNull
-    private Byte peopleNumber;
+    private Byte numOfTeamMembers;
+
+    @NonNull
+    @OneToOne(fetch = LAZY)
+    @JoinColumn(name = "phone_number")
+    private PhoneNumber phoneNumber;
+
+    private ZonedDateTime waitingRegisterTime;
+
+    public void registerWaitingTime() {
+        this.waitingRegisterTime = ZonedDateTime.now();
+    }
 }

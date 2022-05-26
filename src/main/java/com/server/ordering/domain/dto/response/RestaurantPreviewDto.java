@@ -13,11 +13,10 @@ import static lombok.AccessLevel.PROTECTED;
 public class RestaurantPreviewDto {
 
     protected Long restaurantId;
-    // private Integer ratings;
     protected String restaurantName;
     protected String profileImageUrl;
     protected String backgroundImageUrl;
-    protected List<String> representativeMenus = new ArrayList<>();
+    protected List<String> representativeMenus;
 
     public void addRepresentativeFoodName(String foodName) {
         representativeMenus.add(foodName);

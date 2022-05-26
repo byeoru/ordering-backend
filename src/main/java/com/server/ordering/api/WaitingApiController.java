@@ -22,9 +22,12 @@ public class WaitingApiController {
     public ResultDto<Boolean> registerWaiting(@RequestParam(name = "restaurant_id") Long restaurantId,
                                               @RequestParam(name = "customer_id") Long customerId,
                                               @RequestBody WaitingRegisterDto dto) {
+
         Customer customer = customerService.findCustomerWithWaiting(customerId);
+
+        // 웨이팅 접수가 가능한지 체크
         if (customer.isAbleToWaiting()) {
-            waitingService.registerWaiting(restaurantId, customerId, dto.getPeopleNumber());
+            waitingService.registerWaiting(restaurantId, customerId, dto);
             return new ResultDto<>(1, true);
         }
 

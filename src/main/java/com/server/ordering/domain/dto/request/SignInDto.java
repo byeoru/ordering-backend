@@ -11,4 +11,5 @@ public class SignInDto {
 
     private String signInId;
     private String password;
+    private String firebaseToken;
 }

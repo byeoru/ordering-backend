@@ -29,11 +29,13 @@ public class Basket {
     private Food food;
 
     @NonNull
-    private int price;
-    @NonNull
     private int count;
 
-    public static Basket CreateBasket(Customer customer, Food food, int price, int count) {
-        return new Basket(customer, food, price, count);
+    public static Basket CreateBasket(Customer customer, Food food, int count) {
+        return new Basket(customer, food, count);
+    }
+
+    public void updateCount(int count) {
+        this.count = count;
     }
 }

@@ -11,17 +11,26 @@ import static lombok.AccessLevel.*;
 
 @Getter
 @MappedSuperclass
+@RequiredArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
 public abstract class MemberBase {
 
+    @NonNull
     protected String signInId;
+    @NonNull
     protected String password;
+    protected String firebaseToken;
 
+    @NonNull
     @OneToOne(fetch = LAZY, cascade = ALL, orphanRemoval = true)
     @JoinColumn(name = "phone_number")
     protected PhoneNumber phoneNumber;
 
     public void putPassword(String password) {
         this.password = password;
+    }
+
+    public void putFirebaseToken(String firebaseToken) {
+        this.firebaseToken = firebaseToken;
     }
 }

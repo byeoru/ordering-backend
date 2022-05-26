@@ -1,13 +1,11 @@
 package com.server.ordering.service;
 
 import com.server.ordering.S3Service;
-import com.server.ordering.domain.Food;
-import com.server.ordering.domain.FoodCategory;
-import com.server.ordering.domain.RepresentativeMenu;
-import com.server.ordering.domain.Restaurant;
+import com.server.ordering.domain.*;
 import com.server.ordering.domain.dto.request.RestaurantInfoDto;
+import com.server.ordering.domain.dto.request.RestaurantPreviewListReqDto;
 import com.server.ordering.domain.dto.request.WaitingTimeDto;
-import com.server.ordering.domain.dto.response.DailySalesDto;
+import com.server.ordering.domain.dto.response.SalesResponseDto;
 import com.server.ordering.domain.dto.response.RestaurantPreviewWithDistanceDto;
 import com.server.ordering.domain.member.Owner;
 import com.server.ordering.repository.*;
@@ -53,8 +51,14 @@ public class RestaurantService {
                 dto.getTableCount(), dto.getFoodCategory(), dto.getRestaurantType());
     }
 
-    public List<DailySalesDto> getMonthlySalesOfRestaurant(Long restaurantId, String from, String before) {
-        return orderRepository.getMonthlySales(restaurantId, from, before);
+    @Transactional(readOnly = true)
+    public List<SalesResponseDto> getDailySalesOfRestaurant(Long restaurantId, String yearAndMonth) {
+        return orderRepository.getDailySales(restaurantId, yearAndMonth);
+    }
+
+    @Transactional(readOnly = true)
+    public List<SalesResponseDto> getMonthlySalesOfRestaurant(Long restaurantId, String year) {
+        return orderRepository.getMonthlySales(restaurantId, year);
     }
 
     @Transactional
@@ -95,10 +99,12 @@ public class RestaurantService {
     }
 
     @Transactional
-    public List<RestaurantPreviewWithDistanceDto> getAllForPreview(double latitude, double longitude, FoodCategory foodCategory) {
+    public List<RestaurantPreviewWithDistanceDto> getAllForPreview(RestaurantPreviewListReqDto dto) {
         GeometryFactory factory = new GeometryFactory(new PrecisionModel(), 4326);
-        Point point = factory.createPoint(new Coordinate(longitude, latitude));
-        return restaurantRepository.findAllWithRepresentativeMenu(point, foodCategory);
+
+        // 사용자의 위도, 경도 값으로 2차원 좌표 생성
+        Point point = factory.createPoint(new Coordinate(dto.getLongitude(), dto.getLatitude()));
+        return restaurantRepository.findAllWithRepresentativeMenu(point, dto.getFoodCategory());
     }
 
     @Transactional
