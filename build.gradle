@@ -42,8 +42,12 @@ dependencies {
 
     // firebase sdk
     implementation 'com.google.firebase:firebase-admin:8.1.0'
+
     // okhttp
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
+
+    // spring security
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
 }
 
 tasks.named('test') {
