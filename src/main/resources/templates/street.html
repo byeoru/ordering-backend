@@ -107,7 +107,7 @@
             url: `https://dapi.kakao.com/v2/local/search/address.json?analyze_type=exact&page=1&size=10&query=${fullRoadAddress}`,
             headers: {'Authorization': '[[${kakaoApiKey}]]'}
         });
-        const { y: latitude, x:longitude } = documents[0];
+        const { y: latitude, x: longitude } = documents[0];
         return { latitude, longitude };
     }
 

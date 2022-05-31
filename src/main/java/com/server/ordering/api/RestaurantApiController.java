@@ -31,7 +31,7 @@ public class RestaurantApiController {
      */
     @PutMapping("/api/restaurant/{restaurantId}")
     public ResultDto<Boolean> putRestaurant(@PathVariable Long restaurantId,
-                                            @RequestBody RestaurantInfoDto dto) {
+                                            @RequestBody RestaurantDataDto dto) {
         restaurantService.putRestaurant(restaurantId, dto);
         return new ResultDto<>(1, true);
     }
@@ -243,5 +243,26 @@ public class RestaurantApiController {
         List<Order> finishedOrders = orderService.findFinishedOrders(restaurantId);
         List<OrderPreviewDto> previewDtos = finishedOrders.stream().map(OrderPreviewDto::new).collect(Collectors.toList());
         return new ResultDto<>(previewDtos.size(), previewDtos);
+    }
+
+    /**
+     * 매장 공지 등록/변경
+     */
+    @PutMapping("/api/restaurant/{restaurantId}/notice")
+    public ResultDto<Boolean> putNotice(@PathVariable Long restaurantId,
+                                        @RequestBody MessageDto dto) {
+        restaurantService.putRestaurantNotice(restaurantId, dto);
+        return new ResultDto<>(1, true);
+    }
+
+    /**
+     * 매장 공지, 좌표 반환
+     */
+    @GetMapping("/api/restaurant/{restaurantId}/info")
+    public ResultDto<RestaurantInfoDto> getRestaurantInfo(@PathVariable Long restaurantId) {
+        Restaurant restaurant = restaurantService.findRestaurant(restaurantId);
+        RestaurantInfoDto restaurantInfoDto = new RestaurantInfoDto(restaurant.getNotice(),
+                restaurant.getLocation().getY(), restaurant.getLocation().getX());
+        return new ResultDto<>(1, restaurantInfoDto);
     }
 }

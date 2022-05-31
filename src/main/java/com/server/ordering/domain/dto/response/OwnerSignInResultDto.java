@@ -7,7 +7,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Getter @Setter
 @NoArgsConstructor(access = PROTECTED)
-public class OwnerSignInResultDto extends RestaurantInfoWithImgUrlDto {
+public class OwnerSignInResultDto extends RestaurantDataWithImgUrlDto {
 
     private Long ownerId;
     private Long restaurantId;

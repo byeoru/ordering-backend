@@ -2,7 +2,8 @@ package com.server.ordering.service;
 
 import com.server.ordering.S3Service;
 import com.server.ordering.domain.*;
-import com.server.ordering.domain.dto.request.RestaurantInfoDto;
+import com.server.ordering.domain.dto.request.MessageDto;
+import com.server.ordering.domain.dto.request.RestaurantDataDto;
 import com.server.ordering.domain.dto.request.RestaurantPreviewListReqDto;
 import com.server.ordering.domain.dto.request.WaitingTimeDto;
 import com.server.ordering.domain.dto.response.SalesResponseDto;
@@ -46,7 +47,7 @@ public class RestaurantService {
     }
 
     @Transactional
-    public void putRestaurant(Long restaurantId, RestaurantInfoDto dto) throws PersistenceException {
+    public void putRestaurant(Long restaurantId, RestaurantDataDto dto) throws PersistenceException {
         Restaurant restaurant = restaurantRepository.findOne(restaurantId);
         restaurant.putRestaurant(dto.getRestaurantName(), dto.getOwnerName(), dto.getAddress(),
                 dto.getTableCount(), dto.getFoodCategory(), dto.getRestaurantType());
@@ -129,5 +130,11 @@ public class RestaurantService {
 
     public Restaurant findRestaurant(Long restaurantId) {
         return restaurantRepository.findOne(restaurantId);
+    }
+
+    @Transactional
+    public void putRestaurantNotice(Long restaurantId, MessageDto messageDto) {
+        Restaurant restaurant = restaurantRepository.findOne(restaurantId);
+        restaurant.putNotice(messageDto.getMessage());
     }
 }

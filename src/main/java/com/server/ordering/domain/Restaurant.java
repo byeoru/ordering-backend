@@ -70,6 +70,7 @@ public class Restaurant {
 
     private String profileImageUrl;
     private String backgroundImageUrl;
+    private String notice;
 
     @NonNull
     private Integer orderingWaitingTime;
@@ -126,5 +127,9 @@ public class Restaurant {
 
     public void clearFirebaseToken() {
         this.firebaseToken = null;
+    }
+
+    public void putNotice(String notice) {
+        this.notice = notice;
     }
 }

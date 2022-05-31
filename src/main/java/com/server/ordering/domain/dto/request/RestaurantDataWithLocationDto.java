@@ -10,7 +10,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
-public class RestaurantInfoWithLocationDto extends RestaurantInfoDto {
+public class RestaurantDataWithLocationDto extends RestaurantDataDto {
 
     private double latitude;
     private double longitude;

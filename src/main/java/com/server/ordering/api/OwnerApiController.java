@@ -126,7 +126,7 @@ public class OwnerApiController {
     @PostMapping("/api/owner/{ownerId}/restaurant")
     public ResultDto<Optional<Long>> registerRestaurant(
             @PathVariable Long ownerId,
-            @RequestBody RestaurantInfoWithLocationDto dto) throws ParseException {
+            @RequestBody RestaurantDataWithLocationDto dto) throws ParseException {
 
         String pointWKT = String.format("POINT(%s %s)", dto.getLongitude(), dto.getLatitude());
         Point location = (Point) new WKTReader().read(pointWKT);
