@@ -1,20 +1,22 @@
 package com.server.ordering.domain.dto.response;
 
+import com.server.ordering.domain.Bookmark;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
-public class QrcodeResultDto {
+public class BookmarkPreviewDto extends RestaurantPreviewDto {
 
-    private String waitingUrl;
-    private String togoUrl;
-    private List<String> tableUrls;
+    private Long bookmarkId;
+
+    public BookmarkPreviewDto(Bookmark bookmark) {
+        super(bookmark.getRestaurant());
+        this.bookmarkId = bookmark.getId();
+    }
 }

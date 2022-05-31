@@ -28,6 +28,7 @@ public class CustomerService implements MemberService<Customer> {
     private final OrderRepository orderRepository;
     private final BasketRepository basketRepository;
     private final MyCouponRepository myCouponRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     public Customer findCustomerWithWaiting(Long customerId) {
         return customerRepository.findOneWithWaiting(customerId);
@@ -58,6 +59,13 @@ public class CustomerService implements MemberService<Customer> {
         } catch (NoResultException e) {
             return Optional.empty();
         }
+    }
+
+    @Transactional
+    @Override
+    public void signOut(Long id) {
+        Customer customer = customerRepository.findOne(id);
+        customer.clearFirebaseToken();
     }
 
     /**
@@ -140,6 +148,45 @@ public class CustomerService implements MemberService<Customer> {
     }
 
     /**
+     * 매장 북마크(찜) 등록
+     */
+    @Transactional
+    public Long addBookmark(Long customerId, Long restaurantId) {
+        Customer customer = customerRepository.findOne(customerId);
+        Restaurant restaurant = restaurantRepository.findOne(restaurantId);
+        Bookmark bookmark = new Bookmark(restaurant, customer);
+        bookmarkRepository.save(bookmark);
+        return bookmark.getId();
+    }
+
+    /**
+     * 매장 북마크(찜) 삭제
+     */
+    @Transactional
+    public void removeBookmark(Long bookmarkId) {
+        bookmarkRepository.remove(bookmarkId);
+    }
+
+    /**
+     * 북마크 리스트 불러오기
+     */
+    public List<Bookmark> findAllBookmarkWithRestWithRepresentative(Long customerId) {
+        return bookmarkRepository.findAllWithRestWithRepresentativeByCustomerId(customerId);
+    }
+
+    /**
+     * 북마크 중복 체크
+     */
+    public Boolean isExistedBookmark(Long customerId, Long restaurantId) {
+        try {
+            bookmarkRepository.findOneByCustomerIdAndRestaurantId(customerId, restaurantId);
+            return true;
+        } catch (NoResultException e) {
+            return false;
+        }
+    }
+
+    /**
      * 장바구니 리스트 반환
      */
     public List<Basket> findBasketWithFood(Long customerId) {
@@ -158,5 +205,19 @@ public class CustomerService implements MemberService<Customer> {
      */
     public List<MyCoupon> findMyCoupon(Long customerId) {
         return myCouponRepository.findAll(customerId);
+    }
+
+    /**
+     * 내 주문 내역 조회(진행 중)
+     */
+    public List<Order> findAllMyOngoingOrders(Long customerId) {
+        return orderRepository.findAllOngoingWithRestWithOrderFoodsByCustomerId(customerId);
+    }
+
+    /**
+     * 내 주문 내역 조회(완료)
+     */
+    public List<Order> findAllMyFinishedOrders(Long customerId) {
+        return orderRepository.findAllFinishedWithRestWithOrderFoodsByCustomerId(customerId);
     }
 }

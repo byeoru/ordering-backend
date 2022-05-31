@@ -1,12 +1,11 @@
 package com.server.ordering.domain.dto.response;
 
+import com.server.ordering.domain.RepresentativeMenu;
+import com.server.ordering.domain.Restaurant;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import static lombok.AccessLevel.PROTECTED;
+import java.util.stream.Collectors;
 
 @Getter @Setter
 @RequiredArgsConstructor
@@ -22,12 +21,13 @@ public class RestaurantPreviewDto {
         representativeMenus.add(foodName);
     }
 
-    public RestaurantPreviewDto(Long restaurantId, String restaurantName, String profileImageUrl, String backgroundImageUrl, List<String> representativeMenus) {
-        this.restaurantId = restaurantId;
-        this.restaurantName = restaurantName;
-        this.profileImageUrl = profileImageUrl;
-        this.backgroundImageUrl = backgroundImageUrl;
-        this.representativeMenus = representativeMenus;
+    public RestaurantPreviewDto(Restaurant restaurant) {
+        this.restaurantId = restaurant.getId();
+        this.restaurantName = restaurant.getRestaurantName();
+        this.profileImageUrl = restaurant.getProfileImageUrl();
+        this.backgroundImageUrl = restaurant.getBackgroundImageUrl();
+        this.representativeMenus = restaurant.getRepresentativeMenus()
+                .stream().map(RepresentativeMenu::getFoodName).collect(Collectors.toList());
     }
 
     public RestaurantPreviewDto(Long restaurantId, String restaurantName, String profileImageUrl, String backgroundImageUrl) {

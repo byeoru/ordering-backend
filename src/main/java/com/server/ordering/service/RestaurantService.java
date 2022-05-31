@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import java.util.List;
 import java.util.Optional;
@@ -77,25 +78,32 @@ public class RestaurantService {
         restaurant.putBackgroundImageUrl(imageUrl);
     }
 
-    @Transactional
-    public Boolean addRepresentativeMenu(Long restaurantId, Long foodId) {
-        Restaurant restaurant = restaurantRepository.findOneWithRepresentativeMenu(restaurantId);
-        Boolean ableToAddRepresentativeMenu = restaurant.isAbleToAddRepresentativeMenu();
-        if (ableToAddRepresentativeMenu) {
-            Food food = foodRepository.findOne(foodId);
-            String id = String.format("%d%d", restaurantId, foodId);
-            RepresentativeMenu representativeMenu = new RepresentativeMenu(id, restaurant, food, food.getFoodName());
-            restaurant.addRepresentativeMenu(representativeMenu);
-            representativeMenuRepository.save(representativeMenu);
+    public Boolean isExistRepresentativeMenu(Long restaurantId, Long foodId) {
+        try {
+            representativeMenuRepository.findOneByRestaurantIdAndFoodId(restaurantId, foodId);
             return true;
+        } catch (NoResultException e) {
+            return false;
         }
-        return false;
     }
 
     @Transactional
-    public void removeRepresentativeMenu(Long restaurantId, Long foodId) {
-        String id = String.format("%d%d", restaurantId, foodId);
-        representativeMenuRepository.remove(id);
+    public Boolean addRepresentativeMenu(Long restaurantId, Long foodId) {
+        Restaurant restaurant = restaurantRepository.findOne(restaurantId);
+        Food food = foodRepository.findOne(foodId);
+        RepresentativeMenu representativeMenu = new RepresentativeMenu(restaurant, food, food.getFoodName());
+        restaurant.addRepresentativeMenu(representativeMenu);
+        representativeMenuRepository.save(representativeMenu);
+        return true;
+    }
+
+    public List<RepresentativeMenu> findAllRepresentative(Long restaurantId) {
+        return representativeMenuRepository.findAllByRestaurantId(restaurantId);
+    }
+
+    @Transactional
+    public void removeRepresentativeMenu(Long representativeMenuId) {
+        representativeMenuRepository.remove(representativeMenuId);
     }
 
     @Transactional
@@ -103,7 +111,7 @@ public class RestaurantService {
         GeometryFactory factory = new GeometryFactory(new PrecisionModel(), 4326);
 
         // 사용자의 위도, 경도 값으로 2차원 좌표 생성
-        Point point = factory.createPoint(new Coordinate(dto.getLongitude(), dto.getLatitude()));
+        Point point = factory.createPoint(new Coordinate(dto.getLatitude(), dto.getLongitude()));
         return restaurantRepository.findAllWithRepresentativeMenu(point, dto.getFoodCategory());
     }
 

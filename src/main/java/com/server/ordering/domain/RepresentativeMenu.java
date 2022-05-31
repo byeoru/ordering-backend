@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import javax.persistence.*;
 
 import static javax.persistence.FetchType.*;
+import static javax.persistence.GenerationType.*;
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
@@ -16,8 +17,9 @@ import static lombok.AccessLevel.PROTECTED;
 @RequiredArgsConstructor
 public class RepresentativeMenu {
 
-    @Id @NonNull
-    private String id;
+    @Id @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "representative_menu_id")
+    private Long id;
 
     @NonNull
     @ManyToOne(fetch = LAZY)

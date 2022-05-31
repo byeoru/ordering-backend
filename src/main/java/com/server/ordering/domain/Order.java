@@ -4,13 +4,8 @@ import com.server.ordering.domain.member.Customer;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static com.server.ordering.domain.OrderStatus.*;
 import static javax.persistence.CascadeType.*;
@@ -36,10 +31,13 @@ public class Order {
     private Customer customer;
 
     @OneToMany(mappedBy = "order", cascade = ALL, orphanRemoval = true)
-    private final List<OrderFood> orderFoods = new ArrayList<>();
+    private final Set<OrderFood> orderFoods = new HashSet<>();
 
-    @Column(name = "order_time")
-    private ZonedDateTime orderTime;
+    private ZonedDateTime receivedTime;
+    private ZonedDateTime checkedTime;
+    private ZonedDateTime canceledOrCompletedTime;
+
+    private Integer myOrderNumber;
 
     @OneToOne(mappedBy = "order")
     private Review review;
@@ -52,14 +50,16 @@ public class Order {
     @NonNull
     @Enumerated(value = STRING)
     private OrderStatus status;
-
     @NonNull
     @Enumerated(value = STRING)
     private OrderType orderType;
     @NonNull
     private Integer tableNumber;
     @NonNull
+    @Column(nullable = false)
     private Integer totalPrice;
+    @NonNull
+    private String orderSummary;
 
     public void addOrderFood(OrderFood orderFood) {
         this.orderFoods.add(orderFood);
@@ -67,8 +67,8 @@ public class Order {
     }
 
     public static Order createOrder(Customer customer, Restaurant restaurant, List<OrderFood> orderFoods,
-                                    OrderType orderType, Integer tableNumber, int totalPrice) {
-        Order order = new Order(customer, restaurant, ORDERED, orderType, tableNumber, totalPrice);
+                                    OrderType orderType, Integer tableNumber, int totalPrice, String orderSummary) {
+        Order order = new Order(customer, restaurant, ORDERED, orderType, tableNumber, totalPrice, orderSummary);
         orderFoods.forEach(order::addOrderFood);
         return order;
     }
@@ -97,7 +97,19 @@ public class Order {
         return Objects.isNull(this.review);
     }
 
-    public void registerOrderTime() { this.orderTime = ZonedDateTime.now(); }
+    public void registerReceivedTime() {
+        this.receivedTime = ZonedDateTime.now();
+    }
+
+    public void registerCheckedTime() { this.checkedTime = ZonedDateTime.now(); }
+
+    public void registerCanceledTime() {
+        this.canceledOrCompletedTime = ZonedDateTime.now();
+    }
+
+    public void registerCompletedTime() {
+        this.canceledOrCompletedTime = ZonedDateTime.now();
+    }
 
     public void cancel() {
         this.status = CANCELED;
@@ -111,5 +123,9 @@ public class Order {
 
     public void removeAllOrderFood() {
         orderFoods.clear();
+    }
+
+    public void registerMyOrderNumber(int orderNumber) {
+        this.myOrderNumber = orderNumber;
     }
 }

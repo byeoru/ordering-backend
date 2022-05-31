@@ -45,7 +45,7 @@ public class DbInit {
 //        double latitude = 35.1537515937909;
 //        double longitude = 128.107165988155;
 //        GeometryFactory factory = new GeometryFactory(new PrecisionModel(), 4326);
-//        Point point = factory.createPoint(new Coordinate(longitude,latitude));
+//        Point point = factory.createPoint(new Coordinate(longitude, latitude));
 //
 //        Restaurant restaurant1 = new Restaurant("abcabc", "ㄷㄷㄷ",
 //                "52828, 우 우리 우리집 501 (가좌동), 내방", point, 10, FoodCategory.PIZZA, RestaurantType.FOR_HERE_TO_GO, 10, 2);

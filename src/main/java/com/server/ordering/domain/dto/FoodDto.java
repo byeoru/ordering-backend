@@ -1,13 +1,12 @@
 package com.server.ordering.domain.dto;
 
 import com.server.ordering.domain.Food;
+import com.server.ordering.domain.RepresentativeMenu;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
 
-import static lombok.AccessLevel.PROTECTED;
 import static lombok.AccessLevel.PUBLIC;
 
 @Getter @Setter
@@ -31,5 +30,14 @@ public class FoodDto {
         this.soldOut = food.isSoldOut();
         this.imageUrl = food.getImageUrl();
         this.menuIntro = food.getMenuIntro();
+    }
+
+    public FoodDto(RepresentativeMenu menu) {
+        this.foodId = menu.getFood().getId();
+        this.foodName = menu.getFood().getFoodName();
+        this.price = menu.getFood().getPrice();
+        this.soldOut = menu.getFood().isSoldOut();
+        this.imageUrl = menu.getFood().getImageUrl();
+        this.menuIntro = menu.getFood().getMenuIntro();
     }
 }

@@ -25,7 +25,7 @@ public class FoodRepository {
     }
 
     public List<Food> findAll(Long restaurantId) {
-        return em.createQuery("select m from Food m where m.restaurant.id = :id", Food.class)
+        return em.createQuery("select distinct m from Food m where m.restaurant.id =:id", Food.class)
                 .setParameter("id", restaurantId)
                 .getResultList();
     }

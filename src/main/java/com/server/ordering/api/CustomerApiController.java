@@ -3,9 +3,7 @@ package com.server.ordering.api;
 import com.server.ordering.domain.*;
 import com.server.ordering.domain.dto.*;
 import com.server.ordering.domain.dto.request.*;
-import com.server.ordering.domain.dto.response.BasketFood;
-import com.server.ordering.domain.dto.response.CustomerSignInResultDto;
-import com.server.ordering.domain.dto.response.MyWaitingInfoDto;
+import com.server.ordering.domain.dto.response.*;
 import com.server.ordering.domain.member.Customer;
 import com.server.ordering.service.CouponService;
 import com.server.ordering.service.CustomerService;
@@ -28,7 +26,6 @@ public class CustomerApiController {
     private final WaitingService waitingService;
 
     /**
-     *
      * 인증번호 받기
      */
     @PostMapping("/api/customer/verification/get")
@@ -44,7 +41,6 @@ public class CustomerApiController {
     }
 
     /**
-     *
      * 인증번호 체크
      */
     @PostMapping("/api/customer/verification/check")
@@ -54,7 +50,6 @@ public class CustomerApiController {
     }
 
     /**
-     *
      * 고객 회원 가입
      */
     @PostMapping("/api/customer/signup")
@@ -71,7 +66,6 @@ public class CustomerApiController {
     }
 
     /**
-     *
      * 고객 로그인
      */
     @PostMapping("/api/customer/signin")
@@ -84,7 +78,15 @@ public class CustomerApiController {
     }
 
     /**
-     *
+     * 고객 로그아웃
+     */
+    @PostMapping("/api/customer/{customerId}/sign_out")
+    public ResultDto<Boolean> signOut(@PathVariable Long customerId) {
+        customerService.signOut(customerId);
+        return new ResultDto<>(1, true);
+    }
+
+    /**
      * 고객 휴대폰번호 변경
      */
     @PutMapping("/api/customer/{customerId}/phone_number")
@@ -94,7 +96,6 @@ public class CustomerApiController {
     }
 
     /**
-     *
      * 고객 비밀번호 변경
      */
     @PutMapping("/api/customer/{customerId}/password")
@@ -104,7 +105,6 @@ public class CustomerApiController {
     }
 
     /**
-     *
      * 고객 계정 삭제
      */
     @DeleteMapping("/api/customer/{customerId}")
@@ -204,5 +204,61 @@ public class CustomerApiController {
         List<MyCoupon> myCoupons = customerService.findMyCoupon(customerId);
         List<CouponDto> couponDtos = myCoupons.stream().map(CouponDto::new).collect(Collectors.toList());
         return new ResultDto<>(couponDtos.size(), couponDtos);
+    }
+
+    /**
+     * 매장 북마크(찜)
+     */
+    @PostMapping("/api/customer/{customerId}/bookmark")
+    public ResultDto<Long> restaurantBookmark(@PathVariable Long customerId,
+                                              @RequestParam(name = "restaurant_id") Long restaurantId) {
+        // 중복 체크
+        Boolean bExist = customerService.isExistedBookmark(customerId, restaurantId);
+        // 이미 북마크 되어 있음
+        if (bExist) {
+            return new ResultDto<>(1, null);
+        }
+
+        Long bookmarkId = customerService.addBookmark(customerId, restaurantId);
+        return new ResultDto<>(1, bookmarkId);
+    }
+
+    /**
+     * 매장 북마크(찜) 해제
+     */
+    @DeleteMapping("/api/customer/bookmark/{bookmarkId}")
+    public ResultDto<Boolean> deleteBookmark(@PathVariable Long bookmarkId) {
+        customerService.removeBookmark(bookmarkId);
+        return new ResultDto<>(1, true);
+    }
+
+    /**
+     * 내 북마크 불러오기
+     */
+    @GetMapping("/api/customer/{customerId}/bookmarks")
+    public ResultDto<List<BookmarkPreviewDto>> getBookmarkList(@PathVariable Long customerId) {
+        List<Bookmark> bookmarks = customerService.findAllBookmarkWithRestWithRepresentative(customerId);
+        List<BookmarkPreviewDto> previewDtos = bookmarks.stream().map(BookmarkPreviewDto::new).collect(Collectors.toList());
+        return new ResultDto<>(previewDtos.size(), previewDtos);
+    }
+
+    /**
+     * 내 주문 내역(진행 중) 리스트 불러오기
+     */
+    @GetMapping("/api/customer/{customerId}/orders/ongoing")
+    public ResultDto<List<PreviousHistoryDto>> getAllMyOngoingOrders(@PathVariable Long customerId) {
+        List<Order> ongoingOrders = customerService.findAllMyOngoingOrders(customerId);
+        List<PreviousHistoryDto> historyDtos = ongoingOrders.stream().map(PreviousHistoryDto::new).collect(Collectors.toList());
+        return new ResultDto<>(historyDtos.size(), historyDtos);
+    }
+
+    /**
+     * 내 주문 내역(완료) 리스트 불러오기
+     */
+    @GetMapping("/api/customer/{customerId}/orders/finished")
+    public ResultDto<List<PreviousHistoryDto>> getAllMyFinishedOrders(@PathVariable Long customerId) {
+        List<Order> finishedOrders = customerService.findAllMyFinishedOrders(customerId);
+        List<PreviousHistoryDto> historyDtos = finishedOrders.stream().map(PreviousHistoryDto::new).collect(Collectors.toList());
+        return new ResultDto<>(historyDtos.size(), historyDtos);
     }
 }

@@ -27,19 +27,19 @@ public class WaitingRepository {
     }
 
     public Waiting findOne(Long customerId) {
-        return em.createQuery("select m from Waiting m where m.customer.id = :customerId", Waiting.class)
+        return em.createQuery("select m from Waiting m where m.customer.id =:customerId", Waiting.class)
                 .setParameter("customerId", customerId)
                 .getSingleResult();
     }
 
     public List<Waiting> findAllWithPhoneNumberByRestaurantId(Long restaurantId) {
-        return em.createQuery("select m from Waiting m left join fetch m.phoneNumber where m.restaurant.id = :restaurantId", Waiting.class)
+        return em.createQuery("select distinct m from Waiting m left join fetch m.phoneNumber where m.restaurant.id =:restaurantId", Waiting.class)
                 .setParameter("restaurantId", restaurantId)
                 .getResultList();
     }
 
     public Waiting findOneWithRestaurant(Long customerId) throws PersistenceException {
-        return em.createQuery("select m from Waiting m left join fetch m.restaurant where m.customer.id = :customerId", Waiting.class)
+        return em.createQuery("select m from Waiting m left join fetch m.restaurant where m.customer.id =:customerId", Waiting.class)
                 .setParameter("customerId", customerId)
                 .getSingleResult();
     }

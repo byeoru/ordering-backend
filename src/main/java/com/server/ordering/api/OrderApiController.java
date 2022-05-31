@@ -4,7 +4,9 @@ import com.server.ordering.domain.Basket;
 import com.server.ordering.domain.dto.ResultDto;
 import com.server.ordering.domain.dto.request.BasketPutDto;
 import com.server.ordering.domain.dto.request.BasketRequestDto;
+import com.server.ordering.domain.dto.request.MessageDto;
 import com.server.ordering.domain.dto.request.OrderDto;
+import com.server.ordering.domain.dto.response.OrderPreviewDto;
 import com.server.ordering.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -82,35 +84,36 @@ public class OrderApiController {
      * 고객 주문 취소
      */
     @PostMapping("/api/order/{orderId}/cancel")
-    public ResultDto<Boolean> cancel(@PathVariable Long orderId) {
-        Boolean bCanceled = orderService.orderCancel(orderId);
-        return new ResultDto<>(1, bCanceled);
+    public ResultDto<OrderPreviewDto> cancel(@PathVariable Long orderId) {
+        OrderPreviewDto orderPreviewDto = orderService.orderCancel(orderId);
+        return new ResultDto<>(1, orderPreviewDto);
     }
 
     /**
      * 점주 주문 취소
      */
     @PostMapping("/api/order/{orderId}/owner_cancel")
-    public ResultDto<Boolean> ownerCancel(@PathVariable Long orderId) {
-        Boolean bCanceled = orderService.orderOwnerCancel(orderId);
-        return new ResultDto<>(1, bCanceled);
+    public ResultDto<OrderPreviewDto> ownerCancel(@PathVariable Long orderId,
+                                                  @RequestBody MessageDto dto) {
+        OrderPreviewDto orderPreviewDto = orderService.orderOwnerCancel(orderId, dto);
+        return new ResultDto<>(1, orderPreviewDto);
     }
 
     /**
      * 주문 체크
      */
     @PostMapping("/api/order/{orderId}/check")
-    public ResultDto<Boolean> check(@PathVariable Long orderId) {
-        Boolean bChecked = orderService.orderCheck(orderId);
-        return new ResultDto<>(1, bChecked);
+    public ResultDto<OrderPreviewDto> check(@PathVariable Long orderId) {
+        OrderPreviewDto orderPreviewDto = orderService.orderCheck(orderId);
+        return new ResultDto<>(1, orderPreviewDto);
     }
 
     /**
      * 주문 완료
      */
     @PostMapping("/api/order/{orderId}/complete")
-    public ResultDto<Boolean> complete(@PathVariable Long orderId) {
-        Boolean bCompleted = orderService.orderComplete(orderId);
-        return new ResultDto<>(1, bCompleted);
+    public ResultDto<OrderPreviewDto> complete(@PathVariable Long orderId) {
+        OrderPreviewDto orderPreviewDto = orderService.orderComplete(orderId);
+        return new ResultDto<>(1, orderPreviewDto);
     }
 }

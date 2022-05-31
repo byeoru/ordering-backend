@@ -54,6 +54,12 @@ public class Restaurant {
     @NonNull
     private Integer tableCount;
 
+    @Version
+    private int waitingCount;
+    private int orderCount;
+
+    private String firebaseToken;
+
     @NonNull
     @Enumerated(value = EnumType.STRING)
     private FoodCategory foodCategory;
@@ -69,9 +75,6 @@ public class Restaurant {
     private Integer orderingWaitingTime;
     @NonNull
     private Integer admissionWaitingTime;
-
-    @Version
-    private int waitingCount;
 
     public void addFood(Food food) {
         this.foods.add(food);
@@ -100,10 +103,6 @@ public class Restaurant {
 
     public void putAdmissionWaitingTime(Integer minutes) { this.admissionWaitingTime = minutes; }
 
-    public Boolean isAbleToAddRepresentativeMenu() {
-        return representativeMenus.size() < 3;
-    }
-
     public void addRepresentativeMenu(RepresentativeMenu menu) {
         representativeMenus.add(menu);
         menu.registerRestaurant(this);
@@ -113,7 +112,19 @@ public class Restaurant {
         this.reviews.add(review);
     }
 
-    public void addWaitingCnt() {
-        waitingCount++;
+    public void increaseWaitingCount() {
+        this.waitingCount++;
+    }
+
+    public void increaseOrderCount() {
+        this.orderCount++;
+    }
+
+    public void putFirebaseToken(String firebaseToken) {
+        this.firebaseToken = firebaseToken;
+    }
+
+    public void clearFirebaseToken() {
+        this.firebaseToken = null;
     }
 }

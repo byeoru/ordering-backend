@@ -23,13 +23,13 @@ public class BasketRepository {
     }
 
     public List<Basket> findAllWithFoodByCustomerId(Long customerId) {
-        return em.createQuery("select m from Basket m left join fetch m.food where m.customer.id = :customerId", Basket.class)
+        return em.createQuery("select distinct m from Basket m left join fetch m.food where m.customer.id =:customerId", Basket.class)
                 .setParameter("customerId", customerId)
                 .getResultList();
     }
 
     public Basket findOneByCustomerIdAndFoodId(Long customerId, Long foodId) throws PersistenceException {
-        return em.createQuery("select m from Basket m where m.customer.id = :customerId and m.food.id = :foodId", Basket.class)
+        return em.createQuery("select m from Basket m where m.customer.id =:customerId and m.food.id =:foodId", Basket.class)
                 .setParameter("customerId", customerId)
                 .setParameter("foodId", foodId)
                 .getSingleResult();
@@ -49,7 +49,7 @@ public class BasketRepository {
         // 한 번의 Query로 여러 음식의 count를 UPDATE
         em.createQuery("update Basket m set m.count = case m.id"
                         + caseQueryBuilder
-                        + " where m.customer.id =: customerId")
+                        + " where m.customer.id =:customerId")
                 .setParameter("customerId", customerId)
                 .executeUpdate();
     }

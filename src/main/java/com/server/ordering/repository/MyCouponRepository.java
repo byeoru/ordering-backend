@@ -26,7 +26,7 @@ public class MyCouponRepository {
     }
 
     public List<MyCoupon> findAll(Long customerId) {
-        return em.createQuery("select m from MyCoupon m where m.customer.id =:customerId", MyCoupon.class)
+        return em.createQuery("select distinct m from MyCoupon m where m.customer.id =:customerId", MyCoupon.class)
                 .setParameter("customerId", customerId)
                 .getResultList();
     }

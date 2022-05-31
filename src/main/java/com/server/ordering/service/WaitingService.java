@@ -1,9 +1,12 @@
 package com.server.ordering.service;
 
+import com.server.ordering.FirebaseCloudMessageService;
+import com.server.ordering.domain.OrderType;
 import com.server.ordering.domain.Restaurant;
 import com.server.ordering.domain.Waiting;
 import com.server.ordering.domain.dto.request.WaitingRegisterDto;
 import com.server.ordering.domain.member.Customer;
+import com.server.ordering.exception.FcmErrorException;
 import com.server.ordering.repository.CustomerRepository;
 import com.server.ordering.repository.RestaurantRepository;
 import com.server.ordering.repository.WaitingRepository;
@@ -13,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NoResultException;
+import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -24,6 +29,7 @@ public class WaitingService {
     private final RestaurantRepository restaurantRepository;
     private final WaitingRepository waitingRepository;
     private final CustomerRepository customerRepository;
+    private final FirebaseCloudMessageService firebaseCloudMessageService;
 
     /**
      * 웨이팅 등록
@@ -36,10 +42,10 @@ public class WaitingService {
         Customer customer = customerRepository.findOneWithPhoneNumber(customerId);
 
         // Lock 을 적용한 상태에서 해당 음식점 waiting count 증가
-        restaurant.addWaitingCnt();
+        restaurant.increaseWaitingCount();
 
         // 증가된 count 가 내 waiting 번호
-        Integer myWaitingNumber = restaurant.getWaitingCount();
+        int myWaitingNumber = restaurant.getWaitingCount();
 
         Waiting waiting = new Waiting(restaurant, customer, myWaitingNumber,
                 dto.getNumOfTeamMembers(), customer.getPhoneNumber());
@@ -47,6 +53,16 @@ public class WaitingService {
         // 웨이팅 등록시간 설정
         waiting.registerWaitingTime();
         waitingRepository.save(waiting);
+
+        String firebaseToken = restaurant.getFirebaseToken();
+        String message = String.format("[%s] 인원 : %d명의 웨이팅 팀이 새롭게 추가되었습니다.",
+                waiting.getWaitingRegisterTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd - HH:mm:ss")), waiting.getNumOfTeamMembers());
+
+        try {
+            firebaseCloudMessageService.sendMessageTo(firebaseToken, "(웨이팅 접수) 새로운 웨이팅이 접수되었습니다.", message, OrderType.WAITING);
+        } catch (IOException e) {
+            throw new FcmErrorException();
+        }
     }
 
     /**

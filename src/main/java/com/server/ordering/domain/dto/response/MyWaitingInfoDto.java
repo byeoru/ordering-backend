@@ -20,8 +20,10 @@ public class MyWaitingInfoDto {
     private Long numInFrontOfMe;
     private int estimatedWaitingTime;
     private String waitingRegisterTime;
+    private Long restaurantId;
     private String restaurantName;
     private String profileImageUrl;
+    private String backgroundImageUrl;
 
     public MyWaitingInfoDto(Waiting waiting, long numberInFrontOfMe) {
         this.waitingId = waiting.getId();
@@ -29,7 +31,9 @@ public class MyWaitingInfoDto {
         this.numInFrontOfMe = numberInFrontOfMe;
         this.estimatedWaitingTime = waiting.getRestaurant().getAdmissionWaitingTime() * (int) numberInFrontOfMe;
         this.waitingRegisterTime = waiting.getWaitingRegisterTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd - HH:mm:ss"));
+        this.restaurantId = waiting.getRestaurant().getId();
         this.restaurantName = waiting.getRestaurant().getRestaurantName();
         this.profileImageUrl = waiting.getRestaurant().getProfileImageUrl();
+        this.backgroundImageUrl = waiting.getRestaurant().getBackgroundImageUrl();
     }
 }

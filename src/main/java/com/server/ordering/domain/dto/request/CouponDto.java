@@ -1,20 +1,20 @@
 package com.server.ordering.domain.dto.request;
 
+import com.server.ordering.domain.Coupon;
 import com.server.ordering.domain.MyCoupon;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter @Setter
-@AllArgsConstructor
+@RequiredArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
 public class CouponDto {
 
     private Long couponId;
+    @NonNull
     private String serialNumber;
+    @NonNull
     private int value;
 
     public CouponDto(MyCoupon myCoupon) {

@@ -1,17 +1,12 @@
 package com.server.ordering.api;
 
-import com.server.ordering.domain.Food;
-import com.server.ordering.domain.RepresentativeMenu;
-import com.server.ordering.domain.Restaurant;
-import com.server.ordering.domain.Waiting;
+import com.server.ordering.domain.*;
 import com.server.ordering.domain.dto.request.*;
 import com.server.ordering.domain.dto.ResultDto;
 import com.server.ordering.domain.dto.FoodDto;
-import com.server.ordering.domain.dto.response.SalesResponseDto;
-import com.server.ordering.domain.dto.response.RestaurantPreviewDto;
-import com.server.ordering.domain.dto.response.RestaurantPreviewWithDistanceDto;
-import com.server.ordering.domain.dto.response.WaitingPreviewDto;
+import com.server.ordering.domain.dto.response.*;
 import com.server.ordering.service.FoodService;
+import com.server.ordering.service.OrderService;
 import com.server.ordering.service.RestaurantService;
 import com.server.ordering.service.WaitingService;
 import lombok.RequiredArgsConstructor;
@@ -29,14 +24,14 @@ public class RestaurantApiController {
     private final RestaurantService restaurantService;
     private final FoodService foodService;
     private final WaitingService waitingService;
+    private final OrderService orderService;
 
     /**
      * 매장 정보 변경
      */
     @PutMapping("/api/restaurant/{restaurantId}")
-    public ResultDto<Boolean> putRestaurant(
-            @PathVariable Long restaurantId,
-            @RequestBody RestaurantInfoDto dto) {
+    public ResultDto<Boolean> putRestaurant(@PathVariable Long restaurantId,
+                                            @RequestBody RestaurantInfoDto dto) {
         restaurantService.putRestaurant(restaurantId, dto);
         return new ResultDto<>(1, true);
     }
@@ -45,10 +40,9 @@ public class RestaurantApiController {
      * 매장 음식 추가
      */
     @PostMapping("/api/restaurant/{restaurantId}/food")
-    public ResultDto<Optional<Long>> registerFood(
-            @PathVariable Long restaurantId,
-            @RequestPart(required = false) MultipartFile image,
-            @RequestPart FoodDto dto) {
+    public ResultDto<Optional<Long>> registerFood(@PathVariable Long restaurantId,
+                                                  @RequestPart(required = false) MultipartFile image,
+                                                  @RequestPart FoodDto dto) {
 
         Optional<Long> foodId = foodService.registerFood(restaurantId, dto, image);
         return new ResultDto<>(1, foodId);
@@ -76,11 +70,10 @@ public class RestaurantApiController {
      * 매장 음식 정보 변경
      */
     @PutMapping("/api/restaurant/{restaurantId}/food/{foodId}")
-    public ResultDto<Boolean> putFood(
-            @PathVariable Long restaurantId,
-            @PathVariable Long foodId,
-            @RequestPart(required = false) MultipartFile image,
-            @RequestPart FoodDto dto) {
+    public ResultDto<Boolean> putFood(@PathVariable Long restaurantId,
+                                      @PathVariable Long foodId,
+                                      @RequestPart(required = false) MultipartFile image,
+                                      @RequestPart FoodDto dto) {
 
         foodService.putFood(foodId, restaurantId, dto, image);
         return new ResultDto<>(1, true);
@@ -90,7 +83,8 @@ public class RestaurantApiController {
      * 매장 음식 품절 정보 변경
      */
     @PutMapping("/api/restaurant/food/{foodId}/status")
-    public ResultDto<Boolean> putFoodStatus(@PathVariable Long foodId, @RequestBody FoodStatusDto dto) {
+    public ResultDto<Boolean> putFoodStatus(@PathVariable Long foodId,
+                                            @RequestBody FoodStatusDto dto) {
         foodService.changeSoldOutStatus(foodId, dto);
         return new ResultDto<>(1, true);
     }
@@ -109,7 +103,8 @@ public class RestaurantApiController {
      * 매장 한 달 매출 반환
      */
     @PostMapping("/api/restaurant/{restaurantId}/daily_sales")
-    public ResultDto<List<SalesResponseDto>> getDailySales(@PathVariable Long restaurantId, @RequestBody SalesRequestDto dto) {
+    public ResultDto<List<SalesResponseDto>> getDailySales(@PathVariable Long restaurantId,
+                                                           @RequestBody SalesRequestDto dto) {
         List<SalesResponseDto> sales = restaurantService.getDailySalesOfRestaurant(restaurantId, dto.getRequestDateFormat());
         return new ResultDto<>(sales.size(), sales);
     }
@@ -118,7 +113,8 @@ public class RestaurantApiController {
      * 특정 연도의 매장 월별 매출 반환
      */
     @PostMapping("/api/restaurant/{restaurantId}/monthly_sales")
-    public ResultDto<List<SalesResponseDto>> getMonthlySales(@PathVariable Long restaurantId, @RequestBody SalesRequestDto dto) {
+    public ResultDto<List<SalesResponseDto>> getMonthlySales(@PathVariable Long restaurantId,
+                                                             @RequestBody SalesRequestDto dto) {
         List<SalesResponseDto> sales = restaurantService.getMonthlySalesOfRestaurant(restaurantId, dto.getRequestDateFormat());
         return new ResultDto<>(sales.size(), sales);
     }
@@ -127,7 +123,8 @@ public class RestaurantApiController {
      * 매장 프로필 이미지 등록, 변경
      */
     @PutMapping("/api/restaurant/{restaurantId}/profile_image")
-    public ResultDto<Boolean> putProfileImage(@PathVariable Long restaurantId, @RequestPart MultipartFile image) {
+    public ResultDto<Boolean> putProfileImage(@PathVariable Long restaurantId,
+                                              @RequestPart MultipartFile image) {
         restaurantService.putRestaurantProfileImage(restaurantId, image);
         return new ResultDto<>(1, true);
     }
@@ -136,7 +133,8 @@ public class RestaurantApiController {
      * 매장 배경 이미지 등록, 변경
      */
     @PutMapping("/api/restaurant/{restaurantId}/background_image")
-    public ResultDto<Boolean> putBackgroundImage(@PathVariable Long restaurantId, @RequestPart MultipartFile image) {
+    public ResultDto<Boolean> putBackgroundImage(@PathVariable Long restaurantId,
+                                                 @RequestPart MultipartFile image) {
         restaurantService.putRestaurantBackgroundImage(restaurantId, image);
         return new ResultDto<>(1, true);
     }
@@ -145,7 +143,12 @@ public class RestaurantApiController {
      * 매장 대표 음식 추가
      */
     @PostMapping("/api/restaurant/{restaurantId}/representative")
-    public ResultDto<Boolean> addRepresentativeMenu(@PathVariable Long restaurantId, @RequestParam(name = "food_id") Long foodId) {
+    public ResultDto<Boolean> addRepresentativeMenu(@PathVariable Long restaurantId,
+                                                    @RequestParam(name = "food_id") Long foodId) {
+        Boolean bExist = restaurantService.isExistRepresentativeMenu(restaurantId, foodId);
+        if (bExist) {
+            return new ResultDto<>(1, false);
+        }
         Boolean result = restaurantService.addRepresentativeMenu(restaurantId, foodId);
         return new ResultDto<>(1, result);
     }
@@ -153,10 +156,21 @@ public class RestaurantApiController {
     /**
      * 매장 대표 음식 삭제
      */
-    @DeleteMapping("/api/restaurant/{restaurantId}/representative")
-    public ResultDto<Boolean> removeRepresentativeMenu(@PathVariable Long restaurantId, @RequestParam(name = "food_id") Long foodId) {
-        restaurantService.removeRepresentativeMenu(restaurantId, foodId);
+    @DeleteMapping("/api/restaurant/representative/{representativeMenuId}")
+    public ResultDto<Boolean> removeRepresentativeMenu(@PathVariable Long representativeMenuId) {
+        restaurantService.removeRepresentativeMenu(representativeMenuId);
         return new ResultDto<>(1, true);
+    }
+
+    /**
+     * 매장 대표 음식리스트 반환
+     */
+    @GetMapping("/api/restaurant/{restaurantId}/representatives")
+    public ResultDto<List<RepresentativeMenuDto>> getRepresentatives(@PathVariable Long restaurantId) {
+        List<RepresentativeMenu> representativeMenus = restaurantService.findAllRepresentative(restaurantId);
+        List<RepresentativeMenuDto> representativeMenuDtos = representativeMenus
+                .stream().map(RepresentativeMenuDto::new).collect(Collectors.toList());
+        return new ResultDto<>(representativeMenuDtos.size(), representativeMenuDtos);
     }
 
     /**
@@ -165,10 +179,7 @@ public class RestaurantApiController {
     @PostMapping("/api/restaurant/{restaurantId}/preview")
     public ResultDto<RestaurantPreviewDto> getRestaurantPreview(@PathVariable Long restaurantId) {
         Restaurant restaurant = restaurantService.findRestaurant(restaurantId);
-        List<String> representativeMenuNames = restaurant.getRepresentativeMenus()
-                .stream().map(RepresentativeMenu::getFoodName).collect(Collectors.toList());
-        RestaurantPreviewDto previewDto = new RestaurantPreviewDto(restaurantId, restaurant.getRestaurantName(),
-                restaurant.getProfileImageUrl(), restaurant.getBackgroundImageUrl(), representativeMenuNames);
+        RestaurantPreviewDto previewDto = new RestaurantPreviewDto(restaurant);
 
         return new ResultDto<>(1, previewDto);
     }
@@ -210,5 +221,27 @@ public class RestaurantApiController {
         List<Waiting> waitings = waitingService.findAllWithPhoneNumberRestaurantWaiting(restaurantId);
         List<WaitingPreviewDto> waitingPreviewDtos = waitings.stream().map(WaitingPreviewDto::new).collect(Collectors.toList());
         return new ResultDto<>(waitingPreviewDtos.size(), waitingPreviewDtos);
+    }
+
+    /**
+     * 진행중인 주문 리스트 반환(ORDERED, CHECKED)
+     */
+    @GetMapping("/api/restaurant/{restaurantId}/orders/ongoing")
+    public ResultDto<List<OrderPreviewDto>> getOngoingOrderList(@PathVariable Long restaurantId) {
+
+        List<Order> ongoingOrders = orderService.findOngoingOrders(restaurantId);
+        List<OrderPreviewDto> previewDtos = ongoingOrders.stream().map(OrderPreviewDto::new).collect(Collectors.toList());
+        return new ResultDto<>(previewDtos.size(), previewDtos);
+    }
+
+    /**
+     * 완료된 주문 리스트 반환(CANCELED, COMPLETED)
+     */
+    @GetMapping("/api/restaurant/{restaurantId}/orders/finished")
+    public ResultDto<List<OrderPreviewDto>> getFinishedOrderList(@PathVariable Long restaurantId) {
+
+        List<Order> finishedOrders = orderService.findFinishedOrders(restaurantId);
+        List<OrderPreviewDto> previewDtos = finishedOrders.stream().map(OrderPreviewDto::new).collect(Collectors.toList());
+        return new ResultDto<>(previewDtos.size(), previewDtos);
     }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.common.net.HttpHeaders;
+import com.server.ordering.domain.OrderType;
 import lombok.RequiredArgsConstructor;
 import okhttp3.*;
 import org.springframework.core.io.ClassPathResource;
@@ -19,9 +20,9 @@ public class FirebaseCloudMessageService {
 
     private final ObjectMapper objectMapper;
 
-    public void sendMessageTo(String targetToken, String title, String body) throws IOException {
+    public void sendMessageTo(String targetToken, String title, String body, OrderType channel) throws IOException {
 
-        String message = makeMessage(targetToken, title, body);
+        String message = makeMessage(targetToken, title, body, channel);
 
         OkHttpClient client = new OkHttpClient();
         RequestBody requestBody = RequestBody.create(message, MediaType.get("application/json; charset=utf-8"));
@@ -39,14 +40,20 @@ public class FirebaseCloudMessageService {
         System.out.println(Objects.requireNonNull(response.body()).string());
     }
 
-    private String makeMessage(String targetToken, String title, String body) throws JsonProcessingException {
+    private String makeMessage(String targetToken, String title, String body, OrderType channel) throws JsonProcessingException {
 
         FcmMessage fcmMessage = FcmMessage.builder()
-                .message(FcmMessage.Message.builder().token(targetToken)
-                        .notification(FcmMessage.Notification.builder()
+                .message(FcmMessage.Message.builder()
+                        .token(targetToken)
+//                        .notification(FcmMessage.Notification.builder()
+//                                .title(title)
+//                                .body(body)
+//                                .image(null)
+//                                .build())
+                        .data(FcmMessage.Data.builder()
                                 .title(title)
                                 .body(body)
-                                .image(null)
+                                .channel_id(channel.name())
                                 .build())
                         .build())
                 .validate_only(false)

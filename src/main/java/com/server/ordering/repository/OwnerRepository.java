@@ -21,20 +21,26 @@ public class OwnerRepository implements MemberRepository<Owner> {
     }
 
     @Override
-    public Owner findOne(Long id) throws PersistenceException {
-        return em.find(Owner.class, id);
+    public Owner findOne(Long ownerId) throws PersistenceException {
+        return em.find(Owner.class, ownerId);
+    }
+
+    public Owner findOneWithRestaurant(Long ownerId) {
+        return em.createQuery("select m from Owner m left join fetch m.restaurant where m.id=:ownerId", Owner.class)
+                .setParameter("ownerId", ownerId)
+                .getSingleResult();
     }
 
     @Override
     public Owner findById(String signInId) throws PersistenceException {
-        return em.createQuery("select m from Owner m where m.signInId = :signInId", Owner.class)
+        return em.createQuery("select m from Owner m where m.signInId=:signInId", Owner.class)
                 .setParameter("signInId", signInId)
                 .getSingleResult();
     }
 
     @Override
     public Owner findByIdAndPassword(String signInId, String password) throws PersistenceException {
-        return em.createQuery("select m from Owner m where m.signInId = :signInId and m.password = :password", Owner.class)
+        return em.createQuery("select m from Owner m where m.signInId =:signInId and m.password=:password", Owner.class)
                 .setParameter("signInId", signInId)
                 .setParameter("password", password)
                 .getSingleResult();
@@ -48,21 +54,15 @@ public class OwnerRepository implements MemberRepository<Owner> {
 
     public Owner findOneWithRestaurantByIdAndPassword(String signInId, String password) throws PersistenceException {
         return em.createQuery("select m from Owner m left join fetch m.restaurant " +
-                "where m.signInId = :signInId and m.password = :password", Owner.class)
+                "where m.signInId=:signInId and m.password=:password", Owner.class)
                 .setParameter("signInId", signInId)
                 .setParameter("password", password)
                 .getSingleResult();
     }
 
     public Owner findOneWithPhoneNumber(Long ownerId) throws PersistenceException {
-        return em.createQuery("select m from Owner m left join fetch m.phoneNumber where m.id = :id", Owner.class)
+        return em.createQuery("select m from Owner m left join fetch m.phoneNumber where m.id =:id", Owner.class)
                 .setParameter("id", ownerId)
                 .getSingleResult();
-    }
-
-    // test
-    public List<Owner> findAll() {
-        return em.createQuery("select m from Owner m", Owner.class)
-                .getResultList();
     }
 }

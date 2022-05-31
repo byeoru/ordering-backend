@@ -24,40 +24,40 @@ public class CustomerRepository implements MemberRepository<Customer> {
     }
 
     public Customer findOneWithBasket(Long id) {
-        return em.createQuery("select distinct m from Customer m left join fetch m.baskets where m.id = :id", Customer.class)
+        return em.createQuery("select distinct m from Customer m left join fetch m.baskets where m.id =:id", Customer.class)
                 .setParameter("id", id)
                 .getSingleResult();
     }
 
     public Customer findOneWithBasketWithFood(Long id) {
-        return em.createQuery("select distinct m from Customer m left join fetch m.baskets b left join fetch b.food where m.id = :id", Customer.class)
+        return em.createQuery("select distinct m from Customer m left join fetch m.baskets b left join fetch b.food where m.id =:id", Customer.class)
                 .setParameter("id", id)
                 .getSingleResult();
     }
 
     @Override
     public Customer findById(String signInId) throws PersistenceException {
-        return em.createQuery("select m from Customer m where m.signInId = :signInId", Customer.class)
+        return em.createQuery("select m from Customer m where m.signInId =:signInId", Customer.class)
                 .setParameter("signInId", signInId)
                 .getSingleResult();
     }
 
     @Override
     public Customer findByIdAndPassword(String signInId, String password) throws PersistenceException {
-        return em.createQuery("select c from Customer c where c.signInId = :signInId and c.password = :password", Customer.class)
+        return em.createQuery("select c from Customer c where c.signInId =:signInId and c.password =:password", Customer.class)
                 .setParameter("signInId", signInId)
                 .setParameter("password", password)
                 .getSingleResult();
     }
 
     public Customer findOneWithPhoneNumber(Long customerId) throws PersistenceException {
-        return em.createQuery("select m from Customer m left join fetch m.phoneNumber where m.id = :id", Customer.class)
+        return em.createQuery("select m from Customer m left join fetch m.phoneNumber where m.id =:id", Customer.class)
                 .setParameter("id", customerId)
                 .getSingleResult();
     }
 
     public Customer findOneWithWaiting(Long customerId) throws PersistenceException {
-        return em.createQuery("select m from Customer m left join fetch m.waiting where m.id = :id", Customer.class)
+        return em.createQuery("select m from Customer m left join fetch m.waiting where m.id =:id", Customer.class)
                 .setParameter("id", customerId)
                 .getSingleResult();
     }

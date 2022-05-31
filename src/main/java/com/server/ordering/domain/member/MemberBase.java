@@ -19,7 +19,6 @@ public abstract class MemberBase {
     protected String signInId;
     @NonNull
     protected String password;
-    protected String firebaseToken;
 
     @NonNull
     @OneToOne(fetch = LAZY, cascade = ALL, orphanRemoval = true)
@@ -28,9 +27,5 @@ public abstract class MemberBase {
 
     public void putPassword(String password) {
         this.password = password;
-    }
-
-    public void putFirebaseToken(String firebaseToken) {
-        this.firebaseToken = firebaseToken;
     }
 }

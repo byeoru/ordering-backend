@@ -28,6 +28,7 @@ public class OwnerApiController {
     private final OwnerService ownerService;
     private final RestaurantService restaurantService;
 
+
     /**
      * 인증번호 받기
      */
@@ -89,6 +90,16 @@ public class OwnerApiController {
     }
 
     /**
+     * 점주 로그아웃
+     */
+    @PostMapping("/api/owner/{ownerId}/sign_out")
+    public ResultDto<Boolean> signOut(@PathVariable Long ownerId) {
+        ownerService.signOut(ownerId);
+        return new ResultDto<>(1, true);
+    }
+
+
+    /**
      * 점주 휴대폰번호 변경
      */
     @PutMapping("/api/owner/{ownerId}/phone_number")
@@ -129,13 +140,5 @@ public class OwnerApiController {
                 dto.getTableCount(), dto.getFoodCategory(), dto.getRestaurantType(), dto.getOrderingWaitingTime(), dto.getAdmissionWaitingTime());
         Optional<Long> optionalId = restaurantService.registerRestaurant(restaurant, ownerId);
         return new ResultDto<>(1, optionalId);
-    }
-
-    // test
-    @GetMapping("api/owners")
-    public ResultDto<List<OwnerTestDto>> all() {
-        List<Owner> allOwners = ownerService.findAllOwners();
-        List<OwnerTestDto> owners = allOwners.stream().map(OwnerTestDto::new).collect(Collectors.toList());
-        return new ResultDto<>(owners.size(), owners);
     }
 }

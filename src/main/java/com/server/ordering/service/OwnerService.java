@@ -43,12 +43,20 @@ public class OwnerService implements MemberService<Owner> {
     public Optional<Owner> signIn(SignInDto signInDto) throws PersistenceException {
         try {
             Owner owner = ownerRepository.findOneWithRestaurantByIdAndPassword(signInDto.getSignInId(), signInDto.getPassword());
-            owner.putFirebaseToken(signInDto.getFirebaseToken());
+            owner.getRestaurant().putFirebaseToken(signInDto.getFirebaseToken());
             return Optional.of(owner);
         } catch (NoResultException e) {
             return Optional.empty();
         }
     }
+
+    @Transactional
+    @Override
+    public void signOut(Long id) {
+        Owner owner = ownerRepository.findOneWithRestaurant(id);
+        owner.getRestaurant().clearFirebaseToken();
+    }
+
 
     /**
      * 점주 회원가입할 때 email 중복 검증
@@ -92,9 +100,5 @@ public class OwnerService implements MemberService<Owner> {
     @Override
     public void deleteAccount(Long id) {
         ownerRepository.remove(id);
-    }
-
-    public List<Owner> findAllOwners() {
-        return ownerRepository.findAll();
     }
 }

@@ -18,16 +18,25 @@ public class FcmMessage {
     public static class Message {
 
         private Notification notification;
+        private Data data;
         private String token;
     }
 
-    @Getter
-    @Builder
+    @Getter @Builder
     @AllArgsConstructor
     public static class Notification {
 
         private String title;
         private String body;
         private String image;
+    }
+
+    @Getter @Builder
+    @AllArgsConstructor
+    public static class Data {
+
+        private String title;
+        private String body;
+        private String channel_id;
     }
 }
