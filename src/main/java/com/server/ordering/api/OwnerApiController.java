@@ -1,7 +1,6 @@
 package com.server.ordering.api;
 
 import com.server.ordering.domain.MemberType;
-import com.server.ordering.domain.PhoneNumber;
 import com.server.ordering.domain.Restaurant;
 import com.server.ordering.domain.dto.*;
 import com.server.ordering.domain.dto.request.*;
@@ -16,9 +15,7 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -57,15 +54,13 @@ public class OwnerApiController {
      * 점주 회원 가입
      */
     @PostMapping("/api/owner/signup")
-    public ResultDto<Optional<Long>> singUp(@RequestBody OwnerSignUpDto dto) {
-        PhoneNumber phoneNumber = new PhoneNumber(dto.getPhoneNumber(), MemberType.OWNER);
+    public ResultDto<Long> singUp(@RequestBody OwnerSignUpDto dto) {
         boolean bIdDuplicated = ownerService.isIdDuplicated(dto.getSignInId());
         if (bIdDuplicated) {
-            return new ResultDto<>(1, Optional.empty());
+            return new ResultDto<>(1, null);
         } else {
-            Owner owner = new Owner(dto.getSignInId(), dto.getPassword(), phoneNumber);
-            Optional<Long> optionalId = ownerService.signUp(owner);
-            return new ResultDto<>(1, optionalId);
+            Long ownerId = ownerService.signUp(dto);
+            return new ResultDto<>(1, ownerId);
         }
     }
 
@@ -74,10 +69,9 @@ public class OwnerApiController {
      */
     @PostMapping("/api/owner/signin")
     public ResultDto<OwnerSignInResultDto> signIn(@RequestBody SignInDto dto) {
-        Optional<Owner> optionalOwner = ownerService.signIn(dto);
+        Owner owner = ownerService.signIn(dto);
 
-        if (optionalOwner.isPresent()) {
-            Owner owner = optionalOwner.get();
+        if (owner != null) {
             Restaurant restaurant = owner.getRestaurant();
 
             if (restaurant != null) {

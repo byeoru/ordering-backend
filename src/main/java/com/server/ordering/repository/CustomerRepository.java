@@ -42,14 +42,6 @@ public class CustomerRepository implements MemberRepository<Customer> {
                 .getSingleResult();
     }
 
-    @Override
-    public Customer findByIdAndPassword(String signInId, String password) throws PersistenceException {
-        return em.createQuery("select c from Customer c where c.signInId =:signInId and c.password =:password", Customer.class)
-                .setParameter("signInId", signInId)
-                .setParameter("password", password)
-                .getSingleResult();
-    }
-
     public Customer findOneWithPhoneNumber(Long customerId) throws PersistenceException {
         return em.createQuery("select m from Customer m left join fetch m.phoneNumber where m.id =:id", Customer.class)
                 .setParameter("id", customerId)

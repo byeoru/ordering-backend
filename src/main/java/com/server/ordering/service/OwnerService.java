@@ -1,11 +1,15 @@
 package com.server.ordering.service;
 
+import com.server.ordering.domain.MemberType;
+import com.server.ordering.domain.PhoneNumber;
+import com.server.ordering.domain.dto.request.OwnerSignUpDto;
 import com.server.ordering.domain.dto.request.PasswordChangeDto;
 import com.server.ordering.domain.dto.request.SignInDto;
 import com.server.ordering.domain.member.Owner;
 import com.server.ordering.repository.OwnerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,31 +26,40 @@ import java.util.Optional;
 public class OwnerService implements MemberService<Owner> {
 
     private final OwnerRepository ownerRepository;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * 점주 회원가입
-     * @return 가입한 점주 ID 반환
      */
     @Transactional
     @Override
-    public Optional<Long> signUp(Owner customer) throws PersistenceException {
-        ownerRepository.save(customer);
-        return Optional.of(customer.getId());
+    public Long signUp(Object signUpDto) throws PersistenceException {
+        OwnerSignUpDto ownerSignUpDto = (OwnerSignUpDto) signUpDto;
+        PhoneNumber phoneNumber = new PhoneNumber(ownerSignUpDto.getPhoneNumber(), MemberType.OWNER);
+        String encodedPassword = passwordEncoder.encode(ownerSignUpDto.getPassword());
+        Owner owner = new Owner(ownerSignUpDto.getSignInId(), encodedPassword, phoneNumber);
+        ownerRepository.save(owner);
+        return owner.getId();
     }
 
     /**
      * 점주 로그인
-     * @return 로그인 성공 시 owner, 실패 시 null을 Optional로 반환
      */
     @Transactional
     @Override
-    public Optional<Owner> signIn(SignInDto signInDto) throws PersistenceException {
+    public Owner signIn(SignInDto signInDto) throws PersistenceException {
         try {
-            Owner owner = ownerRepository.findOneWithRestaurantByIdAndPassword(signInDto.getSignInId(), signInDto.getPassword());
+            Owner owner = ownerRepository.findOneWithRestaurantById(signInDto.getSignInId());
+            boolean bMatch = passwordEncoder.matches(signInDto.getPassword(), owner.getPassword());
+
+            if (!bMatch) {
+                return null;
+            }
+
             owner.getRestaurant().putFirebaseToken(signInDto.getFirebaseToken());
-            return Optional.of(owner);
+            return owner;
         } catch (NoResultException e) {
-            return Optional.empty();
+            return null;
         }
     }
 
@@ -86,8 +99,9 @@ public class OwnerService implements MemberService<Owner> {
     @Transactional
     public Boolean putPassword(Long ownerId, PasswordChangeDto dto) {
         Owner owner = ownerRepository.findOne(ownerId);
-        if (Objects.equals(owner.getPassword(), dto.getCurrentPassword())) {
-            owner.putPassword(dto.getNewPassword());
+        if (passwordEncoder.matches(dto.getCurrentPassword(), owner.getPassword())) {
+            String encodedNewPassword = passwordEncoder.encode(dto.getNewPassword());
+            owner.putPassword(encodedNewPassword);
             return true;
         }
         return false;

@@ -39,24 +39,15 @@ public class OwnerRepository implements MemberRepository<Owner> {
     }
 
     @Override
-    public Owner findByIdAndPassword(String signInId, String password) throws PersistenceException {
-        return em.createQuery("select m from Owner m where m.signInId =:signInId and m.password=:password", Owner.class)
-                .setParameter("signInId", signInId)
-                .setParameter("password", password)
-                .getSingleResult();
-    }
-
-    @Override
     public void remove(Long id) {
         Owner owner = em.find(Owner.class, id);
         em.remove(owner);
     }
 
-    public Owner findOneWithRestaurantByIdAndPassword(String signInId, String password) throws PersistenceException {
+    public Owner findOneWithRestaurantById(String signInId) throws PersistenceException {
         return em.createQuery("select m from Owner m left join fetch m.restaurant " +
-                "where m.signInId=:signInId and m.password=:password", Owner.class)
+                "where m.signInId=:signInId", Owner.class)
                 .setParameter("signInId", signInId)
-                .setParameter("password", password)
                 .getSingleResult();
     }
 

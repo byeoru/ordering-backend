@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -53,15 +52,13 @@ public class CustomerApiController {
      * 고객 회원 가입
      */
     @PostMapping("/api/customer/signup")
-    public ResultDto<Optional<Long>> singUp(@RequestBody CustomerSignUpDto dto) {
-        PhoneNumber phoneNumber = new PhoneNumber(dto.getPhoneNumber(), MemberType.CUSTOMER);
+    public ResultDto<Long> singUp(@RequestBody CustomerSignUpDto dto) {
         boolean bIdDuplicated = customerService.isIdDuplicated(dto.getSignInId());
         if (bIdDuplicated) {
-            return new ResultDto<>(1, Optional.empty());
+            return new ResultDto<>(1, null);
         } else {
-            Customer customer = new Customer(dto.getNickname(), dto.getSignInId(), dto.getPassword(), phoneNumber);
-            Optional<Long> optionalId = customerService.signUp(customer);
-            return new ResultDto<>(1, optionalId);
+            Long customerId = customerService.signUp(dto);
+            return new ResultDto<>(1, customerId);
         }
     }
 
@@ -70,11 +67,14 @@ public class CustomerApiController {
      */
     @PostMapping("/api/customer/signin")
     public ResultDto<CustomerSignInResultDto> signIn(@RequestBody SignInDto dto) {
-        Optional<Customer> optionalCustomer = customerService.signIn(dto);
-        return optionalCustomer.map(customer -> {
-            int basketCount = customerService.getBasketCount(customer.getId());
-            return new ResultDto<>(1, new CustomerSignInResultDto(customer.getId(), customer.getNickname(), basketCount));
-        }).orElseGet(() -> new ResultDto<>(1, null));
+        Customer customer = customerService.signIn(dto);
+
+        if (customer == null) {
+            return new ResultDto<>(1, null);
+        }
+
+        int basketCount = customerService.getBasketCount(customer.getId());
+        return new ResultDto<>(1, new CustomerSignInResultDto(customer.getId(), customer.getNickname(), basketCount));
     }
 
     /**

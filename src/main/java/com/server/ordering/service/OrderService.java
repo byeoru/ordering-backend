@@ -132,7 +132,7 @@ public class OrderService {
             String message = String.format("[%s] 고객의 요청으로 접수된 주문이 취소되었습니다.", order.getCanceledOrCompletedTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd - HH:mm:ss")));
 
             try {
-                firebaseCloudMessageService.sendMessageTo(firebaseToken, "(주문취소) 주문 취소 알림!!", message, order.getOrderType());
+                firebaseCloudMessageService.sendMessageTo(firebaseToken, "(주문취소) 주문 취소 알림!!", message, OrderType.CANCEL);
             } catch (IOException e) {
                 throw new FcmErrorException();
             }
@@ -154,7 +154,7 @@ public class OrderService {
             String message = String.format("[%s] %s 사유로 인해 주문이 취소되었습니다.", order.getCanceledOrCompletedTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd - HH:mm:ss")), messageDto.getMessage());
 
             try {
-                firebaseCloudMessageService.sendMessageTo(firebaseToken, "(주문취소) 매장의 요청으로 주문이 취소되었습니다.", message, order.getOrderType());
+                firebaseCloudMessageService.sendMessageTo(firebaseToken, "(주문취소) 매장의 요청으로 주문이 취소되었습니다.", message, OrderType.CANCEL);
             } catch (IOException e) {
                 throw new FcmErrorException();
             }

@@ -1,6 +1,7 @@
 package com.server.ordering.service;
 
 import com.server.ordering.domain.*;
+import com.server.ordering.domain.dto.request.CustomerSignUpDto;
 import com.server.ordering.domain.dto.request.PasswordChangeDto;
 import com.server.ordering.domain.dto.request.ReviewDto;
 import com.server.ordering.domain.dto.request.SignInDto;
@@ -8,6 +9,7 @@ import com.server.ordering.domain.member.Customer;
 import com.server.ordering.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +31,7 @@ public class CustomerService implements MemberService<Customer> {
     private final BasketRepository basketRepository;
     private final MyCouponRepository myCouponRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public Customer findCustomerWithWaiting(Long customerId) {
         return customerRepository.findOneWithWaiting(customerId);
@@ -40,24 +43,33 @@ public class CustomerService implements MemberService<Customer> {
      */
     @Transactional
     @Override
-    public Optional<Long> signUp(Customer customer) {
+    public Long signUp(Object signUpDto) {
+        CustomerSignUpDto customerSignUpDto = (CustomerSignUpDto) signUpDto;
+        PhoneNumber phoneNumber = new PhoneNumber(customerSignUpDto.getPhoneNumber(), MemberType.CUSTOMER);
+        String encodedPassword = passwordEncoder.encode(customerSignUpDto.getPassword());
+        Customer customer = new Customer(customerSignUpDto.getNickname(), customerSignUpDto.getSignInId(), encodedPassword, phoneNumber);
         customerRepository.save(customer);
-        return Optional.of(customer.getId());
+        return customer.getId();
     }
 
     /**
      * 고객 로그인
-     * @return 로그인 성공 시 ID를, 실패 시 NULL을 Optional로 반환
      */
     @Transactional
     @Override
-    public Optional<Customer> signIn(SignInDto signInDto) {
+    public Customer signIn(SignInDto signInDto) {
         try {
-            Customer customer = customerRepository.findByIdAndPassword(signInDto.getSignInId(), signInDto.getPassword());
+            Customer customer = customerRepository.findById(signInDto.getSignInId());
+            boolean bMatch = passwordEncoder.matches(signInDto.getPassword(), customer.getPassword());
+
+            if (!bMatch) {
+                return null;
+            }
+
             customer.putFirebaseToken(signInDto.getFirebaseToken());
-            return Optional.of(customer);
+            return customer;
         } catch (NoResultException e) {
-            return Optional.empty();
+            return null;
         }
     }
 
@@ -97,8 +109,9 @@ public class CustomerService implements MemberService<Customer> {
     @Transactional
     public Boolean putPassword(Long customerId, PasswordChangeDto dto) {
         Customer customer = customerRepository.findOne(customerId);
-        if (Objects.equals(customer.getPassword(), dto.getCurrentPassword())) {
-            customer.putPassword(dto.getNewPassword());
+        if (passwordEncoder.matches(customer.getPassword(), dto.getCurrentPassword())) {
+            String encodedNewPassword = passwordEncoder.encode(dto.getNewPassword());
+            customer.putPassword(encodedNewPassword);
             return true;
         }
         return false;
