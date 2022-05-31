@@ -1,6 +1,5 @@
 package com.server.ordering.domain.dto.request;
 
-import com.server.ordering.domain.Coupon;
 import com.server.ordering.domain.MyCoupon;
 import lombok.*;
 

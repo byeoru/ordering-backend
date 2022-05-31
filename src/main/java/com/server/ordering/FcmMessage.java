@@ -1,7 +1,5 @@
 package com.server.ordering;
 
-import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.Notification;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
