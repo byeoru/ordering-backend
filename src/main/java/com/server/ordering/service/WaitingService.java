@@ -39,7 +39,7 @@ public class WaitingService {
 
         // 여러 스레드의 접근으로 동시성 문제가 발생할 수 있으므로 낙관적 Lock을 걸고 가져온다.
         Restaurant restaurant = restaurantRepository.findOneLock(restaurantId);
-        Customer customer = customerRepository.findOneWithPhoneNumber(customerId);
+        Customer customer = customerRepository.findOne(customerId);
 
         // Lock 을 적용한 상태에서 해당 음식점 waiting count 증가
         restaurant.increaseWaitingCount();
@@ -54,7 +54,7 @@ public class WaitingService {
         waiting.registerWaitingTime();
         waitingRepository.save(waiting);
 
-        String firebaseToken = restaurant.getFirebaseToken();
+        String firebaseToken = restaurant.getOwner().getFirebaseToken();
         String message = String.format("[%s] 인원 : %d명의 웨이팅 팀이 새롭게 추가되었습니다.",
                 waiting.getWaitingRegisterTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd - HH:mm:ss")), waiting.getNumOfTeamMembers());
 

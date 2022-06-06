@@ -46,7 +46,7 @@ public class OwnerRepository implements MemberRepository<Owner> {
 
     public Owner findOneWithRestaurantById(String signInId) throws PersistenceException {
         return em.createQuery("select m from Owner m left join fetch m.restaurant " +
-                "where m.signInId=:signInId", Owner.class)
+                "where m.signInId =:signInId", Owner.class)
                 .setParameter("signInId", signInId)
                 .getSingleResult();
     }

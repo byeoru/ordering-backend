@@ -11,16 +11,24 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
-public class PreviousHistoryDto extends OrderPreviewDto {
+public class OrderPreviewWithRestSimpleDto extends OrderPreviewDto {
 
     private Long restaurantId;
+    private Long reviewId;
     private String profileUrl;
     private String restaurantName;
+    private double latitude;
+    private double longitude;
+    private int orderingWaitingTime;
 
-    public PreviousHistoryDto(Order order) {
+    public OrderPreviewWithRestSimpleDto(Order order) {
         super(order);
         this.restaurantId = order.getRestaurant().getId();
+        this.reviewId = order.getReview() == null ? null : order.getReview().getId();
         this.profileUrl = order.getRestaurant().getProfileImageUrl();
         this.restaurantName = order.getRestaurant().getRestaurantName();
+        this.latitude = order.getRestaurant().getLocation().getY();
+        this.longitude = order.getRestaurant().getLocation().getX();
+        this.orderingWaitingTime = order.getRestaurant().getOrderingWaitingTime();
     }
 }

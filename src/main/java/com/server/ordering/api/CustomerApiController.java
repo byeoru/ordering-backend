@@ -5,12 +5,10 @@ import com.server.ordering.domain.dto.*;
 import com.server.ordering.domain.dto.request.*;
 import com.server.ordering.domain.dto.response.*;
 import com.server.ordering.domain.member.Customer;
-import com.server.ordering.service.CouponService;
-import com.server.ordering.service.CustomerService;
-import com.server.ordering.service.VerificationService;
-import com.server.ordering.service.WaitingService;
+import com.server.ordering.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +21,7 @@ public class CustomerApiController {
     private final CustomerService customerService;
     private final CouponService couponService;
     private final WaitingService waitingService;
+    private final OrderService orderService;
 
     /**
      * 인증번호 받기
@@ -119,18 +118,10 @@ public class CustomerApiController {
     @PostMapping("/api/customer/review")
     public ResultDto<Boolean> registerReview(@RequestParam(name = "restaurant_id") Long restaurantId,
                                              @RequestParam(name = "order_id") Long orderId,
-                                             @RequestBody ReviewDto dto) {
-        Boolean isRegistered = customerService.registerReview(restaurantId, orderId, dto);
+                                             @RequestPart(required = false) MultipartFile image,
+                                             @RequestPart ReviewDto dto) {
+        Boolean isRegistered = customerService.registerReview(restaurantId, orderId, dto, image);
         return new ResultDto<>(1, isRegistered);
-    }
-
-    /**
-     * 고객 리뷰 수정
-     */
-    @PutMapping("/api/customer/review/{reviewId}")
-    public ResultDto<Boolean> putReview(@PathVariable Long reviewId, @RequestBody ReviewDto dto) {
-        customerService.putReview(reviewId, dto);
-        return new ResultDto<>(1, true);
     }
 
     /**
@@ -182,7 +173,7 @@ public class CustomerApiController {
         long numberInFrontOfMe = waitingService.
                 getNumberInFrontOfMe(waiting.getMyWaitingNumber(), waiting.getRestaurant().getId());
 
-        MyWaitingInfoDto myWaitingDto = new MyWaitingInfoDto(waiting, numberInFrontOfMe);
+        MyWaitingInfoDto myWaitingDto = new MyWaitingInfoDto(waiting, (int) numberInFrontOfMe);
         return new ResultDto<>(1, myWaitingDto);
     }
 
@@ -246,19 +237,38 @@ public class CustomerApiController {
      * 내 주문 내역(진행 중) 리스트 불러오기
      */
     @GetMapping("/api/customer/{customerId}/orders/ongoing")
-    public ResultDto<List<PreviousHistoryDto>> getAllMyOngoingOrders(@PathVariable Long customerId) {
+    public ResultDto<List<OrderPreviewWithRestSimpleDto>> getAllMyOngoingOrders(@PathVariable Long customerId) {
         List<Order> ongoingOrders = customerService.findAllMyOngoingOrders(customerId);
-        List<PreviousHistoryDto> historyDtos = ongoingOrders.stream().map(PreviousHistoryDto::new).collect(Collectors.toList());
+        List<OrderPreviewWithRestSimpleDto> historyDtos = ongoingOrders.stream().map(OrderPreviewWithRestSimpleDto::new).collect(Collectors.toList());
         return new ResultDto<>(historyDtos.size(), historyDtos);
     }
 
     /**
-     * 내 주문 내역(완료) 리스트 불러오기
+     * 내 주문 내역(완료) 리스트 조회
      */
     @GetMapping("/api/customer/{customerId}/orders/finished")
-    public ResultDto<List<PreviousHistoryDto>> getAllMyFinishedOrders(@PathVariable Long customerId) {
+    public ResultDto<List<OrderPreviewWithRestSimpleDto>> getAllMyFinishedOrders(@PathVariable Long customerId) {
         List<Order> finishedOrders = customerService.findAllMyFinishedOrders(customerId);
-        List<PreviousHistoryDto> historyDtos = finishedOrders.stream().map(PreviousHistoryDto::new).collect(Collectors.toList());
+        List<OrderPreviewWithRestSimpleDto> historyDtos = finishedOrders.stream().map(OrderPreviewWithRestSimpleDto::new).collect(Collectors.toList());
         return new ResultDto<>(historyDtos.size(), historyDtos);
+    }
+
+    /**
+     * 내 주문 상세정보
+     */
+    @GetMapping("/api/customer/order/{orderId}/detail")
+    public ResultDto<OrderDetailDto> getOrderDetail(@PathVariable Long orderId) {
+        Order order = orderService.findOrderWithRestWithOrderFoodsWithFood(orderId);
+        OrderDetailDto orderDetailDto = new OrderDetailDto(order);
+        return new ResultDto<>(1, orderDetailDto);
+    }
+
+    /**
+     * 최근 주문 매장 리스트 조회
+     */
+    @GetMapping("/api/customer/{customerId}/orders/recent")
+    public ResultDto<List<RecentOrderRestaurantDto>> getRecentOrdersRestaurant(@PathVariable Long customerId) {
+        List<RecentOrderRestaurantDto> restaurantDtos = customerService.findRecentOrdersWithRestaurant(customerId, 10);
+        return new ResultDto<>(restaurantDtos.size(), restaurantDtos);
     }
 }

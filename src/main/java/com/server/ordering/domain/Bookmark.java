@@ -19,7 +19,7 @@ public class Bookmark {
     private Long id;
 
     @NonNull
-    @OneToOne(fetch = LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 

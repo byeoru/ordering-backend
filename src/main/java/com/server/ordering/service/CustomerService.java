@@ -1,10 +1,12 @@
 package com.server.ordering.service;
 
+import com.server.ordering.S3Service;
 import com.server.ordering.domain.*;
 import com.server.ordering.domain.dto.request.CustomerSignUpDto;
 import com.server.ordering.domain.dto.request.PasswordChangeDto;
 import com.server.ordering.domain.dto.request.ReviewDto;
 import com.server.ordering.domain.dto.request.SignInDto;
+import com.server.ordering.domain.dto.response.RecentOrderRestaurantDto;
 import com.server.ordering.domain.member.Customer;
 import com.server.ordering.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -12,11 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.NoResultException;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -32,9 +33,10 @@ public class CustomerService implements MemberService<Customer> {
     private final MyCouponRepository myCouponRepository;
     private final BookmarkRepository bookmarkRepository;
     private final PasswordEncoder passwordEncoder;
+    private final S3Service s3Service;
 
-    public Customer findCustomerWithWaiting(Long customerId) {
-        return customerRepository.findOneWithWaiting(customerId);
+    public Customer findCustomerWithPhoneNumberWithWaiting(Long customerId) {
+        return customerRepository.findOneWithPhoneNumberWithWaiting(customerId);
     }
 
     /**
@@ -123,6 +125,7 @@ public class CustomerService implements MemberService<Customer> {
     @Transactional
     @Override
     public void deleteAccount(Long id) {
+        orderRepository.putCustomerIdToNull(id);
         customerRepository.remove(id);
     }
 
@@ -130,25 +133,27 @@ public class CustomerService implements MemberService<Customer> {
      * 고객 리뷰 등록
      */
     @Transactional
-    public Boolean registerReview(Long restaurantId, Long orderId, ReviewDto dto) {
-        Order order = orderRepository.findOneWithReview(orderId);
-        if (order.isAbleRegisterReview()) {
-            Review review = new Review(dto.getReview(), dto.getRating());
-            Restaurant restaurant = restaurantRepository.findOne(restaurantId);
-            review.registerOrderAndRestaurant(order, restaurant);
-            reviewRepository.save(review);
-            return true;
-        }
-        return false;
-    }
+    public Boolean registerReview(Long restaurantId, Long orderId, ReviewDto dto, MultipartFile image) {
 
-    /**
-     * 리뷰 수정
-     */
-    @Transactional
-    public void putReview(Long reviewId, ReviewDto dto) {
-        Review review = reviewRepository.findOne(reviewId);
-        review.putReview(dto.getReview(), dto.getRating());
+        Order order = orderRepository.findOneWithReview(orderId);
+
+        if (!order.isAbleRegisterReview()) {
+            return false;
+        }
+
+        Review review = new Review(dto.getReview(), dto.getRating());
+
+        if (image != null) {
+            String newImageKey = String.format("%d%s%d", orderId, "review-image", System.currentTimeMillis());
+            String imageUrl = s3Service.upload(image, newImageKey);
+            review.registerImageUrl(imageUrl);
+        }
+
+        Restaurant restaurant = restaurantRepository.findOne(restaurantId);
+        review.registerOrderAndRestaurant(order, restaurant);
+        reviewRepository.save(review);
+
+        return true;
     }
 
     /**
@@ -232,5 +237,12 @@ public class CustomerService implements MemberService<Customer> {
      */
     public List<Order> findAllMyFinishedOrders(Long customerId) {
         return orderRepository.findAllFinishedWithRestWithOrderFoodsByCustomerId(customerId);
+    }
+
+    /**
+     * 최근 주문 매장 조회(10개)
+     */
+    public List<RecentOrderRestaurantDto> findRecentOrdersWithRestaurant(Long customerId, int requestNumber) {
+        return orderRepository.findRecentWithRestaurant(customerId, requestNumber);
     }
 }

@@ -23,7 +23,7 @@ public class WaitingApiController {
                                               @RequestParam(name = "customer_id") Long customerId,
                                               @RequestBody WaitingRegisterDto dto) {
 
-        Customer customer = customerService.findCustomerWithWaiting(customerId);
+        Customer customer = customerService.findCustomerWithPhoneNumberWithWaiting(customerId);
 
         // 웨이팅 접수가 가능한지 체크
         if (customer.isAbleToWaiting()) {

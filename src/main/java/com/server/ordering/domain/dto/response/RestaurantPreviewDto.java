@@ -4,18 +4,21 @@ import com.server.ordering.domain.RepresentativeMenu;
 import com.server.ordering.domain.Restaurant;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static lombok.AccessLevel.*;
+
 @Getter @Setter
-@RequiredArgsConstructor
+@NoArgsConstructor(access = PROTECTED)
 public class RestaurantPreviewDto {
 
     protected Long restaurantId;
     protected String restaurantName;
     protected String profileImageUrl;
     protected String backgroundImageUrl;
-    protected List<String> representativeMenus;
+    protected List<String> representativeMenus = new ArrayList<>();
 
     public void addRepresentativeFoodName(String foodName) {
         representativeMenus.add(foodName);

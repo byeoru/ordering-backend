@@ -22,7 +22,10 @@ public class Review {
     private String review;
 
     @NonNull
-    private float rating;
+    @Column(nullable = false)
+    private Float rating;
+
+    private String imageUrl;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "restaurant_id")
@@ -42,5 +45,9 @@ public class Review {
     public void putReview(String text, float rating) {
         this.review = text;
         this.rating = rating;
+    }
+
+    public void registerImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

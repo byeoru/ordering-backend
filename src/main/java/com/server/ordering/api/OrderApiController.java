@@ -1,12 +1,14 @@
 package com.server.ordering.api;
 
 import com.server.ordering.domain.Basket;
+import com.server.ordering.domain.Order;
 import com.server.ordering.domain.dto.ResultDto;
 import com.server.ordering.domain.dto.request.BasketPutDto;
 import com.server.ordering.domain.dto.request.BasketRequestDto;
 import com.server.ordering.domain.dto.request.MessageDto;
 import com.server.ordering.domain.dto.request.OrderDto;
 import com.server.ordering.domain.dto.response.OrderPreviewDto;
+import com.server.ordering.domain.dto.response.OrderPreviewWithRestSimpleDto;
 import com.server.ordering.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -84,9 +86,17 @@ public class OrderApiController {
      * 고객 주문 취소
      */
     @PostMapping("/api/order/{orderId}/cancel")
-    public ResultDto<OrderPreviewDto> cancel(@PathVariable Long orderId) {
-        OrderPreviewDto orderPreviewDto = orderService.orderCancel(orderId);
-        return new ResultDto<>(1, orderPreviewDto);
+    public ResultDto<OrderPreviewWithRestSimpleDto> cancel(@PathVariable Long orderId) {
+
+        boolean bCanceled = orderService.orderCancel(orderId);
+
+        if (bCanceled) {
+            Order order = orderService.findOrder(orderId);
+            OrderPreviewWithRestSimpleDto previewWithRestSimpleDto = new OrderPreviewWithRestSimpleDto(order);
+            return new ResultDto<>(1, previewWithRestSimpleDto);
+        }
+
+        return new ResultDto<>(1, null);
     }
 
     /**
@@ -95,8 +105,16 @@ public class OrderApiController {
     @PostMapping("/api/order/{orderId}/owner_cancel")
     public ResultDto<OrderPreviewDto> ownerCancel(@PathVariable Long orderId,
                                                   @RequestBody MessageDto dto) {
-        OrderPreviewDto orderPreviewDto = orderService.orderOwnerCancel(orderId, dto);
-        return new ResultDto<>(1, orderPreviewDto);
+
+        boolean bCanceled = orderService.orderOwnerCancel(orderId, dto);
+
+        if (bCanceled) {
+            Order order = orderService.findOrder(orderId);
+            OrderPreviewDto orderPreviewDto = new OrderPreviewDto(order);
+            return new ResultDto<>(1, orderPreviewDto);
+        }
+
+        return new ResultDto<>(1, null);
     }
 
     /**
@@ -104,8 +122,16 @@ public class OrderApiController {
      */
     @PostMapping("/api/order/{orderId}/check")
     public ResultDto<OrderPreviewDto> check(@PathVariable Long orderId) {
-        OrderPreviewDto orderPreviewDto = orderService.orderCheck(orderId);
-        return new ResultDto<>(1, orderPreviewDto);
+
+        boolean bChecked = orderService.orderCheck(orderId);
+
+        if (bChecked) {
+            Order order = orderService.findOrder(orderId);
+            OrderPreviewDto orderPreviewDto = new OrderPreviewDto(order);
+            return new ResultDto<>(1, orderPreviewDto);
+        }
+
+        return new ResultDto<>(1, null);
     }
 
     /**
@@ -113,7 +139,15 @@ public class OrderApiController {
      */
     @PostMapping("/api/order/{orderId}/complete")
     public ResultDto<OrderPreviewDto> complete(@PathVariable Long orderId) {
-        OrderPreviewDto orderPreviewDto = orderService.orderComplete(orderId);
-        return new ResultDto<>(1, orderPreviewDto);
+
+        boolean bCompleted = orderService.orderComplete(orderId);
+
+        if (bCompleted) {
+            Order order = orderService.findOrder(orderId);
+            OrderPreviewDto orderPreviewDto = new OrderPreviewDto(order);
+            return new ResultDto<>(1, orderPreviewDto);
+        }
+
+        return new ResultDto<>(1, null);
     }
 }

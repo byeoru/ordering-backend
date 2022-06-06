@@ -246,7 +246,7 @@ public class RestaurantApiController {
     }
 
     /**
-     * 매장 공지 등록/변경
+     * 매장 공지 작성/수정
      */
     @PutMapping("/api/restaurant/{restaurantId}/notice")
     public ResultDto<Boolean> putNotice(@PathVariable Long restaurantId,
@@ -256,13 +256,22 @@ public class RestaurantApiController {
     }
 
     /**
-     * 매장 공지, 좌표 반환
+     * 매장 소개(공지, 좌표) 반환
      */
     @GetMapping("/api/restaurant/{restaurantId}/info")
     public ResultDto<RestaurantInfoDto> getRestaurantInfo(@PathVariable Long restaurantId) {
         Restaurant restaurant = restaurantService.findRestaurant(restaurantId);
-        RestaurantInfoDto restaurantInfoDto = new RestaurantInfoDto(restaurant.getNotice(),
-                restaurant.getLocation().getY(), restaurant.getLocation().getX());
+        RestaurantInfoDto restaurantInfoDto = new RestaurantInfoDto(restaurant);
         return new ResultDto<>(1, restaurantInfoDto);
+    }
+
+    /**
+     * 매장 리뷰 리스트 반환
+     */
+    @GetMapping("/api/restaurant/{restaurantId}/reviews")
+    public ResultDto<List<ReviewPreviewDto>> getAllReview(@PathVariable Long restaurantId) {
+        List<Review> reviews = restaurantService.findReviewWithOrderWithCustomer(restaurantId);
+        List<ReviewPreviewDto> previewDtos = reviews.stream().map(ReviewPreviewDto::new).collect(Collectors.toList());
+        return new ResultDto<>(previewDtos.size(), previewDtos);
     }
 }

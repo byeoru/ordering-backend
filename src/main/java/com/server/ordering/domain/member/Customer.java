@@ -25,18 +25,20 @@ public class Customer extends MemberBase {
     private String nickname;
 
     private Long basketKey;
-    private String firebaseToken;
+
+    @OneToMany(mappedBy = "customer", cascade = REMOVE)
+    private final List<Bookmark> bookmarks = new ArrayList<>();
 
     @OneToMany(mappedBy = "customer", cascade = REMOVE, orphanRemoval = true)
     private final List<Basket> baskets = new ArrayList<>();
 
-    @OneToMany(mappedBy = "customer", cascade = REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "customer")
     private final List<Order> orders = new ArrayList<>();
 
     @OneToMany(mappedBy = "customer", cascade = REMOVE, orphanRemoval = true)
     private final List<MyCoupon> coupons = new ArrayList<>();
 
-    @OneToOne(mappedBy = "customer", cascade = REMOVE, orphanRemoval = true, fetch = LAZY)
+    @OneToOne(mappedBy = "customer", cascade = REMOVE, orphanRemoval = true)
     private Waiting waiting;
 
     public Customer(String nickname, String signInId, String password, PhoneNumber phoneNumber) {
@@ -50,13 +52,5 @@ public class Customer extends MemberBase {
 
     public Boolean isAbleToWaiting() {
         return this.waiting == null;
-    }
-
-    public void putFirebaseToken(String firebaseToken) {
-        this.firebaseToken = firebaseToken;
-    }
-
-    public void clearFirebaseToken() {
-        this.firebaseToken = null;
     }
 }

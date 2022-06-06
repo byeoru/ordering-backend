@@ -79,12 +79,13 @@
                     extraRoadAddr = ' (' + extraRoadAddr + ')';
                 }
                 // 도로명, 지번 주소의 유무에 따라 해당 조합형 주소를 추가한다.
+                const locationReqAddress = fullAddr;
                 if (fullRoadAddr !== '') {
                     fullRoadAddr += extraRoadAddr;
                 }
 
                 const fullAddress = data.zonecode + ", " + fullRoadAddr;
-                const { latitude, longitude } = await getLatitudeAndLongitude(fullRoadAddr);
+                const { latitude, longitude } = await getLatitudeAndLongitude(locationReqAddress);
                 window.Android.processDATA(fullAddress, latitude, longitude);
             },
             width: '100%',

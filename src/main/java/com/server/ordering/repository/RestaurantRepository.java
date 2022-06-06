@@ -2,6 +2,7 @@ package com.server.ordering.repository;
 
 import com.server.ordering.domain.FoodCategory;
 import com.server.ordering.domain.Restaurant;
+import com.server.ordering.domain.Review;
 import com.server.ordering.domain.dto.response.RestaurantPreviewWithDistanceDto;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Point;
@@ -40,7 +41,7 @@ public class RestaurantRepository {
 
     public List<RestaurantPreviewWithDistanceDto> findAllWithRepresentativeMenu(Point customerLocation, FoodCategory foodCategory) {
 
-        String query = "select * from(select * , " +
+        String query = "select distinct * from(select * , " +
                 "(ST_Distance_Sphere(ST_GeomFromText(?, 4326), location, 6373000)) as distance_meter " +
                 "from restaurant order by distance_meter) result left join representative_menu " +
                 "on result.restaurant_id = representative_menu.restaurant_id " +
@@ -65,6 +66,7 @@ public class RestaurantRepository {
                             backgroundImageUrl, distanceMeter);
                     previews.put(restaurantId, preview);
                 }
+
                 if (representativeFoodName != null) {
                     preview.addRepresentativeFoodName(representativeFoodName);
                 }
@@ -79,5 +81,12 @@ public class RestaurantRepository {
         return em.createQuery("select distinct m from Restaurant m left join fetch m.representativeMenus where m.id=:id", Restaurant.class)
                 .setParameter("id", id)
                 .getSingleResult();
+    }
+
+    public float findRestaurantRatingAverage(Long restaurantId) {
+        double avg = em.createQuery("select coalesce(avg(m.rating), 0) from Review m where m.restaurant.id =:restaurantId", Double.class)
+                .setParameter("restaurantId", restaurantId)
+                .getSingleResult();
+        return (float) avg;
     }
 }

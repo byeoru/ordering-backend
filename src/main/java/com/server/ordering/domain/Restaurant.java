@@ -32,7 +32,7 @@ public class Restaurant {
     @OneToOne(mappedBy = "restaurant", fetch = LAZY)
     private Owner owner;
 
-    @OneToMany(mappedBy = "restaurant", cascade = REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "restaurant", orphanRemoval = true)
     private List<Food> foods = new ArrayList<>();
 
     @OneToMany(mappedBy = "restaurant")
@@ -43,6 +43,9 @@ public class Restaurant {
 
     @OneToMany(mappedBy = "restaurant", cascade = REMOVE, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
+
+    @OneToMany(mappedBy = "restaurant", cascade = REMOVE, orphanRemoval = true)
+    private List<Bookmark> bookmarks = new ArrayList<>();
 
     @NonNull
     @Column(name = "restaurant_address")
@@ -57,8 +60,6 @@ public class Restaurant {
     @Version
     private int waitingCount;
     private int orderCount;
-
-    private String firebaseToken;
 
     @NonNull
     @Enumerated(value = EnumType.STRING)
@@ -119,14 +120,6 @@ public class Restaurant {
 
     public void increaseOrderCount() {
         this.orderCount++;
-    }
-
-    public void putFirebaseToken(String firebaseToken) {
-        this.firebaseToken = firebaseToken;
-    }
-
-    public void clearFirebaseToken() {
-        this.firebaseToken = null;
     }
 
     public void putNotice(String notice) {

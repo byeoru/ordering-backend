@@ -10,12 +10,7 @@ import com.server.ordering.service.OwnerService;
 import com.server.ordering.service.RestaurantService;
 import com.server.ordering.service.VerificationService;
 import lombok.RequiredArgsConstructor;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKTReader;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -124,15 +119,11 @@ public class OwnerApiController {
      * 점주 매장 등록
      */
     @PostMapping("/api/owner/{ownerId}/restaurant")
-    public ResultDto<Optional<Long>> registerRestaurant(
+    public ResultDto<Long> registerRestaurant(
             @PathVariable Long ownerId,
-            @RequestBody RestaurantDataWithLocationDto dto) throws ParseException {
+            @RequestBody RestaurantDataWithLocationDto dto) {
 
-        String pointWKT = String.format("POINT(%s %s)", dto.getLongitude(), dto.getLatitude());
-        Point location = (Point) new WKTReader().read(pointWKT);
-        Restaurant restaurant = new Restaurant(dto.getRestaurantName(), dto.getOwnerName(), dto.getAddress(), location,
-                dto.getTableCount(), dto.getFoodCategory(), dto.getRestaurantType(), dto.getOrderingWaitingTime(), dto.getAdmissionWaitingTime());
-        Optional<Long> optionalId = restaurantService.registerRestaurant(restaurant, ownerId);
-        return new ResultDto<>(1, optionalId);
+        Long restaurantId = restaurantService.registerRestaurant(ownerId, dto);
+        return new ResultDto<>(1, restaurantId);
     }
 }

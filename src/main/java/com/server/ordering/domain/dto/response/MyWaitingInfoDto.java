@@ -29,7 +29,7 @@ public class MyWaitingInfoDto {
         this.waitingId = waiting.getId();
         this.myWaitingNumber = waiting.getMyWaitingNumber();
         this.numInFrontOfMe = numberInFrontOfMe;
-        this.estimatedWaitingTime = waiting.getRestaurant().getAdmissionWaitingTime() * (int) numberInFrontOfMe;
+        this.estimatedWaitingTime = waiting.getRestaurant().getAdmissionWaitingTime() * ((int) numberInFrontOfMe + 1);
         this.waitingRegisterTime = waiting.getWaitingRegisterTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd - HH:mm:ss"));
         this.restaurantId = waiting.getRestaurant().getId();
         this.restaurantName = waiting.getRestaurant().getRestaurantName();

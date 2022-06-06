@@ -2,10 +2,7 @@ package com.server.ordering.service;
 
 import com.server.ordering.S3Service;
 import com.server.ordering.domain.*;
-import com.server.ordering.domain.dto.request.MessageDto;
-import com.server.ordering.domain.dto.request.RestaurantDataDto;
-import com.server.ordering.domain.dto.request.RestaurantPreviewListReqDto;
-import com.server.ordering.domain.dto.request.WaitingTimeDto;
+import com.server.ordering.domain.dto.request.*;
 import com.server.ordering.domain.dto.response.SalesResponseDto;
 import com.server.ordering.domain.dto.response.RestaurantPreviewWithDistanceDto;
 import com.server.ordering.domain.member.Owner;
@@ -23,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -37,13 +33,18 @@ public class RestaurantService {
     private final OwnerRepository ownerRepository;
     private final FoodRepository foodRepository;
     private final RepresentativeMenuRepository representativeMenuRepository;
+    private final ReviewRepository reviewRepository;
 
     @Transactional
-    public Optional<Long> registerRestaurant(Restaurant restaurant, Long ownerId) throws PersistenceException {
+    public Long registerRestaurant(Long ownerId, RestaurantDataWithLocationDto dto) throws PersistenceException {
+        GeometryFactory factory = new GeometryFactory(new PrecisionModel(), 4326);
+        Point point = factory.createPoint(new Coordinate(dto.getLongitude(), dto.getLatitude()));
+        Restaurant restaurant = new Restaurant(dto.getRestaurantName(), dto.getOwnerName(), dto.getAddress(), point,
+                dto.getTableCount(), dto.getFoodCategory(), dto.getRestaurantType(), dto.getOrderingWaitingTime(), dto.getAdmissionWaitingTime());
         restaurantRepository.save(restaurant);
         Owner owner = ownerRepository.findOne(ownerId);
         owner.registerRestaurant(restaurant);
-        return Optional.of(restaurant.getId());
+        return restaurant.getId();
     }
 
     @Transactional
@@ -136,5 +137,9 @@ public class RestaurantService {
     public void putRestaurantNotice(Long restaurantId, MessageDto messageDto) {
         Restaurant restaurant = restaurantRepository.findOne(restaurantId);
         restaurant.putNotice(messageDto.getMessage());
+    }
+
+    public List<Review> findReviewWithOrderWithCustomer(Long restaurantId) {
+        return reviewRepository.findAllWithOrderWithCustomerByRestaurantId(restaurantId);
     }
 }

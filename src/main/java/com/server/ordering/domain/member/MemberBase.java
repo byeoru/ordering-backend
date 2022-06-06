@@ -24,8 +24,17 @@ public abstract class MemberBase {
     @OneToOne(fetch = LAZY, cascade = ALL, orphanRemoval = true)
     @JoinColumn(name = "phone_number")
     protected PhoneNumber phoneNumber;
+    protected String firebaseToken;
 
     public void putPassword(String password) {
         this.password = password;
+    }
+
+    public void putFirebaseToken(String firebaseToken) {
+        this.firebaseToken = firebaseToken;
+    }
+
+    public void clearFirebaseToken() {
+        this.firebaseToken = null;
     }
 }

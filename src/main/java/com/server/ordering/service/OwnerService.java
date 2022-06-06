@@ -44,7 +44,7 @@ public class OwnerService implements MemberService<Owner> {
      */
     @Transactional
     @Override
-    public Owner signIn(SignInDto signInDto) throws PersistenceException {
+    public Owner signIn(SignInDto signInDto) {
         try {
             Owner owner = ownerRepository.findOneWithRestaurantById(signInDto.getSignInId());
             boolean bMatch = passwordEncoder.matches(signInDto.getPassword(), owner.getPassword());
@@ -53,7 +53,7 @@ public class OwnerService implements MemberService<Owner> {
                 return null;
             }
 
-            owner.getRestaurant().putFirebaseToken(signInDto.getFirebaseToken());
+            owner.putFirebaseToken(signInDto.getFirebaseToken());
             return owner;
         } catch (NoResultException e) {
             return null;
@@ -63,8 +63,8 @@ public class OwnerService implements MemberService<Owner> {
     @Transactional
     @Override
     public void signOut(Long id) {
-        Owner owner = ownerRepository.findOneWithRestaurant(id);
-        owner.getRestaurant().clearFirebaseToken();
+        Owner owner = ownerRepository.findOne(id);
+        owner.clearFirebaseToken();
     }
 
 

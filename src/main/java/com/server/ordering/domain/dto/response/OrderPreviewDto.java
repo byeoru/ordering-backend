@@ -18,6 +18,7 @@ import static lombok.AccessLevel.PROTECTED;
 public class OrderPreviewDto {
 
     private Long orderId;
+    private Long reviewId;
     private Integer myOrderNumber;
     private String orderSummary;
     private String receivedTime;
@@ -30,6 +31,7 @@ public class OrderPreviewDto {
 
     public OrderPreviewDto(Order order) {
         this.orderId = order.getId();
+        this.reviewId = order.getReview() == null ? null : order.getReview().getId();
         this.myOrderNumber = order.getMyOrderNumber();
         this.orderSummary = order.getOrderSummary();
         this.receivedTime = order.getReceivedTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd - HH:mm:ss"));

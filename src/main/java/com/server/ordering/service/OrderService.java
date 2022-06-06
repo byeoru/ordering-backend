@@ -34,8 +34,17 @@ public class OrderService {
     private final BasketRepository basketRepository;
     private final FirebaseCloudMessageService firebaseCloudMessageService;
 
+    public Order findOrder(Long orderId) {
+        return orderRepository.findOne(orderId);
+    }
+
+    public Order findOrderWithRestWithOrderFoodsWithFood(Long orderId) {
+        return orderRepository.findOneWithRestWithOrderFoodsWithFood(orderId);
+    }
+
     @Transactional(readOnly = true)
     public Boolean isAbleToAddToBasket(Long customerId, Long restaurantId) {
+
         Customer customer = customerRepository.findOne(customerId);
 
         // 직전에 장바구니에 저장한 음식의 음식점 PK
@@ -47,6 +56,7 @@ public class OrderService {
 
     @Transactional
     public void addToBasket(Long customerId, Long restaurantId, BasketRequestDto basketDto) {
+
         Customer customer = customerRepository.findOne(customerId);
         Food food = foodRepository.findOne(basketDto.getFoodId());
         Basket basket = Basket.CreateBasket(customer, food, basketDto.getCount());
@@ -60,6 +70,7 @@ public class OrderService {
 
     @Transactional
     public void removeToBasket(Long basketId, Long customerId) {
+
         basketRepository.remove(basketId);
         Customer customer = customerRepository.findOneWithBasket(customerId);
         int basketCount = customer.getBaskets().size();
@@ -78,10 +89,13 @@ public class OrderService {
     @Transactional
     public void removeAllToBasket(Long customerId) {
         basketRepository.removeAll(customerId);
+        Customer customer = customerRepository.findOne(customerId);
+        customer.changeBasketKey(null);
     }
 
     @Transactional
     public Long order(Long customerId, OrderDto orderDto) {
+
         int totalPrice = 0; // 총 주문 금액
         Customer customer = customerRepository.findOneWithBasketWithFood(customerId);
         List<OrderFood> orderFoods = new ArrayList<>();
@@ -100,8 +114,8 @@ public class OrderService {
         // FCM message 추가
         messageBuilder.append(String.format("총 주문 금액: %d원", totalPrice));
 
-        Restaurant restaurant = restaurantRepository.findOne(customer.getBasketKey());
-        String token = restaurant.getFirebaseToken();
+        Restaurant restaurant = restaurantRepository.findOneWithOwner(customer.getBasketKey());
+        String token = restaurant.getOwner().getFirebaseToken();
 
         // 주문 생성
         Order order = Order.createOrder(customer, restaurant, orderFoods, orderDto.getOrderType(),
@@ -121,14 +135,16 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderPreviewDto orderCancel(Long orderId) {
-        Order order = orderRepository.findOneWithRestaurant(orderId);
+    public boolean orderCancel(Long orderId) {
+
+        Order order = orderRepository.findOneWithRestaurantWithOwner(orderId);
+
         if (order.isAbleToCancel()) {
             order.cancel();
             //order.removeAllOrderFood();
             order.registerCanceledTime();
 
-            String firebaseToken = order.getRestaurant().getFirebaseToken();
+            String firebaseToken = order.getRestaurant().getOwner().getFirebaseToken();
             String message = String.format("[%s] 고객의 요청으로 접수된 주문이 취소되었습니다.", order.getCanceledOrCompletedTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd - HH:mm:ss")));
 
             try {
@@ -136,13 +152,14 @@ public class OrderService {
             } catch (IOException e) {
                 throw new FcmErrorException();
             }
-            return new OrderPreviewDto(order);
+            return true;
         }
-        return null;
+        return false;
     }
 
     @Transactional
-    public OrderPreviewDto orderOwnerCancel(Long orderId, MessageDto messageDto) {
+    public boolean orderOwnerCancel(Long orderId, MessageDto messageDto) {
+
         Order order = orderRepository.findOneWithCustomer(orderId);
 
         if (order.isAbleToOwnerCancel()) {
@@ -158,14 +175,15 @@ public class OrderService {
             } catch (IOException e) {
                 throw new FcmErrorException();
             }
-            return new OrderPreviewDto(order);
+            return true;
         }
-        return null;
+        return false;
     }
 
     // 주문 체크
     @Transactional
-    public OrderPreviewDto orderCheck(Long orderId) {
+    public boolean orderCheck(Long orderId) {
+
         Order order = orderRepository.findOneWithCustomerAndRestaurant(orderId);
 
         if (order.isAbleToCheck()) {
@@ -185,14 +203,15 @@ public class OrderService {
                 throw new FcmErrorException();
             }
 
-            return new OrderPreviewDto(order);
+            return true;
         }
-        return null;
+        return false;
     }
 
     // 주문 완료
     @Transactional
-    public OrderPreviewDto orderComplete(Long orderId) {
+    public boolean orderComplete(Long orderId) {
+
         Order order = orderRepository.findOneWithCustomer(orderId);
         if (order.isAbleToComplete()) {
             order.complete();
@@ -208,9 +227,9 @@ public class OrderService {
             } catch (IOException e) {
                 throw new FcmErrorException();
             }
-            return new OrderPreviewDto(order);
+            return true;
         }
-        return null;
+        return false;
     }
 
     public Basket findBasketByCustomerIdAndFoodId(Long customerId, Long foodId) {

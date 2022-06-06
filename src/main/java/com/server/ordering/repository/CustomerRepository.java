@@ -48,8 +48,10 @@ public class CustomerRepository implements MemberRepository<Customer> {
                 .getSingleResult();
     }
 
-    public Customer findOneWithWaiting(Long customerId) throws PersistenceException {
-        return em.createQuery("select m from Customer m left join fetch m.waiting where m.id =:id", Customer.class)
+    public Customer findOneWithPhoneNumberWithWaiting(Long customerId) throws PersistenceException {
+        return em.createQuery("select m from Customer m" +
+                        " left join fetch m.waiting" +
+                        " left join fetch m.phoneNumber where m.id =:id", Customer.class)
                 .setParameter("id", customerId)
                 .getSingleResult();
     }
