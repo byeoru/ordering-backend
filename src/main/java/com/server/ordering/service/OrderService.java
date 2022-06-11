@@ -95,7 +95,6 @@ public class OrderService {
 
     @Transactional
     public Long order(Long customerId, OrderDto orderDto) {
-
         int totalPrice = 0; // 총 주문 금액
         Customer customer = customerRepository.findOneWithBasketWithFood(customerId);
         List<OrderFood> orderFoods = new ArrayList<>();
@@ -106,11 +105,9 @@ public class OrderService {
             totalPrice += basket.getFood().getPrice() * basket.getCount();
             OrderFood orderFood = OrderFood.createOrderFood(basket.getFood(), basket.getFood().getPrice(), basket.getCount());
             orderFoods.add(orderFood);
-
             // FCM message 추가
             messageBuilder.append(String.format("%s: %d개, ", basket.getFood().getFoodName(), basket.getCount()));
         }
-
         // FCM message 추가
         messageBuilder.append(String.format("총 주문 금액: %d원", totalPrice));
 
@@ -120,11 +117,9 @@ public class OrderService {
         // 주문 생성
         Order order = Order.createOrder(customer, restaurant, orderFoods, orderDto.getOrderType(),
                 orderDto.getTableNumber(), totalPrice, messageBuilder.toString());
-
         // 고객 주문시간 등록
         order.registerReceivedTime();
         orderRepository.save(order);
-
         try {
             // 점주에게 FCM 발신
             firebaseCloudMessageService.sendMessageTo(token, "(주문접수) 주문이 접수되었습니다.", messageBuilder.toString(), orderDto.getOrderType());

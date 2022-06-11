@@ -101,6 +101,7 @@
 
     }
 
+    // 도로명주소로 위도, 경도 값을 구하는 Kakao Api 호출
     async function getLatitudeAndLongitude (fullRoadAddress) {
 
         const { data: { documents } } = await axios({

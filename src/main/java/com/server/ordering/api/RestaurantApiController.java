@@ -31,7 +31,7 @@ public class RestaurantApiController {
      */
     @PutMapping("/api/restaurant/{restaurantId}")
     public ResultDto<Boolean> putRestaurant(@PathVariable Long restaurantId,
-                                            @RequestBody RestaurantDataDto dto) {
+                                            @RequestBody RestaurantDataWithLocationDto dto) {
         restaurantService.putRestaurant(restaurantId, dto);
         return new ResultDto<>(1, true);
     }
@@ -273,5 +273,15 @@ public class RestaurantApiController {
         List<Review> reviews = restaurantService.findReviewWithOrderWithCustomer(restaurantId);
         List<ReviewPreviewDto> previewDtos = reviews.stream().map(ReviewPreviewDto::new).collect(Collectors.toList());
         return new ResultDto<>(previewDtos.size(), previewDtos);
+    }
+
+    /**
+     * 웨이팅 호출
+     */
+    @DeleteMapping("/api/restaurant/waiting/{waitingId}/call")
+    public ResultDto<Boolean> callWaiting(@PathVariable Long waitingId) {
+        restaurantService.callWaiting(waitingId);
+        waitingService.cancelOrDeleteWaiting(waitingId);
+        return new ResultDto<>(1, true);
     }
 }

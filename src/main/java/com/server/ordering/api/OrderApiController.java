@@ -68,6 +68,14 @@ public class OrderApiController {
         return new ResultDto<>(1, true);
     }
 
+    /**
+     * 장바구니 비우기
+     */
+    @DeleteMapping("/api/order/baskets")
+    public ResultDto<Boolean> removeAllBaskets(@RequestParam(name = "customer_id") Long customerId) {
+        orderService.removeAllToBasket(customerId);
+        return new ResultDto<>(1, true);
+    }
 
     /**
      * 장바구니 음식 주문

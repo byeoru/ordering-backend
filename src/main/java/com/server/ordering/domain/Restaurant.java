@@ -83,11 +83,12 @@ public class Restaurant {
         food.registerRestaurant(this);
     }
 
-    public void putRestaurant(String restaurantName, String ownerName, String address,
+    public void putRestaurant(String restaurantName, String ownerName, String address, Point location,
                               int tableCount, FoodCategory foodCategory, RestaurantType restaurantType) {
         this.restaurantName = restaurantName;
         this.ownerName = ownerName;
         this.address = address;
+        this.location = location;
         this.tableCount = tableCount;
         this.foodCategory = foodCategory;
         this.restaurantType = restaurantType;

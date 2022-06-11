@@ -71,7 +71,7 @@ public class OrderRepository {
         return jdbcTemplate.query("select temp_month, ifnull(a.sales, 0) as sales from (" +
                         " select date_format(received_time, '%Y-%m-%d') as order_month, sum(total_price) sales from orders" +
                         " where restaurant_id=? and date_format(received_time, '%Y-%m')=? and status='COMPLETED'" +
-                        " group by date_format(received_time, '%Y-%m-%d')) a right join (WITH RECURSIVE cte  AS (" +
+                        " group by date_format(received_time, '%Y-%m-%d')) a right join (WITH RECURSIVE cte AS (" +
                         " SELECT date_format(?,'%Y-%m-%d') AS dt UNION ALL" +
                         " SELECT date_add(dt,INTERVAL 1 DAY) FROM cte WHERE date_format(dt, '%Y-%m')=?)" +
                         " SELECT date_format(dt, '%Y-%m-%d') as temp_month FROM cte WHERE date_format(dt, '%Y-%m')=?) b" +
@@ -83,11 +83,11 @@ public class OrderRepository {
         return jdbcTemplate.query("select temp_month, ifnull(a.sales, 0) as sales from (" +
                 " select date_format(received_time, '%Y-%m') as order_month, sum(total_price) sales from orders" +
                 " where restaurant_id=? and date_format(received_time, '%Y')=? and status='COMPLETED'" +
-                " group by date_format(received_time, '%Y-%m')) a right join (WITH RECURSIVE cte  AS (" +
-                " SELECT date_format('2022-01-01','%Y-%m-%d') AS dt UNION ALL" +
+                " group by date_format(received_time, '%Y-%m')) a right join (WITH RECURSIVE cte AS (" +
+                " SELECT date_format(?,'%Y-%m-%d') AS dt UNION ALL" +
                 " SELECT date_add(dt,INTERVAL 1 MONTH) FROM cte WHERE dt < ?)" +
                 " SELECT date_format(dt, '%Y-%m') as temp_month FROM cte) b" +
-                " on a.order_month = b.temp_month",new SalesMapper() , restaurantId, year, year + "-12");
+                " on a.order_month = b.temp_month",new SalesMapper() , restaurantId, year, year + "-01-01", year + "-12");
     }
 
     // 조회 데이터 DTO 매핑
@@ -146,17 +146,21 @@ public class OrderRepository {
 
     public List<RecentOrderRestaurantDto> findRecentWithRestaurant(Long customerId, int requestNumber) {
 
-        return jdbcTemplate.query("select restaurant_name, background_image_url, r.restaurant_id as restaurant_id, ordering_waiting_time from orders o " +
+        return jdbcTemplate.query("select restaurant_name, profile_image_url, background_image_url, r.restaurant_id " +
+                "as restaurant_id, ordering_waiting_time from orders o " +
                 "left join restaurant r on o.restaurant_id = r.restaurant_id " +
                 "where order_id in (select max(order_id) from orders where customer_id = ? group by restaurant_id) " +
                 "order by order_id desc limit ? offset 0", (rs, rowNum) -> {
 
-            String restaurant_name = rs.getString("restaurant_name");
-            String background_image_url = rs.getString("background_image_url");
-            int ordering_waiting_time = rs.getInt("ordering_waiting_time");
+            // DTO 매핑
+            Long restaurantId = rs.getLong("restaurant_id");
+            String restaurantName = rs.getString("restaurant_name");
+            String profileImageUrl = rs.getString("profile_image_url");
+            String backgroundImageUrl = rs.getString("background_image_url");
+            int orderingWaitingTime = rs.getInt("ordering_waiting_time");
             float average = restaurantRepository.findRestaurantRatingAverage(rs.getLong("restaurant_id"));
 
-            return new RecentOrderRestaurantDto(restaurant_name, background_image_url, average, ordering_waiting_time);
+            return new RecentOrderRestaurantDto(restaurantId, restaurantName, profileImageUrl, backgroundImageUrl, average, orderingWaitingTime);
         }, customerId, requestNumber);
     }
 

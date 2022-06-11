@@ -56,20 +56,22 @@ public class WaitingService {
 
         String firebaseToken = restaurant.getOwner().getFirebaseToken();
         String message = String.format("[%s] 인원 : %d명의 웨이팅 팀이 새롭게 추가되었습니다.",
-                waiting.getWaitingRegisterTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd - HH:mm:ss")), waiting.getNumOfTeamMembers());
+                waiting.getWaitingRegisterTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd - HH:mm:ss")),
+                waiting.getNumOfTeamMembers());
 
         try {
-            firebaseCloudMessageService.sendMessageTo(firebaseToken, "(웨이팅 접수) 새로운 웨이팅이 접수되었습니다.", message, OrderType.WAITING);
+            firebaseCloudMessageService.sendMessageTo(firebaseToken, "(웨이팅 접수) 새로운 웨이팅이 접수되었습니다.",
+                    message, OrderType.WAITING);
         } catch (IOException e) {
             throw new FcmErrorException();
         }
     }
 
     /**
-     * 웨이팅 취소
+     * 웨이팅 취소 or 삭제
      */
     @Transactional
-    public void cancelWaiting(Long waitingId) {
+    public void cancelOrDeleteWaiting(Long waitingId) {
         waitingRepository.remove(waitingId);
     }
 

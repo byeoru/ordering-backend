@@ -22,6 +22,7 @@ public class CustomerApiController {
     private final CouponService couponService;
     private final WaitingService waitingService;
     private final OrderService orderService;
+    private final RestaurantService restaurantService;
 
     /**
      * 인증번호 받기
@@ -181,10 +182,18 @@ public class CustomerApiController {
      * 장바구니 리스트 조회
      */
     @PostMapping("/api/customer/{customerId}/baskets")
-    public ResultDto<List<BasketFood>> getBasketList(@PathVariable Long customerId) {
+    public ResultDto<BasketListResultDto> getBasketList(@PathVariable Long customerId) {
         List<Basket> baskets = customerService.findBasketWithFood(customerId);
+        Long basketKey = customerService.findCustomer(customerId).getBasketKey();
+
+        String restaurantName = null;
+        if (basketKey != null) {
+            restaurantName = restaurantService.findRestaurant(basketKey).getRestaurantName();
+        }
+
         List<BasketFood> basketResponseDtos = baskets.stream().map(BasketFood::new).collect(Collectors.toList());
-        return new ResultDto<>(basketResponseDtos.size(), basketResponseDtos);
+        BasketListResultDto basketListResultDto = new BasketListResultDto(restaurantName, basketResponseDtos);
+        return new ResultDto<>(1, basketListResultDto);
     }
 
     /**

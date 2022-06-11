@@ -39,7 +39,7 @@ public class WaitingApiController {
      */
     @DeleteMapping("/api/waiting/{waitingId}")
     public ResultDto<Boolean> cancelWaiting(@PathVariable Long waitingId) {
-        waitingService.cancelWaiting(waitingId);
+        waitingService.cancelOrDeleteWaiting(waitingId);
         return new ResultDto<>(1, true);
     }
 }

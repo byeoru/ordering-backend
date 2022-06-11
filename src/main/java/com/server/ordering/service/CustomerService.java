@@ -39,15 +39,20 @@ public class CustomerService implements MemberService<Customer> {
         return customerRepository.findOneWithPhoneNumberWithWaiting(customerId);
     }
 
+    public Customer findCustomer(Long customerId) {
+        return customerRepository.findOne(customerId);
+    }
+
     /**
      * 고객 회원가입
-     * @return 가입한 고객 ID 반환
      */
     @Transactional
     @Override
     public Long signUp(Object signUpDto) {
         CustomerSignUpDto customerSignUpDto = (CustomerSignUpDto) signUpDto;
         PhoneNumber phoneNumber = new PhoneNumber(customerSignUpDto.getPhoneNumber(), MemberType.CUSTOMER);
+
+        // spring security password 암호화
         String encodedPassword = passwordEncoder.encode(customerSignUpDto.getPassword());
         Customer customer = new Customer(customerSignUpDto.getNickname(), customerSignUpDto.getSignInId(), encodedPassword, phoneNumber);
         customerRepository.save(customer);
@@ -62,12 +67,15 @@ public class CustomerService implements MemberService<Customer> {
     public Customer signIn(SignInDto signInDto) {
         try {
             Customer customer = customerRepository.findById(signInDto.getSignInId());
+
+            // 사용자가 입력한 raw password, 해시화된 password 비교
             boolean bMatch = passwordEncoder.matches(signInDto.getPassword(), customer.getPassword());
 
             if (!bMatch) {
                 return null;
             }
 
+            // client 에서 받아온 토큰을 저장/업데이트
             customer.putFirebaseToken(signInDto.getFirebaseToken());
             return customer;
         } catch (NoResultException e) {
@@ -111,7 +119,7 @@ public class CustomerService implements MemberService<Customer> {
     @Transactional
     public Boolean putPassword(Long customerId, PasswordChangeDto dto) {
         Customer customer = customerRepository.findOne(customerId);
-        if (passwordEncoder.matches(customer.getPassword(), dto.getCurrentPassword())) {
+        if (passwordEncoder.matches(dto.getCurrentPassword(), customer.getPassword())) {
             String encodedNewPassword = passwordEncoder.encode(dto.getNewPassword());
             customer.putPassword(encodedNewPassword);
             return true;
