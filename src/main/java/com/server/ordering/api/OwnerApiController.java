@@ -92,7 +92,8 @@ public class OwnerApiController {
      * 점주 휴대폰번호 변경
      */
     @PutMapping("/api/owner/{ownerId}/phone_number")
-    public ResultDto<Boolean> putPhoneNumber(@PathVariable Long ownerId, @RequestBody PhoneNumberDto dto) {
+    public ResultDto<Boolean> putPhoneNumber(@PathVariable Long ownerId,
+                                             @RequestBody PhoneNumberDto dto) {
         ownerService.putPhoneNumber(ownerId, dto.getPhoneNumber());
         return new ResultDto<>(1, true);
     }
@@ -101,7 +102,8 @@ public class OwnerApiController {
      * 점주 비밀번호 변경
      */
     @PutMapping("/api/owner/{ownerId}/password")
-    public ResultDto<Boolean> putPassword(@PathVariable Long ownerId, @RequestBody PasswordChangeDto dto) {
+    public ResultDto<Boolean> putPassword(@PathVariable Long ownerId,
+                                          @RequestBody PasswordChangeDto dto) {
         Boolean isChanged = ownerService.putPassword(ownerId, dto);
         return new ResultDto<>(1, isChanged);
     }
@@ -119,9 +121,8 @@ public class OwnerApiController {
      * 점주 매장 등록
      */
     @PostMapping("/api/owner/{ownerId}/restaurant")
-    public ResultDto<Long> registerRestaurant(
-            @PathVariable Long ownerId,
-            @RequestBody RestaurantDataWithLocationDto dto) {
+    public ResultDto<Long> registerRestaurant(@PathVariable Long ownerId,
+                                              @RequestBody RestaurantDataWithLocationDto dto) {
 
         Long restaurantId = restaurantService.registerRestaurant(ownerId, dto);
         return new ResultDto<>(1, restaurantId);

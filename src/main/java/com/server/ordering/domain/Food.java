@@ -41,4 +41,17 @@ public class Food {
     public void registerRestaurant(Restaurant restaurant) {
         this.restaurant = restaurant;
     }
+
+    public void putFood(String foodName, int price, String menuIntro) {
+        this.foodName = foodName;
+        this.price = price;
+        this.menuIntro = menuIntro;
+    }
+
+    public void putFood(String foodName, int price, String menuIntro, String imageUrl) {
+        this.foodName = foodName;
+        this.price = price;
+        this.menuIntro = menuIntro;
+        this.imageUrl = imageUrl;
+    }
 }

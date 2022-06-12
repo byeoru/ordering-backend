@@ -40,11 +40,11 @@ public class RestaurantApiController {
      * 매장 음식 추가
      */
     @PostMapping("/api/restaurant/{restaurantId}/food")
-    public ResultDto<Optional<Long>> registerFood(@PathVariable Long restaurantId,
-                                                  @RequestPart(required = false) MultipartFile image,
-                                                  @RequestPart FoodDto dto) {
+    public ResultDto<Long> registerFood(@PathVariable Long restaurantId,
+                                        @RequestPart(required = false) MultipartFile image,
+                                        @RequestPart FoodDto dto) {
 
-        Optional<Long> foodId = foodService.registerFood(restaurantId, dto, image);
+        Long foodId = foodService.registerFood(restaurantId, dto, image);
         return new ResultDto<>(1, foodId);
     }
 

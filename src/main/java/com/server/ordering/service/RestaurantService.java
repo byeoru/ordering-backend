@@ -48,7 +48,8 @@ public class RestaurantService {
         Point point = factory.createPoint(new Coordinate(dto.getLongitude(), dto.getLatitude()));
 
         Restaurant restaurant = new Restaurant(dto.getRestaurantName(), dto.getOwnerName(), dto.getAddress(), point,
-                dto.getTableCount(), dto.getFoodCategory(), dto.getRestaurantType(), dto.getOrderingWaitingTime(), dto.getAdmissionWaitingTime());
+                dto.getTableCount(), dto.getFoodCategory(), dto.getRestaurantType(),
+                dto.getOrderingWaitingTime(), dto.getAdmissionWaitingTime());
 
         restaurantRepository.save(restaurant);
         Owner owner = ownerRepository.findOne(ownerId);

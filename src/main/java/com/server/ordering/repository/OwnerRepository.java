@@ -21,7 +21,7 @@ public class OwnerRepository implements MemberRepository<Owner> {
     }
 
     @Override
-    public Owner findOne(Long ownerId) throws PersistenceException {
+    public Owner findOne(Long ownerId) {
         return em.find(Owner.class, ownerId);
     }
 
@@ -52,7 +52,8 @@ public class OwnerRepository implements MemberRepository<Owner> {
     }
 
     public Owner findOneWithPhoneNumber(Long ownerId) throws PersistenceException {
-        return em.createQuery("select m from Owner m left join fetch m.phoneNumber where m.id =:id", Owner.class)
+        return em.createQuery("select m from Owner m" +
+                        " left join fetch m.phoneNumber where m.id =:id", Owner.class)
                 .setParameter("id", ownerId)
                 .getSingleResult();
     }

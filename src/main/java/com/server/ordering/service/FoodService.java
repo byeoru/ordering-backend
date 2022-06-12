@@ -32,7 +32,7 @@ public class FoodService {
     }
 
     @Transactional
-    public Optional<Long> registerFood(Long restaurantId, FoodDto dto, MultipartFile image) {
+    public Long registerFood(Long restaurantId, FoodDto dto, MultipartFile image) {
         Restaurant restaurant = restaurantRepository.findOne(restaurantId);
         if (image != null) {
             String newImageKey = restaurantId + "food-image" + System.currentTimeMillis();
@@ -42,13 +42,14 @@ public class FoodService {
         Food food = new Food(dto.getFoodName(), dto.getPrice(), false, dto.getImageUrl(), dto.getMenuIntro());
         restaurant.addFood(food);
         foodRepository.save(food);
-        return Optional.of(food.getId());
+        return food.getId();
     }
 
     @Transactional
     public void putFood(Long foodId, Long restaurantId, FoodDto dto, MultipartFile image) {
+
+        Food food = foodRepository.findOne(foodId);
         if (image != null) {
-            Food food = foodRepository.findOne(foodId);
 
             if (food.getImageUrl() != null) {
                 String imageUrl = food.getImageUrl();
@@ -62,9 +63,9 @@ public class FoodService {
             // 이미지 S3 저장
             String newImageUrl = s3Service.upload(image, newImageKey);
             dto.setImageUrl(newImageUrl);
-            foodRepository.putFood(foodId, dto.getFoodName(), dto.getPrice(), dto.getImageUrl(), dto.getMenuIntro());
+            food.putFood(dto.getFoodName(), dto.getPrice(), dto.getImageUrl(), dto.getMenuIntro());
         } else {
-            foodRepository.putFood(foodId, dto.getFoodName(), dto.getPrice(), dto.getMenuIntro());
+            food.putFood(dto.getFoodName(), dto.getPrice(), dto.getMenuIntro());
         }
     }
 

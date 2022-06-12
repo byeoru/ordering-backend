@@ -7,18 +7,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import static lombok.AccessLevel.PUBLIC;
+import static lombok.AccessLevel.PROTECTED;
 
 @Getter @Setter
 @AllArgsConstructor
-@NoArgsConstructor(access = PUBLIC)
+@NoArgsConstructor(access = PROTECTED)
 public class FoodDto {
 
-    // request 전용
     private String foodName;
     private int price;
     private String menuIntro;
 
+    // response 전용
     private Long foodId;
     private String imageUrl;
     private boolean soldOut;

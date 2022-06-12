@@ -40,9 +40,7 @@ public class VerificationService {
 
     public boolean checkCode(String totalNum, String verificationCode) {
         Twilio.init(pt.getAccount_sid(), pt.getAuth_token());
-        VerificationCheck verificationCheck = VerificationCheck.creator(
-                        pt.getPath_service_sid(),
-                        verificationCode)
+        VerificationCheck verificationCheck = VerificationCheck.creator(pt.getPath_service_sid(), verificationCode)
                 .setTo(totalNum).create();
 
         return verificationCheck.getValid();

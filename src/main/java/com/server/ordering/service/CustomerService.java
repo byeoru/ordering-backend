@@ -54,7 +54,8 @@ public class CustomerService implements MemberService<Customer> {
 
         // spring security password 암호화
         String encodedPassword = passwordEncoder.encode(customerSignUpDto.getPassword());
-        Customer customer = new Customer(customerSignUpDto.getNickname(), customerSignUpDto.getSignInId(), encodedPassword, phoneNumber);
+        Customer customer = new Customer(customerSignUpDto.getNickname(), customerSignUpDto.getSignInId(),
+                encodedPassword, phoneNumber);
         customerRepository.save(customer);
         return customer.getId();
     }
@@ -90,9 +91,6 @@ public class CustomerService implements MemberService<Customer> {
         customer.clearFirebaseToken();
     }
 
-    /**
-     * 고객 회원가입할 때 email 중복 검증
-     */
     @Override
     public boolean isIdDuplicated(String signInId) {
         try {
@@ -101,7 +99,6 @@ public class CustomerService implements MemberService<Customer> {
         } catch (NoResultException e) {
             return false;
         }
-
     }
 
     /**

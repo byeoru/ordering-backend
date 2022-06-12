@@ -30,16 +30,6 @@ public class FoodRepository {
                 .getResultList();
     }
 
-    public void putFood(Long foodId, String foodName, int foodPrice, String imageUrl, String menuIntro) {
-        jdbcTemplate.update("update food set food_name=?, price=?, image_url=?, menu_intro=? where food_id=?",
-                foodName, foodPrice, imageUrl, menuIntro, foodId);
-    }
-
-    public void putFood(Long foodId, String foodName, int foodPrice, String menuIntro) {
-        jdbcTemplate.update("update food set food_name=?, price=?, menu_intro=? where food_id=?",
-                foodName, foodPrice, menuIntro, foodId);
-    }
-
     public void remove(Food food) throws PersistenceException {
         em.remove(food);
     }

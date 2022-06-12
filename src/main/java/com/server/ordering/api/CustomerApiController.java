@@ -90,7 +90,8 @@ public class CustomerApiController {
      * 고객 휴대폰번호 변경
      */
     @PutMapping("/api/customer/{customerId}/phone_number")
-    public ResultDto<Boolean> putPhoneNumber(@PathVariable Long customerId, @RequestBody PhoneNumberDto dto) {
+    public ResultDto<Boolean> putPhoneNumber(@PathVariable Long customerId,
+                                             @RequestBody PhoneNumberDto dto) {
         customerService.putPhoneNumber(customerId, dto.getPhoneNumber());
         return new ResultDto<>(1, true);
     }
@@ -99,7 +100,8 @@ public class CustomerApiController {
      * 고객 비밀번호 변경
      */
     @PutMapping("/api/customer/{customerId}/password")
-    public ResultDto<Boolean> putPassword(@PathVariable Long customerId, @RequestBody PasswordChangeDto dto) {
+    public ResultDto<Boolean> putPassword(@PathVariable Long customerId,
+                                          @RequestBody PasswordChangeDto dto) {
         Boolean isChanged = customerService.putPassword(customerId, dto);
         return new ResultDto<>(1, isChanged);
     }
