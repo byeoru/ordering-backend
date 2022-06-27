@@ -163,6 +163,7 @@ public class CustomerService implements MemberService<Customer> {
     @Transactional
     public void removeReview(Long reviewId) {
         reviewRepository.remove(reviewId);
+
     }
 
     /**
