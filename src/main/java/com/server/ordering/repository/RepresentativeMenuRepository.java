@@ -23,15 +23,15 @@ public class RepresentativeMenuRepository {
         em.remove(representativeMenu);
     }
 
-    public RepresentativeMenu findOneByRestaurantIdAndFoodId(Long restaurantId, Long foodId) throws PersistenceException {
-        return em.createQuery("select m from RepresentativeMenu m where m.food.id =:foodId and m.restaurant.id =: restaurantId", RepresentativeMenu.class)
+    public void findOneByFoodId(Long foodId) throws PersistenceException {
+        em.createQuery("select m from RepresentativeMenu m where m.food.id =:foodId", RepresentativeMenu.class)
                 .setParameter("foodId", foodId)
-                .setParameter("restaurantId", restaurantId)
                 .getSingleResult();
     }
 
     public List<RepresentativeMenu> findAllByRestaurantId(Long restaurantId) {
-        return em.createQuery("select distinct m from RepresentativeMenu m where m.restaurant.id =:restaurantId", RepresentativeMenu.class)
+        return em.createQuery("select distinct m from RepresentativeMenu m" +
+                        " where m.restaurant.id =:restaurantId", RepresentativeMenu.class)
                 .setParameter("restaurantId", restaurantId)
                 .getResultList();
     }

@@ -25,12 +25,14 @@ public class ReviewRepository {
     public List<Review> findAllWithOrderWithCustomerByRestaurantId(Long restaurantId) {
         return em.createQuery("select distinct m from Review m" +
                         " left join fetch m.order o" +
-                        " left join fetch o.customer where m.restaurant.id =:restaurantId order by m.id desc ", Review.class)
+                        " left join fetch o.customer where m.restaurant.id =:restaurantId" +
+                        " order by m.id desc ", Review.class)
                 .setParameter("restaurantId", restaurantId)
                 .getResultList();
     }
 
-    public void remove(Review review) {
+    public void remove(Long reviewId) {
+        Review review = em.find(Review.class, reviewId);
         em.remove(review);
     }
 }

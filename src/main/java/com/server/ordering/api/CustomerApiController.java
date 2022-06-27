@@ -185,15 +185,14 @@ public class CustomerApiController {
      */
     @PostMapping("/api/customer/{customerId}/baskets")
     public ResultDto<BasketListResultDto> getBasketList(@PathVariable Long customerId) {
-        List<Basket> baskets = customerService.findBasketWithFood(customerId);
-        Long basketKey = customerService.findCustomer(customerId).getBasketKey();
+        Customer customer = customerService.findCustomerWithBasketWithFood(customerId);
 
         String restaurantName = null;
-        if (basketKey != null) {
-            restaurantName = restaurantService.findRestaurant(basketKey).getRestaurantName();
+        if (customer.getBasketKey() != null) {
+            restaurantName = restaurantService.findRestaurant(customer.getBasketKey()).getRestaurantName();
         }
 
-        List<BasketFood> basketResponseDtos = baskets.stream().map(BasketFood::new).collect(Collectors.toList());
+        List<BasketFood> basketResponseDtos = customer.getBaskets().stream().map(BasketFood::new).collect(Collectors.toList());
         BasketListResultDto basketListResultDto = new BasketListResultDto(restaurantName, basketResponseDtos);
         return new ResultDto<>(1, basketListResultDto);
     }
@@ -240,7 +239,8 @@ public class CustomerApiController {
     @GetMapping("/api/customer/{customerId}/bookmarks")
     public ResultDto<List<BookmarkPreviewDto>> getBookmarkList(@PathVariable Long customerId) {
         List<Bookmark> bookmarks = customerService.findAllBookmarkWithRestWithRepresentative(customerId);
-        List<BookmarkPreviewDto> previewDtos = bookmarks.stream().map(BookmarkPreviewDto::new).collect(Collectors.toList());
+        List<BookmarkPreviewDto> previewDtos = bookmarks
+                .stream().map(BookmarkPreviewDto::new).collect(Collectors.toList());
         return new ResultDto<>(previewDtos.size(), previewDtos);
     }
 
@@ -250,7 +250,8 @@ public class CustomerApiController {
     @GetMapping("/api/customer/{customerId}/orders/ongoing")
     public ResultDto<List<OrderPreviewWithRestSimpleDto>> getAllMyOngoingOrders(@PathVariable Long customerId) {
         List<Order> ongoingOrders = customerService.findAllMyOngoingOrders(customerId);
-        List<OrderPreviewWithRestSimpleDto> historyDtos = ongoingOrders.stream().map(OrderPreviewWithRestSimpleDto::new).collect(Collectors.toList());
+        List<OrderPreviewWithRestSimpleDto> historyDtos = ongoingOrders.stream()
+                .map(OrderPreviewWithRestSimpleDto::new).collect(Collectors.toList());
         return new ResultDto<>(historyDtos.size(), historyDtos);
     }
 
@@ -260,7 +261,8 @@ public class CustomerApiController {
     @GetMapping("/api/customer/{customerId}/orders/finished")
     public ResultDto<List<OrderPreviewWithRestSimpleDto>> getAllMyFinishedOrders(@PathVariable Long customerId) {
         List<Order> finishedOrders = customerService.findAllMyFinishedOrders(customerId);
-        List<OrderPreviewWithRestSimpleDto> historyDtos = finishedOrders.stream().map(OrderPreviewWithRestSimpleDto::new).collect(Collectors.toList());
+        List<OrderPreviewWithRestSimpleDto> historyDtos = finishedOrders.stream()
+                .map(OrderPreviewWithRestSimpleDto::new).collect(Collectors.toList());
         return new ResultDto<>(historyDtos.size(), historyDtos);
     }
 
@@ -279,7 +281,8 @@ public class CustomerApiController {
      */
     @GetMapping("/api/customer/{customerId}/orders/recent")
     public ResultDto<List<RecentOrderRestaurantDto>> getRecentOrdersRestaurant(@PathVariable Long customerId) {
-        List<RecentOrderRestaurantDto> restaurantDtos = customerService.findRecentOrdersWithRestaurant(customerId, 10);
+        List<RecentOrderRestaurantDto> restaurantDtos =
+                customerService.findRecentOrdersWithRestaurant(customerId, 10);
         return new ResultDto<>(restaurantDtos.size(), restaurantDtos);
     }
 }

@@ -80,12 +80,15 @@ public class FoodService {
     }
 
     @Transactional
-    public void deleteFood(Food food) {
-        foodRepository.remove(food);
-    }
-
-    @Transactional
     public void deleteFood(Long foodId) {
-        foodRepository.remove(foodId);
+        Food food = foodRepository.findOne(foodId);
+
+        String imageUrl = food.getImageUrl();
+        if (imageUrl != null) {
+            String imageKey = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+            // 이미지 삭제
+            //s3Service.delete(imageKey);
+        }
+        foodRepository.remove(food);
     }
 }

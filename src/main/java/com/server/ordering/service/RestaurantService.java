@@ -90,9 +90,9 @@ public class RestaurantService {
         restaurant.putBackgroundImageUrl(imageUrl);
     }
 
-    public Boolean isExistRepresentativeMenu(Long restaurantId, Long foodId) {
+    public Boolean isExistRepresentativeMenu(Long foodId) {
         try {
-            representativeMenuRepository.findOneByRestaurantIdAndFoodId(restaurantId, foodId);
+            representativeMenuRepository.findOneByFoodId(foodId);
             return true;
         } catch (NoResultException e) {
             return false;
@@ -100,13 +100,12 @@ public class RestaurantService {
     }
 
     @Transactional
-    public Boolean addRepresentativeMenu(Long restaurantId, Long foodId) {
+    public void addRepresentativeMenu(Long restaurantId, Long foodId) {
         Restaurant restaurant = restaurantRepository.findOne(restaurantId);
         Food food = foodRepository.findOne(foodId);
         RepresentativeMenu representativeMenu = new RepresentativeMenu(restaurant, food, food.getFoodName());
         restaurant.addRepresentativeMenu(representativeMenu);
         representativeMenuRepository.save(representativeMenu);
-        return true;
     }
 
     public List<RepresentativeMenu> findAllRepresentative(Long restaurantId) {

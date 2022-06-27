@@ -24,13 +24,16 @@ public class CustomerRepository implements MemberRepository<Customer> {
     }
 
     public Customer findOneWithBasket(Long id) {
-        return em.createQuery("select distinct m from Customer m left join fetch m.baskets where m.id =:id", Customer.class)
+        return em.createQuery("select distinct m from Customer m" +
+                        " left join fetch m.baskets where m.id =:id", Customer.class)
                 .setParameter("id", id)
                 .getSingleResult();
     }
 
     public Customer findOneWithBasketWithFood(Long id) {
-        return em.createQuery("select distinct m from Customer m left join fetch m.baskets b left join fetch b.food where m.id =:id", Customer.class)
+        return em.createQuery("select distinct m from Customer m" +
+                        " left join fetch m.baskets b" +
+                        " left join fetch b.food where m.id =:id", Customer.class)
                 .setParameter("id", id)
                 .getSingleResult();
     }

@@ -42,7 +42,6 @@ public class OrderService {
         return orderRepository.findOneWithRestWithOrderFoodsWithFood(orderId);
     }
 
-    @Transactional(readOnly = true)
     public Boolean isAbleToAddToBasket(Long customerId, Long restaurantId) {
 
         Customer customer = customerRepository.findOne(customerId);
@@ -122,7 +121,8 @@ public class OrderService {
         orderRepository.save(order);
         try {
             // 점주에게 FCM 발신
-            firebaseCloudMessageService.sendMessageTo(token, "(주문접수) 주문이 접수되었습니다.", messageBuilder.toString(), orderDto.getOrderType());
+            firebaseCloudMessageService.sendMessageTo(token, "(주문접수) 주문이 접수되었습니다.",
+                    messageBuilder.toString(), orderDto.getOrderType());
         } catch (IOException e) {
             throw new FcmErrorException();
         }
@@ -140,7 +140,8 @@ public class OrderService {
             order.registerCanceledTime();
 
             String firebaseToken = order.getRestaurant().getOwner().getFirebaseToken();
-            String message = String.format("[%s] 고객의 요청으로 접수된 주문이 취소되었습니다.", order.getCanceledOrCompletedTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd - HH:mm:ss")));
+            String message = String.format("[%s] 고객의 요청으로 접수된 주문이 취소되었습니다.",
+                    order.getCanceledOrCompletedTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd - HH:mm:ss")));
 
             try {
                 firebaseCloudMessageService.sendMessageTo(firebaseToken, "(주문취소) 주문 취소 알림!!", message, OrderType.CANCEL);
@@ -159,16 +160,20 @@ public class OrderService {
 
         if (order.isAbleToOwnerCancel()) {
             order.cancel();
-            //order.removeAllOrderFood();
             order.registerCanceledTime();
 
-            String firebaseToken = order.getCustomer().getFirebaseToken();
-            String message = String.format("[%s] %s 사유로 인해 주문이 취소되었습니다.", order.getCanceledOrCompletedTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd - HH:mm:ss")), messageDto.getMessage());
-
             try {
-                firebaseCloudMessageService.sendMessageTo(firebaseToken, "(주문취소) 매장의 요청으로 주문이 취소되었습니다.", message, OrderType.CANCEL);
+                String firebaseToken = order.getCustomer().getFirebaseToken();
+                String message = String.format("[%s] %s 사유로 인해 주문이 취소되었습니다.",
+                        order.getCanceledOrCompletedTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd - HH:mm:ss")),
+                        messageDto.getMessage());
+
+                firebaseCloudMessageService.sendMessageTo(firebaseToken, "(주문취소) 매장의 요청으로 주문이 취소되었습니다.",
+                        message, OrderType.CANCEL);
             } catch (IOException e) {
                 throw new FcmErrorException();
+            } catch (NullPointerException e) {
+                // 고객이 회원탈퇴를 했을 경우
             }
             return true;
         }
@@ -189,15 +194,19 @@ public class OrderService {
             // 증가된 카운터 내 주문번호로 등록
             order.registerMyOrderNumber(order.getRestaurant().getOrderCount());
 
-            String firebaseToken = order.getCustomer().getFirebaseToken();
-            String message = String.format("[%s] 조리가 시작되었습니다. 약 %d분 후 조리가 완료될 예정입니다.", order.getCheckedTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd - HH:mm:ss")), order.getRestaurant().getOrderingWaitingTime());
-
             try {
-                firebaseCloudMessageService.sendMessageTo(firebaseToken, "(접수완료) 요청하신 주문이 접수완료되었습니다.", message, order.getOrderType());
+                String firebaseToken = order.getCustomer().getFirebaseToken();
+                String message = String.format("[%s] 조리가 시작되었습니다. 약 %d분 후 조리가 완료될 예정입니다.",
+                        order.getCheckedTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd - HH:mm:ss")),
+                        order.getRestaurant().getOrderingWaitingTime());
+
+                firebaseCloudMessageService.sendMessageTo(firebaseToken, "(접수완료) 요청하신 주문이 접수완료되었습니다.",
+                        message, order.getOrderType());
             } catch (IOException e) {
                 throw new FcmErrorException();
+            } catch (NullPointerException e) {
+                // 고객이 회원탈퇴를 했을 경우
             }
-
             return true;
         }
         return false;
@@ -212,15 +221,18 @@ public class OrderService {
             order.complete();
             order.registerCompletedTime();
 
-            String firebaseToken = order.getCustomer().getFirebaseToken();
-            String message = String.format("[%s] 최상의 맛을 느낄 수 있도록 지금 바로 %s",
-                    order.getCanceledOrCompletedTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd - HH:mm:ss")),
-                    order.getOrderType() == OrderType.PACKING ? "매장에서 픽업해주세요." : "픽업대에서 음식을 가져가주세요.");
-
             try {
-                firebaseCloudMessageService.sendMessageTo(firebaseToken, "(조리완료) 주문하신 음식이 조리완료 되었습니다.", message, order.getOrderType());
+                String firebaseToken = order.getCustomer().getFirebaseToken();
+                String message = String.format("[%s] 최상의 맛을 느낄 수 있도록 지금 바로 %s",
+                        order.getCanceledOrCompletedTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd - HH:mm:ss")),
+                        order.getOrderType() == OrderType.PACKING ? "매장에서 픽업해주세요." : "픽업대에서 음식을 가져가주세요.");
+
+                firebaseCloudMessageService.sendMessageTo(firebaseToken, "(조리완료) 주문하신 음식이 조리완료 되었습니다.",
+                        message, order.getOrderType());
             } catch (IOException e) {
                 throw new FcmErrorException();
+            } catch (NullPointerException e) {
+                // 고객이 회원탈퇴를 했을 경우
             }
             return true;
         }

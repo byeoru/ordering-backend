@@ -89,7 +89,6 @@ public class WaitingService {
     /**
      * 내 앞 대기 인원 수 조회
      */
-    @Transactional(readOnly = true)
     public Long getNumberInFrontOfMe(Integer myWaitingNumber, Long restaurantId) {
         return waitingRepository.getCountInFrontOfMe(myWaitingNumber, restaurantId);
     }

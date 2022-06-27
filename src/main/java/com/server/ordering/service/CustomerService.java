@@ -39,10 +39,6 @@ public class CustomerService implements MemberService<Customer> {
         return customerRepository.findOneWithPhoneNumberWithWaiting(customerId);
     }
 
-    public Customer findCustomer(Long customerId) {
-        return customerRepository.findOne(customerId);
-    }
-
     /**
      * 고객 회원가입
      */
@@ -166,8 +162,7 @@ public class CustomerService implements MemberService<Customer> {
      */
     @Transactional
     public void removeReview(Long reviewId) {
-        Review review = reviewRepository.findOne(reviewId);
-        reviewRepository.remove(review);
+        reviewRepository.remove(reviewId);
     }
 
     /**
@@ -212,8 +207,8 @@ public class CustomerService implements MemberService<Customer> {
     /**
      * 장바구니 리스트 반환
      */
-    public List<Basket> findBasketWithFood(Long customerId) {
-        return basketRepository.findAllWithFoodByCustomerId(customerId);
+    public Customer findCustomerWithBasketWithFood(Long customerId) {
+        return customerRepository.findOneWithBasketWithFood(customerId);
     }
 
     /**

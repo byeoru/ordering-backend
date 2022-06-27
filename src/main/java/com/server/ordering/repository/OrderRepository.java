@@ -48,7 +48,8 @@ public class OrderRepository {
     }
 
     public Order findOneWithCustomer(Long orderId) {
-        return em.createQuery("select m from Order m left join fetch m.customer where m.id =:orderId", Order.class)
+        return em.createQuery("select m from Order m" +
+                        " left join fetch m.customer where m.id =:orderId", Order.class)
                 .setParameter("orderId", orderId)
                 .getSingleResult();
     }
@@ -62,7 +63,8 @@ public class OrderRepository {
     }
 
     public Order findOneWithReview(Long orderId) {
-        return em.createQuery("select distinct m from Order m left join fetch m.review where m.id =:id", Order.class)
+        return em.createQuery("select distinct m from Order m" +
+                        " left join fetch m.review where m.id =:id", Order.class)
                 .setParameter("id", orderId)
                 .getSingleResult();
     }
@@ -100,7 +102,8 @@ public class OrderRepository {
 
     public List<Order> findAllOrderedChecked(Long restaurantId) {
         return em.createQuery("select distinct m from Order m" +
-                        " where m.restaurant.id =:restaurantId and (m.status =:ordered or m.status =:checked) order by m.id desc", Order.class)
+                        " where m.restaurant.id =:restaurantId and (m.status =:ordered or m.status =:checked)" +
+                        " order by m.id desc", Order.class)
                 .setParameter("restaurantId", restaurantId)
                 .setParameter("ordered", OrderStatus.ORDERED)
                 .setParameter("checked", OrderStatus.CHECKED)
@@ -109,7 +112,8 @@ public class OrderRepository {
 
     public List<Order> findAllCanceledCompleted(Long restaurantId) {
         return em.createQuery("select distinct m from Order m" +
-                        " where m.restaurant.id =:restaurantId and (m.status =:canceled or m.status =:completed) order by m.canceledOrCompletedTime desc", Order.class)
+                        " where m.restaurant.id =:restaurantId and (m.status =:canceled or m.status =:completed)" +
+                        " order by m.canceledOrCompletedTime desc", Order.class)
                 .setParameter("restaurantId", restaurantId)
                 .setParameter("canceled", OrderStatus.CANCELED)
                 .setParameter("completed", OrderStatus.COMPLETED)
@@ -135,7 +139,8 @@ public class OrderRepository {
                         " left join fetch m.restaurant" +
                         " left join fetch m.orderFoods odf" +
                         " left join fetch odf.food" +
-                        " where m.customer.id =:customerId and (m.status =:canceled or m.status =:completed) order by m.receivedTime desc", Order.class)
+                        " where m.customer.id =:customerId and (m.status =:canceled or m.status =:completed)" +
+                        " order by m.id desc", Order.class)
                 .setParameter("customerId", customerId)
                 .setParameter("canceled", OrderStatus.CANCELED)
                 .setParameter("completed", OrderStatus.COMPLETED)
@@ -160,7 +165,8 @@ public class OrderRepository {
             int orderingWaitingTime = rs.getInt("ordering_waiting_time");
             float average = restaurantRepository.findRestaurantRatingAverage(rs.getLong("restaurant_id"));
 
-            return new RecentOrderRestaurantDto(restaurantId, restaurantName, profileImageUrl, backgroundImageUrl, average, orderingWaitingTime);
+            return new RecentOrderRestaurantDto(restaurantId, restaurantName,
+                    profileImageUrl, backgroundImageUrl, average, orderingWaitingTime);
         }, customerId, requestNumber);
     }
 

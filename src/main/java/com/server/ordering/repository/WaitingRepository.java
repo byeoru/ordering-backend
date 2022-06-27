@@ -39,7 +39,8 @@ public class WaitingRepository {
     }
 
     public Waiting findOneWithRestaurant(Long customerId) throws PersistenceException {
-        return em.createQuery("select m from Waiting m left join fetch m.restaurant where m.customer.id =:customerId", Waiting.class)
+        return em.createQuery("select m from Waiting m" +
+                        " left join fetch m.restaurant where m.customer.id =:customerId", Waiting.class)
                 .setParameter("customerId", customerId)
                 .getSingleResult();
     }

@@ -23,8 +23,8 @@ public class BookmarkRepository {
         em.remove(bookmark);
     }
 
-    public Bookmark findOneByCustomerIdAndRestaurantId(Long customerId, Long restaurantId) throws PersistenceException {
-        return em.createQuery("select m from Bookmark m where m.customer.id =:customerId and m.restaurant.id =:restaurantId", Bookmark.class)
+    public void findOneByCustomerIdAndRestaurantId(Long customerId, Long restaurantId) throws PersistenceException {
+        em.createQuery("select m from Bookmark m where m.customer.id =:customerId and m.restaurant.id =:restaurantId", Bookmark.class)
                 .setParameter("customerId", customerId)
                 .setParameter("restaurantId", restaurantId)
                 .getSingleResult();

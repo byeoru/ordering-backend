@@ -22,14 +22,16 @@ public class BasketRepository {
         em.persist(basket);
     }
 
-    public List<Basket> findAllWithFoodByCustomerId(Long customerId) {
-        return em.createQuery("select distinct m from Basket m left join fetch m.food where m.customer.id =:customerId", Basket.class)
-                .setParameter("customerId", customerId)
-                .getResultList();
-    }
+//    public List<Basket> findAllWithFoodByCustomerId(Long customerId) {
+//        return em.createQuery("select distinct m from Basket m" +
+//                        " left join fetch m.food where m.customer.id =:customerId", Basket.class)
+//                .setParameter("customerId", customerId)
+//                .getResultList();
+//    }
 
     public Basket findOneByCustomerIdAndFoodId(Long customerId, Long foodId) throws PersistenceException {
-        return em.createQuery("select m from Basket m where m.customer.id =:customerId and m.food.id =:foodId", Basket.class)
+        return em.createQuery("select m from Basket m" +
+                        " where m.customer.id =:customerId and m.food.id =:foodId", Basket.class)
                 .setParameter("customerId", customerId)
                 .setParameter("foodId", foodId)
                 .getSingleResult();

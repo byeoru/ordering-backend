@@ -30,7 +30,8 @@ public class RestaurantRepository {
     }
 
     public Restaurant findOneWithOwner(Long id) {
-        return em.createQuery("select m from Restaurant m left join fetch m.owner where m.id =:id", Restaurant.class)
+        return em.createQuery("select m from Restaurant m" +
+                        " left join fetch m.owner where m.id =:id", Restaurant.class)
                 .setParameter("id", id)
                 .getSingleResult();
     }
@@ -75,16 +76,9 @@ public class RestaurantRepository {
         }, customerLocation.toText(), foodCategory.toString());
     }
 
-
-
-    public Restaurant findOneWithRepresentativeMenu(Long id) {
-        return em.createQuery("select distinct m from Restaurant m left join fetch m.representativeMenus where m.id=:id", Restaurant.class)
-                .setParameter("id", id)
-                .getSingleResult();
-    }
-
     public float findRestaurantRatingAverage(Long restaurantId) {
-        double avg = em.createQuery("select coalesce(avg(m.rating), 0) from Review m where m.restaurant.id =:restaurantId", Double.class)
+        double avg = em.createQuery("select coalesce(avg(m.rating), 0) from Review m" +
+                        " where m.restaurant.id =:restaurantId", Double.class)
                 .setParameter("restaurantId", restaurantId)
                 .getSingleResult();
         return (float) avg;
