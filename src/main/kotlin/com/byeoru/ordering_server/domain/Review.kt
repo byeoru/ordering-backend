@@ -5,6 +5,7 @@ import javax.persistence.*
 @Entity
 class Review(review: String,
              rating: Float) {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_id")

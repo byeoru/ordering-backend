@@ -10,13 +10,11 @@ import com.byeoru.ordering_server.domain.dto.request.RestaurantDataWithLocationD
 import com.byeoru.ordering_server.domain.dto.request.RestaurantPreviewListReqDto
 import com.byeoru.ordering_server.domain.dto.request.WaitingTimeDto
 import com.byeoru.ordering_server.domain.dto.response.RestaurantPreviewWithDistanceDto
-import com.byeoru.ordering_server.domain.dto.response.SalesResponseDto
 import com.byeoru.ordering_server.repository.*
 import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.GeometryFactory
 import org.locationtech.jts.geom.PrecisionModel
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile

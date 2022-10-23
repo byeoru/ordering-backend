@@ -8,6 +8,7 @@ import javax.persistence.*
 class Owner(signInId: String,
             password: String,
             phoneNumber: PhoneNumber) : MemberBase(signInId, password, phoneNumber) {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "owner_id")

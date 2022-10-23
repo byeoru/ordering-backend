@@ -15,6 +15,7 @@ class Restaurant(restaurantName: String,
                  restaurantType: RestaurantType,
                  orderingWaitingTime: Int,
                  admissionWaitingTime: Int) {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "restaurant_id")

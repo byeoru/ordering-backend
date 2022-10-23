@@ -26,9 +26,9 @@ class FoodService(private val s3Service: S3Service,
     @Transactional
     fun registerFood(restaurantId: Long, dto: FoodDto, image: MultipartFile?): Long? {
         val restaurant = restaurantRepository.findOne(restaurantId)
-        if (image != null) {
-            val newImageKey = restaurantId.toString() + "food-image" + System.currentTimeMillis()
-            val imageUrl: String = s3Service.upload(image, newImageKey)
+        image?.let {
+            val newImageKey = "${restaurantId}food-image${System.currentTimeMillis()}"
+            val imageUrl = s3Service.upload(image, newImageKey)
             dto.imageUrl = imageUrl
         }
         val food = Food(dto.foodName, dto.price, false, dto.imageUrl, dto.menuIntro)

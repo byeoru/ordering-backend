@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository
 import java.sql.ResultSet
 import java.sql.SQLException
 import javax.persistence.EntityManager
-import javax.persistence.PersistenceContext
 
 @Repository
 class OrderRepository(private val em: EntityManager,

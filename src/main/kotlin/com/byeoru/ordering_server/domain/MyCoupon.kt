@@ -7,6 +7,7 @@ import javax.persistence.*
 class MyCoupon(serialNumber: String,
                value: Int,
                customer: Customer) {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "my_coupon_id")

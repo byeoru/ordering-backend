@@ -16,7 +16,6 @@ class CouponApiController(val couponService: CouponService) {
      */
     @PostMapping("/api/coupon")
     fun registerCoupon(@RequestBody dto: CouponDto): ResultDto<Boolean> {
-
         couponService.saveCoupon(dto)
         return ResultDto(1, true)
     }

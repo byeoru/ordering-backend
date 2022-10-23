@@ -3,6 +3,7 @@ package com.byeoru.ordering_server.domain.dto.response
 import com.byeoru.ordering_server.domain.Basket
 
 class BasketFood(basket: Basket) {
+
     val basketId: Long?
     val foodId: Long?
     val foodName: String

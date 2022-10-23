@@ -10,6 +10,7 @@ class Waiting(restaurant: Restaurant,
               myWaitingNumber: Int,
               numOfTeamMembers: Byte,
               phoneNumber: PhoneNumber) {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "waiting_id")

@@ -4,7 +4,6 @@ import com.byeoru.ordering_server.domain.*
 import com.byeoru.ordering_server.domain.dto.ResultDto
 import com.byeoru.ordering_server.domain.dto.request.*
 import com.byeoru.ordering_server.domain.dto.response.*
-import com.byeoru.ordering_server.domain.member.Customer
 import com.byeoru.ordering_server.service.*
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -23,13 +22,13 @@ class CustomerApiController(val verificationService: VerificationService,
      */
     @PostMapping("/api/customer/verification/get")
     fun sendCode(@RequestBody dto: PhoneNumberDto): ResultDto<Boolean> {
-        val bDuplicatedNumber: Boolean =
-            verificationService.isPhoneNumberDuplicated(MemberType.CUSTOMER, dto.phoneNumber)
-        if (bDuplicatedNumber) {
-            return ResultDto(1, false)
+        val bDuplicatedNumber: Boolean = verificationService.isPhoneNumberDuplicated(MemberType.CUSTOMER, dto.phoneNumber)
+        return if (bDuplicatedNumber) {
+            ResultDto(1, false)
+        } else {
+            verificationService.sendCode(dto.phoneNumber)
+            ResultDto(1, true)
         }
-        verificationService.sendCode(dto.phoneNumber)
-        return ResultDto(1, true)
     }
 
     /**
@@ -60,8 +59,8 @@ class CustomerApiController(val verificationService: VerificationService,
      */
     @PostMapping("/api/customer/signin")
     fun signIn(@RequestBody dto: SignInDto): ResultDto<CustomerSignInResultDto> {
-        val customer: Customer = customerService.signIn(dto) ?: return ResultDto(1, null)
-        val basketCount: Int = customerService.getBasketCount(customer.id!!)
+        val customer = customerService.signIn(dto) ?: return ResultDto(1, null)
+        val basketCount = customerService.getBasketCount(customer.id!!)
         return ResultDto(1, CustomerSignInResultDto(customer.id!!, customer.nickname, basketCount))
     }
 
@@ -78,10 +77,8 @@ class CustomerApiController(val verificationService: VerificationService,
      * 고객 휴대폰번호 변경
      */
     @PutMapping("/api/customer/{customerId}/phone_number")
-    fun putPhoneNumber(
-        @PathVariable customerId: Long,
-        @RequestBody dto: PhoneNumberDto
-    ): ResultDto<Boolean> {
+    fun putPhoneNumber(@PathVariable customerId: Long,
+                       @RequestBody dto: PhoneNumberDto): ResultDto<Boolean> {
         customerService.putPhoneNumber(customerId, dto.phoneNumber)
         return ResultDto(1, true)
     }
@@ -90,11 +87,9 @@ class CustomerApiController(val verificationService: VerificationService,
      * 고객 비밀번호 변경
      */
     @PutMapping("/api/customer/{customerId}/password")
-    fun putPassword(
-        @PathVariable customerId: Long,
-        @RequestBody dto: PasswordChangeDto
-    ): ResultDto<Boolean> {
-        val isChanged: Boolean = customerService.putPassword(customerId, dto)
+    fun putPassword(@PathVariable customerId: Long,
+                    @RequestBody dto: PasswordChangeDto): ResultDto<Boolean> {
+        val isChanged = customerService.putPassword(customerId, dto)
         return ResultDto(1, isChanged)
     }
 
@@ -111,13 +106,11 @@ class CustomerApiController(val verificationService: VerificationService,
      * 고객 리뷰 등록
      */
     @PostMapping("/api/customer/review")
-    fun registerReview(
-        @RequestParam(name = "restaurant_id") restaurantId: Long,
-        @RequestParam(name = "order_id") orderId: Long,
-        @RequestPart(required = false) image: MultipartFile,
-        @RequestPart dto: ReviewDto
-    ): ResultDto<Boolean> {
-        val isRegistered: Boolean = customerService.registerReview(restaurantId, orderId, dto, image)
+    fun registerReview(@RequestParam(name = "restaurant_id") restaurantId: Long,
+                       @RequestParam(name = "order_id") orderId: Long,
+                       @RequestPart(required = false) image: MultipartFile?,
+                       @RequestPart dto: ReviewDto): ResultDto<Boolean> {
+        val isRegistered = customerService.registerReview(restaurantId, orderId, dto, image)
         return ResultDto(1, isRegistered)
     }
 
@@ -134,14 +127,16 @@ class CustomerApiController(val verificationService: VerificationService,
      * 고객 쿠폰 등록
      */
     @PostMapping("/api/customer/{customerId}/coupon")
-    fun getCoupon(@PathVariable customerId: Long, @RequestBody dto: CouponSerialNumberDto): ResultDto<Boolean> {
-        val coupon: Coupon = couponService.getCoupon(dto.serialNumber)
-        val haveCoupon: Boolean = couponService.haveThisCoupon(dto.serialNumber, customerId)
-        if (haveCoupon) {
-            return ResultDto(1, false)
+    fun getCoupon(@PathVariable customerId: Long,
+                  @RequestBody dto: CouponSerialNumberDto): ResultDto<Boolean> {
+        val coupon = couponService.getCoupon(dto.serialNumber)
+        val haveCoupon = couponService.haveThisCoupon(dto.serialNumber, customerId)
+        return if (haveCoupon) {
+            ResultDto(1, false)
+        } else {
+            couponService.saveMyCoupon(coupon, customerId)
+            ResultDto(1, true)
         }
-        couponService.saveMyCoupon(coupon, customerId)
-        return ResultDto(1, true)
     }
 
     /**
@@ -158,14 +153,10 @@ class CustomerApiController(val verificationService: VerificationService,
      */
     @PostMapping("/api/customer/{customerId}/waiting")
     fun getMyWaitingInfo(@PathVariable customerId: Long): ResultDto<MyWaitingInfoDto> {
-
         // 접수한 웨이팅이 없다면 Null 반환
-        val waiting: Waiting = waitingService.findOneWithRestaurantByCustomer(customerId)
-            ?: return ResultDto(1, null)
-
+        val waiting = waitingService.findOneWithRestaurantByCustomer(customerId) ?: return ResultDto(1, null)
         // 앞에 남은 사람 수
-        val numberInFrontOfMe: Long =
-            waitingService.getNumberInFrontOfMe(waiting.myWaitingNumber, waiting.restaurant.id!!)
+        val numberInFrontOfMe = waitingService.getNumberInFrontOfMe(waiting.myWaitingNumber, waiting.restaurant.id!!)
         val myWaitingDto = MyWaitingInfoDto(waiting, numberInFrontOfMe)
         return ResultDto(1, myWaitingDto)
     }
@@ -175,7 +166,7 @@ class CustomerApiController(val verificationService: VerificationService,
      */
     @PostMapping("/api/customer/{customerId}/baskets")
     fun getBasketList(@PathVariable customerId: Long): ResultDto<BasketListResultDto> {
-        val customer: Customer = customerService.findCustomerWithBasketWithFood(customerId)
+        val customer = customerService.findCustomerWithBasketWithFood(customerId)
         var restaurantName: String? = null
 
         customer.basketKey?.let {
@@ -192,7 +183,7 @@ class CustomerApiController(val verificationService: VerificationService,
      */
     @PostMapping("/api/customer/{customerId}/my_coupons")
     fun getMyCouponList(@PathVariable customerId: Long): ResultDto<List<CouponDto>> {
-        val myCoupons: List<MyCoupon> = customerService.findMyCoupon(customerId)
+        val myCoupons = customerService.findMyCoupon(customerId)
         val couponDtos = myCoupons.map { CouponDto(it) }
         return ResultDto(couponDtos.size, couponDtos)
     }
@@ -201,18 +192,17 @@ class CustomerApiController(val verificationService: VerificationService,
      * 매장 북마크(찜)
      */
     @PostMapping("/api/customer/{customerId}/bookmark")
-    fun restaurantBookmark(
-        @PathVariable customerId: Long,
-        @RequestParam(name = "restaurant_id") restaurantId: Long
-    ): ResultDto<Long> {
+    fun restaurantBookmark(@PathVariable customerId: Long,
+                           @RequestParam(name = "restaurant_id") restaurantId: Long): ResultDto<Long> {
         // 중복 체크
         val bExist: Boolean = customerService.isExistedBookmark(customerId, restaurantId)
         // 이미 북마크 되어 있음
-        if (bExist) {
-            return ResultDto(1, null)
+        return if (bExist) {
+            ResultDto(1, null)
+        } else {
+            val bookmarkId = customerService.addBookmark(customerId, restaurantId)
+            ResultDto(1, bookmarkId)
         }
-        val bookmarkId: Long? = customerService.addBookmark(customerId, restaurantId)
-        return ResultDto(1, bookmarkId)
     }
 
     /**
@@ -229,7 +219,7 @@ class CustomerApiController(val verificationService: VerificationService,
      */
     @GetMapping("/api/customer/{customerId}/bookmarks")
     fun getBookmarkList(@PathVariable customerId: Long): ResultDto<List<BookmarkPreviewDto>> {
-        val bookmarks: List<Bookmark> = customerService.findAllBookmarkWithRestWithRepresentative(customerId)
+        val bookmarks = customerService.findAllBookmarkWithRestWithRepresentative(customerId)
         val previewDtos = bookmarks.map { BookmarkPreviewDto(it) }
         return ResultDto(previewDtos.size, previewDtos)
     }
@@ -239,7 +229,7 @@ class CustomerApiController(val verificationService: VerificationService,
      */
     @GetMapping("/api/customer/{customerId}/orders/ongoing")
     fun getAllMyOngoingOrders(@PathVariable customerId: Long): ResultDto<List<OrderPreviewWithRestSimpleDto>> {
-        val ongoingOrders: List<Order> = customerService.findAllMyOngoingOrders(customerId)
+        val ongoingOrders = customerService.findAllMyOngoingOrders(customerId)
         val historyDtos = ongoingOrders.map { OrderPreviewWithRestSimpleDto(it) }
         return ResultDto(historyDtos.size, historyDtos)
     }
@@ -249,7 +239,7 @@ class CustomerApiController(val verificationService: VerificationService,
      */
     @GetMapping("/api/customer/{customerId}/orders/finished")
     fun getAllMyFinishedOrders(@PathVariable customerId: Long): ResultDto<List<OrderPreviewWithRestSimpleDto>> {
-        val finishedOrders: List<Order> = customerService.findAllMyFinishedOrders(customerId)
+        val finishedOrders = customerService.findAllMyFinishedOrders(customerId)
         val historyDtos = finishedOrders.map { OrderPreviewWithRestSimpleDto(it) }
         return ResultDto(historyDtos.size, historyDtos)
     }
@@ -259,7 +249,7 @@ class CustomerApiController(val verificationService: VerificationService,
      */
     @GetMapping("/api/customer/order/{orderId}/detail")
     fun getOrderDetail(@PathVariable orderId: Long): ResultDto<OrderDetailDto> {
-        val order: Order = orderService.findOrderWithRestWithOrderFoodsWithFood(orderId)
+        val order = orderService.findOrderWithRestWithOrderFoodsWithFood(orderId)
         val orderDetailDto = OrderDetailDto(order)
         return ResultDto(1, orderDetailDto)
     }
@@ -269,8 +259,7 @@ class CustomerApiController(val verificationService: VerificationService,
      */
     @GetMapping("/api/customer/{customerId}/orders/recent")
     fun getRecentOrdersRestaurant(@PathVariable customerId: Long): ResultDto<List<RecentOrderRestaurantDto>> {
-        val restaurantDtos: List<RecentOrderRestaurantDto> =
-            customerService.findRecentOrdersWithRestaurant(customerId, 10)
+        val restaurantDtos = customerService.findRecentOrdersWithRestaurant(customerId, 10)
         return ResultDto(restaurantDtos.size, restaurantDtos)
     }
 }

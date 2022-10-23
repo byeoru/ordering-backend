@@ -6,6 +6,7 @@ import javax.persistence.*
 class OrderFood(food: Food,
                 price: Int,
                 count: Int) {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_food_id")

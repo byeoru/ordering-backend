@@ -18,17 +18,11 @@ class WebController {
     }
 
     @GetMapping("/app-download")
-    fun appDownload(): String {
-        return "downloadApp"
-    }
+    fun appDownload() = "downloadApp"
 
     @GetMapping("/banner/1")
-    fun banner1(): String {
-        return "banner1"
-    }
+    fun banner1() = "banner1"
 
     @GetMapping("/banner/2")
-    fun banner2(): String {
-        return "banner2"
-    }
+    fun banner2() = "banner2"
 }

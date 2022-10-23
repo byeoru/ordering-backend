@@ -3,9 +3,9 @@ package com.byeoru.ordering_server.domain
 import javax.persistence.*
 
 @Entity
-class PhoneNumber(
-    phoneNumber: String,
-    memberType: MemberType) {
+class PhoneNumber(phoneNumber: String,
+                  memberType: MemberType) {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "phone_number_id")

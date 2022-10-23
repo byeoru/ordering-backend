@@ -4,10 +4,11 @@ import javax.persistence.*
 
 @Entity
 class Food(foodName: String,
-                 price: Int,
-                 soldOut: Boolean,
-                 imageUrl: String?,
-                 menuIntro: String) {
+           price: Int,
+           soldOut: Boolean,
+           imageUrl: String?,
+           menuIntro: String) {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "food_id")

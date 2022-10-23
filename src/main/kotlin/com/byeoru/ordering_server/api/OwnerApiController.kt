@@ -1,7 +1,6 @@
 package com.byeoru.ordering_server.api
 
 import com.byeoru.ordering_server.domain.MemberType
-import com.byeoru.ordering_server.domain.Restaurant
 import com.byeoru.ordering_server.domain.dto.ResultDto
 import com.byeoru.ordering_server.domain.dto.request.*
 import com.byeoru.ordering_server.domain.dto.response.OwnerSignInResultDto
@@ -20,7 +19,7 @@ class OwnerApiController(val verificationService: VerificationService,
      */
     @PostMapping("/api/owner/verification/get")
     fun sendCode(@RequestBody dto: PhoneNumberDto): ResultDto<Boolean> {
-        val bDuplicatedNumber: Boolean = verificationService.isPhoneNumberDuplicated(MemberType.OWNER, dto.phoneNumber)
+        val bDuplicatedNumber = verificationService.isPhoneNumberDuplicated(MemberType.OWNER, dto.phoneNumber)
         return if (bDuplicatedNumber) {
             ResultDto(1, false)
         } else {
@@ -34,7 +33,7 @@ class OwnerApiController(val verificationService: VerificationService,
      */
     @PostMapping("/api/owner/verification/check")
     fun checkCode(@RequestBody dto: VerificationDto): ResultDto<Boolean> {
-        val isSuccess: Boolean = verificationService.checkCode(dto.totalNum, dto.code)
+        val isSuccess = verificationService.checkCode(dto.totalNum, dto.code)
         return ResultDto(1, isSuccess)
     }
 
@@ -43,11 +42,11 @@ class OwnerApiController(val verificationService: VerificationService,
      */
     @PostMapping("/api/owner/signup")
     fun singUp(@RequestBody dto: OwnerSignUpDto): ResultDto<Long> {
-        val bIdDuplicated: Boolean = ownerService.isIdDuplicated(dto.signInId)
+        val bIdDuplicated = ownerService.isIdDuplicated(dto.signInId)
         return if (bIdDuplicated) {
             ResultDto(1, null)
         } else {
-            val ownerId: Long? = ownerService.signUp(dto)
+            val ownerId = ownerService.signUp(dto)
             ResultDto(1, ownerId)
         }
     }
@@ -59,10 +58,9 @@ class OwnerApiController(val verificationService: VerificationService,
     fun signIn(@RequestBody dto: SignInDto): ResultDto<OwnerSignInResultDto> {
         val owner = ownerService.signIn(dto)
         return if (owner != null) {
-            val restaurant: Restaurant? = owner.restaurant
-            if (restaurant != null) {
-                ResultDto(1, OwnerSignInResultDto(owner.id, owner.restaurant!!))
-            } else ResultDto(1, OwnerSignInResultDto(owner.id))
+            val restaurant = owner.restaurant
+            if (restaurant != null) ResultDto(1, OwnerSignInResultDto(owner.id, owner.restaurant!!))
+            else ResultDto(1, OwnerSignInResultDto(owner.id))
         } else {
             ResultDto(1, null)
         }
@@ -81,10 +79,8 @@ class OwnerApiController(val verificationService: VerificationService,
      * 점주 휴대폰번호 변경
      */
     @PutMapping("/api/owner/{ownerId}/phone_number")
-    fun putPhoneNumber(
-        @PathVariable ownerId: Long,
-        @RequestBody dto: PhoneNumberDto
-    ): ResultDto<Boolean> {
+    fun putPhoneNumber(@PathVariable ownerId: Long,
+                       @RequestBody dto: PhoneNumberDto): ResultDto<Boolean> {
         ownerService.putPhoneNumber(ownerId, dto.phoneNumber)
         return ResultDto(1, true)
     }
@@ -93,11 +89,9 @@ class OwnerApiController(val verificationService: VerificationService,
      * 점주 비밀번호 변경
      */
     @PutMapping("/api/owner/{ownerId}/password")
-    fun putPassword(
-        @PathVariable ownerId: Long,
-        @RequestBody dto: PasswordChangeDto
-    ): ResultDto<Boolean> {
-        val isChanged: Boolean = ownerService.putPassword(ownerId, dto)
+    fun putPassword(@PathVariable ownerId: Long,
+                    @RequestBody dto: PasswordChangeDto): ResultDto<Boolean> {
+        val isChanged = ownerService.putPassword(ownerId, dto)
         return ResultDto(1, isChanged)
     }
 
@@ -114,11 +108,9 @@ class OwnerApiController(val verificationService: VerificationService,
      * 점주 매장 등록
      */
     @PostMapping("/api/owner/{ownerId}/restaurant")
-    fun registerRestaurant(
-        @PathVariable ownerId: Long,
-        @RequestBody dto: RestaurantDataWithLocationDto
-    ): ResultDto<Long> {
-        val restaurantId: Long? = restaurantService.registerRestaurant(ownerId, dto)
+    fun registerRestaurant(@PathVariable ownerId: Long,
+                           @RequestBody dto: RestaurantDataWithLocationDto): ResultDto<Long> {
+        val restaurantId = restaurantService.registerRestaurant(ownerId, dto)
         return ResultDto(1, restaurantId)
     }
 }

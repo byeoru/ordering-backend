@@ -85,12 +85,13 @@ class OwnerService(private val ownerRepository: OwnerRepository,
     @Transactional
     fun putPassword(ownerId: Long, dto: PasswordChangeDto): Boolean {
         val owner = ownerRepository.findOne(ownerId)
-        if (passwordEncoder.matches(dto.currentPassword, owner.password)) {
+        return if (passwordEncoder.matches(dto.currentPassword, owner.password)) {
             val encodedNewPassword = passwordEncoder.encode(dto.newPassword)
             owner.putPassword(encodedNewPassword)
-            return true
+            true
+        } else {
+            false
         }
-        return false
     }
 
     /**

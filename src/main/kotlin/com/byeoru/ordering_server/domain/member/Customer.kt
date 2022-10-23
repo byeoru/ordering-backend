@@ -8,7 +8,8 @@ import javax.persistence.*
 class Customer(nickname: String,
                signInId: String,
                password: String,
-               phoneNumber: PhoneNumber) : MemberBase(signInId, password, phoneNumber)  {
+               phoneNumber: PhoneNumber) : MemberBase(signInId, password, phoneNumber) {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "customer_id")

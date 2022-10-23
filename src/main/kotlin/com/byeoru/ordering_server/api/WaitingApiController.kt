@@ -2,7 +2,6 @@ package com.byeoru.ordering_server.api
 
 import com.byeoru.ordering_server.domain.dto.ResultDto
 import com.byeoru.ordering_server.domain.dto.request.WaitingRegisterDto
-import com.byeoru.ordering_server.domain.member.Customer
 import com.byeoru.ordering_server.service.CustomerService
 import com.byeoru.ordering_server.service.WaitingService
 import org.springframework.web.bind.annotation.*
@@ -15,19 +14,17 @@ class WaitingApiController(private val waitingService: WaitingService,
      * 웨이팅 접수
      */
     @PostMapping("/api/waiting")
-    fun registerWaiting(
-        @RequestParam(name = "restaurant_id") restaurantId: Long,
-        @RequestParam(name = "customer_id") customerId: Long,
-        @RequestBody dto: WaitingRegisterDto
-    ): ResultDto<Boolean> {
-        val customer: Customer = customerService.findCustomerWithPhoneNumberWithWaiting(customerId)
-
+    fun registerWaiting(@RequestParam(name = "restaurant_id") restaurantId: Long,
+                        @RequestParam(name = "customer_id") customerId: Long,
+                        @RequestBody dto: WaitingRegisterDto): ResultDto<Boolean> {
+        val customer = customerService.findCustomerWithPhoneNumberWithWaiting(customerId)
         // 웨이팅 접수가 가능한지 체크
-        if (customer.isAbleToWaiting()) {
+        return if (customer.isAbleToWaiting()) {
             waitingService.registerWaiting(restaurantId, customerId, dto)
-            return ResultDto(1, true)
+            ResultDto(1, true)
+        } else {
+            ResultDto(1, false)
         }
-        return ResultDto(1, false)
     }
 
     /**

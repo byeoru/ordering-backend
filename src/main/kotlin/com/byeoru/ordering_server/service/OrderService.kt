@@ -2,7 +2,6 @@ package com.byeoru.ordering_server.service
 
 import com.byeoru.ordering_server.FirebaseCloudMessageService
 import com.byeoru.ordering_server.domain.Basket
-import com.byeoru.ordering_server.domain.Basket.Companion.CreateBasket
 import com.byeoru.ordering_server.domain.Order.Companion.createOrder
 import com.byeoru.ordering_server.domain.OrderFood
 import com.byeoru.ordering_server.domain.OrderFood.Companion.createOrderFood
@@ -47,7 +46,7 @@ class OrderService(private val customerRepository: CustomerRepository,
     fun addToBasket(customerId: Long, restaurantId: Long, basketDto: BasketRequestDto) {
         val customer = customerRepository.findOne(customerId)
         val food = foodRepository.findOne(basketDto.foodId)
-        val basket = CreateBasket(customer, food, basketDto.count)
+        val basket = Basket.createBasket(customer, food, basketDto.count)
 
         // 장바구니에 저장
         basketRepository.save(basket)
@@ -148,7 +147,8 @@ class OrderService(private val customerRepository: CustomerRepository,
             order.cancel()
             order.registerCanceledTime()
             try {
-                val firebaseToken = order.customer.firebaseToken!!
+                // 고객이 회원탈퇴를 했을 경우 NPE 발생
+                val firebaseToken = order.customer!!.firebaseToken!!
                 val message = String.format(
                     "[%s] %s 사유로 인해 주문이 취소되었습니다.",
                     order.canceledOrCompletedTime!!.format(DateTimeFormatter.ofPattern("yyyy/MM/dd - HH:mm:ss")),
@@ -180,7 +180,8 @@ class OrderService(private val customerRepository: CustomerRepository,
             // 증가된 카운터 내 주문번호로 등록
             order.registerMyOrderNumber(order.restaurant.orderCount)
             try {
-                val firebaseToken = order.customer.firebaseToken!!
+                // 고객이 회원탈퇴를 했을 경우 NPE 발생
+                val firebaseToken = order.customer!!.firebaseToken!!
                 val message = String.format(
                     "[%s] 조리가 시작되었습니다. 약 %d분 후 조리가 완료될 예정입니다.",
                     order.checkedTime!!.format(DateTimeFormatter.ofPattern("yyyy/MM/dd - HH:mm:ss")),
@@ -208,7 +209,8 @@ class OrderService(private val customerRepository: CustomerRepository,
             order.complete()
             order.registerCompletedTime()
             try {
-                val firebaseToken = order.customer.firebaseToken!!
+                // 고객이 회원탈퇴를 했을 경우 NPE 발생
+                val firebaseToken = order.customer!!.firebaseToken!!
                 val message = String.format(
                     "[%s] 최상의 맛을 느낄 수 있도록 지금 바로 %s",
                     order.canceledOrCompletedTime!!.format(DateTimeFormatter.ofPattern("yyyy/MM/dd - HH:mm:ss")),

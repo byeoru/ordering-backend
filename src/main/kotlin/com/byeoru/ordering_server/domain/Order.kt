@@ -14,6 +14,7 @@ class Order(customer: Customer,
             tableNumber: Int,
             totalPrice: Int,
             orderSummary: String) {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_id")
@@ -22,7 +23,7 @@ class Order(customer: Customer,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
-     var customer: Customer = customer
+     var customer: Customer? = customer
          protected set
 
     @OneToMany(mappedBy = "order", cascade = [CascadeType.ALL], orphanRemoval = true)
@@ -125,8 +126,7 @@ class Order(customer: Customer,
             customer: Customer, restaurant: Restaurant, orderFoods: List<OrderFood>,
             orderType: OrderType, tableNumber: Int, totalPrice: Int, orderSummary: String
         ): Order {
-            val order =
-                Order(customer, restaurant, OrderStatus.ORDERED, orderType, tableNumber, totalPrice, orderSummary)
+            val order = Order(customer, restaurant, OrderStatus.ORDERED, orderType, tableNumber, totalPrice, orderSummary)
             orderFoods.forEach(order::addOrderFood)
             return order
         }

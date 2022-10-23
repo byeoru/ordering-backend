@@ -5,6 +5,7 @@ import javax.persistence.*
 @Entity
 class Coupon(serialNumber: String,
              value: Int) {
+
     @Id
      var serialNumber: String = serialNumber
          protected set

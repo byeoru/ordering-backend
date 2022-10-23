@@ -1,6 +1,5 @@
 package com.byeoru.ordering_server.api
 
-import com.byeoru.ordering_server.domain.Basket
 import com.byeoru.ordering_server.domain.dto.ResultDto
 import com.byeoru.ordering_server.domain.dto.request.BasketPutDto
 import com.byeoru.ordering_server.domain.dto.request.BasketRequestDto
@@ -19,14 +18,11 @@ class OrderApiController(val orderService: OrderService) {
      * 장바구니에 추가
      */
     @PostMapping("/api/order/basket")
-    fun addToBasket(
-        @RequestParam(name = "customer_id") customerId: Long,
-        @RequestParam(name = "restaurant_id") restaurantId: Long,
-        @RequestBody dto: BasketRequestDto
-    ): ResultDto<Boolean> {
-
+    fun addToBasket(@RequestParam(name = "customer_id") customerId: Long,
+                    @RequestParam(name = "restaurant_id") restaurantId: Long,
+                    @RequestBody dto: BasketRequestDto): ResultDto<Boolean> {
         // 이미 저장되이 있는 음식인지 조회
-        val basket: Basket? = orderService.findBasketByCustomerIdAndFoodId(customerId, dto.foodId)
+        val basket = orderService.findBasketByCustomerIdAndFoodId(customerId, dto.foodId)
 
         // 이미 저장된 음식일 경우
         basket?.let {
@@ -35,7 +31,7 @@ class OrderApiController(val orderService: OrderService) {
         }
 
         // 장바구니에 추가 가능한지 체크
-        val bAbleToAddToBasket: Boolean = orderService.isAbleToAddToBasket(customerId, restaurantId)
+        val bAbleToAddToBasket = orderService.isAbleToAddToBasket(customerId, restaurantId)
         return if (bAbleToAddToBasket) {
             orderService.addToBasket(customerId, restaurantId, dto)
             ResultDto(1, true)
@@ -48,10 +44,8 @@ class OrderApiController(val orderService: OrderService) {
      * 장바구니 음식(여러개) 수량 변경
      */
     @PutMapping("/api/order/baskets")
-    fun putFoodCntInBasket(
-        @RequestParam(name = "customer_id") customerId: Long,
-        @RequestBody basketPutDtos: List<BasketPutDto>
-    ): ResultDto<Boolean> {
+    fun putFoodCntInBasket(@RequestParam(name = "customer_id") customerId: Long,
+                           @RequestBody basketPutDtos: List<BasketPutDto>): ResultDto<Boolean> {
         orderService.putFoodCntInBasket(customerId, basketPutDtos)
         return ResultDto(1, true)
     }
@@ -60,10 +54,8 @@ class OrderApiController(val orderService: OrderService) {
      * 장바구니에서 음식 삭제
      */
     @DeleteMapping("/api/order/basket/{basketId}")
-    fun removeToBasket(
-        @PathVariable basketId: Long,
-        @RequestParam(name = "customer_id") customerId: Long
-    ): ResultDto<Boolean> {
+    fun removeToBasket(@PathVariable basketId: Long,
+                       @RequestParam(name = "customer_id") customerId: Long): ResultDto<Boolean> {
         orderService.removeToBasket(basketId, customerId)
         return ResultDto(1, true)
     }
@@ -81,12 +73,10 @@ class OrderApiController(val orderService: OrderService) {
      * 장바구니 음식 주문
      */
     @PostMapping("/api/order")
-    fun order(
-        @RequestParam(name = "customer_id") customerId: Long,
-        @RequestBody dto: OrderDto
-    ): ResultDto<Long> {
+    fun order(@RequestParam(name = "customer_id") customerId: Long,
+              @RequestBody dto: OrderDto): ResultDto<Long> {
         // 주문
-        val orderId: Long? = orderService.order(customerId, dto)
+        val orderId = orderService.order(customerId, dto)
         // 장바구니 비우기
         orderService.removeAllToBasket(customerId)
         return ResultDto(1, orderId)
@@ -111,11 +101,9 @@ class OrderApiController(val orderService: OrderService) {
      * 점주 주문 취소
      */
     @PostMapping("/api/order/{orderId}/owner_cancel")
-    fun ownerCancel(
-        @PathVariable orderId: Long,
-        @RequestBody dto: MessageDto
-    ): ResultDto<OrderPreviewDto> {
-        val bCanceled: Boolean = orderService.orderOwnerCancel(orderId, dto)
+    fun ownerCancel(@PathVariable orderId: Long,
+                    @RequestBody dto: MessageDto): ResultDto<OrderPreviewDto> {
+        val bCanceled = orderService.orderOwnerCancel(orderId, dto)
         return if (bCanceled) {
             val order = orderService.findOrder(orderId)
             val orderPreviewDto = OrderPreviewDto(order)
@@ -130,8 +118,7 @@ class OrderApiController(val orderService: OrderService) {
      */
     @PostMapping("/api/order/{orderId}/check")
     fun check(@PathVariable orderId: Long): ResultDto<OrderPreviewDto> {
-        val bChecked: Boolean = orderService.orderCheck(orderId)
-
+        val bChecked = orderService.orderCheck(orderId)
         return if (bChecked) {
             val order = orderService.findOrder(orderId)
             val orderPreviewDto = OrderPreviewDto(order)
@@ -147,7 +134,6 @@ class OrderApiController(val orderService: OrderService) {
     @PostMapping("/api/order/{orderId}/complete")
     fun complete(@PathVariable orderId: Long): ResultDto<OrderPreviewDto> {
         val bCompleted: Boolean = orderService.orderComplete(orderId)
-
         return if (bCompleted) {
             val order = orderService.findOrder(orderId)
             val orderPreviewDto = OrderPreviewDto(order)

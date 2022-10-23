@@ -4,11 +4,10 @@ import com.byeoru.ordering_server.domain.PhoneNumber
 import javax.persistence.*
 
 @MappedSuperclass
-abstract class MemberBase(
-    signInId: String,
-    password: String,
-    phoneNumber: PhoneNumber
-) {
+abstract class MemberBase(signInId: String,
+                          password: String,
+                          phoneNumber: PhoneNumber) {
+
     var signInId: String = signInId
         protected set
     var password: String = password

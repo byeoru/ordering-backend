@@ -7,6 +7,7 @@ import javax.persistence.*
 class Basket(customer: Customer,
              food: Food,
              count: Int) {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "basket_id")
@@ -32,7 +33,7 @@ class Basket(customer: Customer,
 
     companion object {
         @JvmStatic
-        fun CreateBasket(customer: Customer, food: Food, count: Int): Basket {
+        fun createBasket(customer: Customer, food: Food, count: Int): Basket {
             return Basket(customer, food, count)
         }
     }

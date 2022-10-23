@@ -6,15 +6,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.security.crypto.password.PasswordEncoder
 
 @Configuration
 @EnableWebSecurity
 class SecurityConfig : WebSecurityConfigurerAdapter() {
 
     @get:Bean
-    val passwordEncoder: PasswordEncoder
-        get() = BCryptPasswordEncoder()
+    val passwordEncoder = BCryptPasswordEncoder()
 
     @Throws(Exception::class)
     override fun configure(http: HttpSecurity) {

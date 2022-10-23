@@ -1,9 +1,8 @@
 package com.byeoru.ordering_server.domain.dto
 
 import com.byeoru.ordering_server.domain.Food
-import com.byeoru.ordering_server.domain.RepresentativeMenu
 
-open class FoodDto {
+class FoodDto {
 
     var foodName: String
     var price: Int
@@ -30,14 +29,5 @@ open class FoodDto {
         food.id,
         food.imageUrl,
         food.isSoldOut
-    )
-
-    constructor(menu: RepresentativeMenu) : this(
-        menu.food.foodName,
-        menu.food.price,
-        menu.food.menuIntro,
-        menu.food.id,
-        menu.food.imageUrl,
-        menu.food.isSoldOut
     )
 }

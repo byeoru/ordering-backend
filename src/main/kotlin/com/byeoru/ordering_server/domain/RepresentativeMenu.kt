@@ -6,6 +6,7 @@ import javax.persistence.*
 class RepresentativeMenu(restaurant: Restaurant,
                          food: Food,
                          foodName: String) {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "representative_menu_id")
