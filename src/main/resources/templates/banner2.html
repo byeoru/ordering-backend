@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko" style="background-color: white;" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <!-- user-scalable=no 는 모바일 기기에서 확대/축소 를 불가능하게 한다-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <title>오더링 회원이라면 쿠폰 무한제공</title>
+
+
+    <!-- 부트스트랩 CSS-->
+    <link rel="stylesheet" th:href="@{https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css}">
+
+    <!-- AOS(스크롤 시 애니메이션 시작) 라이브러리-->
+    <link th:href="@{https://unpkg.com/aos@2.3.1/dist/aos.css}" rel="stylesheet">
+    <script th:src="@{https://unpkg.com/aos@2.3.1/dist/aos.js}"></script>
+    <script th:src="@{https://code.jquery.com/jquery-1.11.3.min.js}"></script>
+
+    <link rel="stylesheet" th:href="@{/styles/banner.css}">
+</head>
+
+<body>
+<!-- 클라이언트 자바스크립트 연동 -->
+<script type="text/javascript">
+    function couponIssueToAndroid(price) {
+        Android.CouponIssue(parseInt(price));
+    }
+</script>
+
+<!-- AOS 초기화 -->
+<script>
+    AOS.init();
+</script>
+
+<div class="row" style="background-color: white;">
+    <div class="col-md-12" style="background-color: white; text-align: center; margin-bottom: 50px;">
+        <img th:src="@{/images/coupon_inside_title_background.gif}" alt="coupon_inside_title_background" width=100%, height=auto>
+    </div>
+</div>
+<div class="row" style="background-color:white">
+    <div class="col-md-12" style="text-align: center; margin-bottom: 30px;">
+        <img th:src="@{/images/eventweb_2_ordering_short.gif}" alt="eventweb_2_ordering_short" width=100%, height=auto>
+    </div>
+</div>
+
+<div class="row" style="background-color: white;">
+    <div class="col-md-12" style="text-align: center; margin-bottom: 30px;">
+        <span style="font-size: 48px">
+            <p data-aos="flip-right" class="bm-font" style="letter-spacing:0.01em; color: #E1695E" ><b>오더링 회원끼린</b></p>
+        </span>
+    </div>
+    <div class="col-md-4" style="text-align: center; margin-bottom: 100px;">
+        <span style="font-size: 36px">
+            <span data-aos="fade-in" data-aos-duration="500" data-aos-delay="300" class="bmeul-font" style="letter-spacing:0.01em;">
+                <b>니꺼</b>
+            </span>
+            <span data-aos="fade-in" data-aos-duration="500" data-aos-delay="700" class="bmeul-font" style="letter-spacing:0.01em;">
+                <b>내꺼</b>
+            </span>
+            <span data-aos="fade-in" data-aos-duration="500" data-aos-delay="1100" class="bmeul-font" style="letter-spacing:0.01em">
+                <b>가 없으니까!</b>
+            </span>
+        </span>
+    </div>
+
+    <div class="col-md-12">
+        <p class="download-text">* 본 쿠폰은 가상의 상품이며 실제 현금성 가치는 없습니다.</p>
+        <p class="download-text" style="margin-top: 10px;">* 해당 이벤트는 임의로 종료될 수 있습니다.</p>
+        <p class="download-text" style="margin-top: 10px; padding-left: 10px; padding-right: 10px;">* 같은 종류의 쿠폰은 최대 1개까지만 소유할 수 있으며 사용 후 다시 발급 가능합니다.</p>
+    </div>
+
+    <div class = "couponbox">
+        <p style="font-size: 48px;" class="bmdh-font">30,000원</p>
+        <p style="margin-top: 30px;font-size: 32px;color: rgb(255, 5, 55);" class="bmdh-font">COUPON</p>
+    </div>
+    <div class = "download-background">
+        <button type="button" class="download-btn" onClick="couponIssueToAndroid('30000')">
+            <img th:src="@{/images/download-icon.png}" alt="download-icon" width="40px" height="auto">
+        </button>
+    </div>
+
+    <div class = "couponbox">
+        <p style="font-size: 48px;" class="bmdh-font">50,000원</p>
+        <p style="margin-top: 30px;font-size: 32px;color: rgb(255, 5, 55);" class="bmdh-font">COUPON</p>
+    </div>
+    <div class = "download-background">
+        <button type="button" class="download-btn" onClick="couponIssueToAndroid('50000')">
+            <img th:src="@{/images/download-icon.png}" alt="download-icon" width="40px" height="auto">
+        </button>
+    </div>
+
+    <div class = "couponbox">
+        <p style="font-size: 48px;" class="bmdh-font">100,000원</p>
+        <p style="margin-top: 30px;font-size: 32px;color: rgb(255, 5, 55);" class="bmdh-font">COUPON</p>
+    </div>
+    <div class = "download-background" style="margin-bottom: 50px;">
+        <button type="button" class="download-btn" onClick="couponIssueToAndroid('100000')">
+            <img th:src="@{/images/download-icon.png}" alt="download-icon" width="40px" height="auto">
+        </button>
+    </div>
+</div>
+
+
+<div class="row" id="closing">
+    <div class="col-md-12">
+        <span class="bm-font" style="font-size: 24px; color: black;"><b>Contact Us</b></span>
+    </div>
+    <div class="col-md-12">
+        <span class="closing-text">(우)52828 경남 진주시 진주대로 501 경상국립대학교 자연과학대학 컴퓨터과학부 컴퓨터과학전공</span>
+    </div>
+    <div class="col-md-12">
+        <span class="closing-text"><b>Call </b>055-772-1380</span>
+    </div>
+    <div class="col-md-12">
+        <span class="closing-text"><b>Fax </b>055-772-1389</span>
+    </div>
+    <div class="col-md-12">
+        <span class="closing-text"><b>E-mail </b>cs@gnu.ac.kr</span>
+    </div>
+</div>
+</body>
+</html>

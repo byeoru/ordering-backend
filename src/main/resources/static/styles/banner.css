@@ -1,0 +1,184 @@
+@import url('./reset.css');
+
+/*구글 웹 폰트 적용*/
+@import url("http://fonts.googleapis.com/earlyaccess/jejumyeongjo.css");
+
+.ordering_font{
+    font-family: 'Jeju Myeongjo', serif;/*웹 폰트 지정*/
+    color: #E1695E;
+    font-size: large;
+}
+
+@font-face{
+    font-family:'BMHANNAPro'; /*글꼴*/
+    src: local('BMHANNAPro'),
+    url('../fonts/BMHANNAPro.ttf') format('truetype');
+}
+
+@font-face{
+    font-family:'SquarePeg'; /*글꼴*/
+    src: local('SquarePeg'),
+    url('../fonts/SquarePeg.ttf') format('truetype');
+}
+
+@font-face{
+    font-family:'BMDOHYEON'; /*글꼴*/
+    src: local('BMDOHYEON'),
+    url('../fonts/BMDOHYEON.ttf') format('truetype');
+}
+
+@font-face{
+    font-family:'BMEULJIROTTF'; /*글꼴*/
+    src: local('BMEULJIROTTF'),
+    url('../fonts/BMEULJIROTTF.ttf') format('truetype');
+}
+
+@font-face{
+    font-family:'BMJUA'; /*글꼴*/
+    src: local('BMJUA'),
+    url('../fonts/BMJUA.ttf') format('truetype');
+}
+
+@font-face{
+    font-family:'BMKIRANGHAERANG'; /*글꼴*/
+    src: local('BMKIRANGHAERANG'),
+    url('../fonts/BMKIRANGHAERANG.ttf') format('truetype');
+}
+
+body {
+    width: 100%;
+}
+
+/*웹 폰트 지정*/
+.bm-font{
+    font-family: 'BMHANNAPro', sans-serif;
+    color: black;
+}
+
+.bmjua-font{
+    font-family: 'BMHANNAPro', sans-serif;
+    color: black;
+}
+
+.bmdh-font{
+    font-family: 'BMDOHYEON', sans-serif;
+    color: black;
+}
+
+.bmeul-font{
+    font-family: 'BMEULJIROTTF', sans-serif;
+    color: black;
+}
+
+.bmki-font{
+    font-family: 'BMKIRANGHAERANG', sans-serif;
+    color: black;
+}
+.square-font{
+    font-family: 'SquarePeg', sans-serif;
+    color: black;
+}
+
+/* 모서리 둥근 사각형 */
+.couponbox {
+    background-color: white;
+    border: 2px solid rgb(27, 65, 218);
+    line-height: 1rem;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    margin-left: 50px;
+    margin-right: 50px;
+    width: auto;
+    height: auto;
+    text-align: center;
+    margin-top: 50px;
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+.download-background {
+    background-color: #c1c1c1;
+    border-bottom: 2px solid rgb(27, 65, 218);
+    border-left: 2px solid rgb(27, 65, 218);
+    border-right: 2px solid rgb(27, 65, 218);
+    line-height: 1rem;
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    margin-left: 50px;
+    margin-right: 50px;
+    width: auto;
+    height: auto;
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.download-btn {
+    background-color: #c1c1c1;
+    text-align: center;
+    border: 0;
+    outline: 0;
+}
+.download-text{
+    text-align: center;
+    font-family: sans-serif;
+    color: black;
+    font-size: 14px;
+}
+.closing-text{
+    font-family: sans-serif;
+    color: black;
+    font-size: 14px;
+}
+/***********/
+
+.insta{
+    margin-bottom: 150px;
+}
+
+
+
+#padtop{
+    padding:50px 0px 0px 0px;
+}
+
+#padtopbot{
+    padding:50px 0px 50px 0px;
+}
+
+#padbot{
+    padding:0px 0px 50px 0px;
+}
+
+#padtopbotlg{
+    padding:300px 0px 100px 0px;
+}
+
+#mediumpad{
+    padding:50px 0px 0px 0px;
+}
+
+#martop{
+    margin:50px 0px 0px 0px;
+}
+
+#marbot{
+    margin:0px 0px 50px 0px;
+}
+#martopbot{
+    margin:50px 0px 50px 0px;
+}
+
+#martopbotlg{
+    margin:300px 0px 100px 0px;
+}
+
+#medium{
+    margin:50px 0px 0px 0px;
+}
+
+#closing{
+    background-color: rgb(215, 215, 215);
+    padding-left: 40px;
+    padding-right: 50px;
+    padding-top: 30px;
+    padding-bottom: 20px;
+}
