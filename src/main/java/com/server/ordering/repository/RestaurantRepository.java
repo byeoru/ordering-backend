@@ -46,7 +46,7 @@ public class RestaurantRepository {
                 "(ST_Distance_Sphere(ST_GeomFromText(?, 4326), location, 6373000)) as distance_meter " +
                 "from restaurant order by distance_meter) result left join representative_menu " +
                 "on result.restaurant_id = representative_menu.restaurant_id " +
-                "where result.distance_meter <= 3000 and food_category=? order by result.distance_meter";
+                "where result.distance_meter <= 5000 and food_category=? order by result.distance_meter";
 
         return jdbcTemplate.query(query, (ResultSetExtractor<List<RestaurantPreviewWithDistanceDto>>) rs -> {
             HashMap<Long, RestaurantPreviewWithDistanceDto> previews = new HashMap<>();
